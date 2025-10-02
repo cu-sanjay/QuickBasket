@@ -1,165 +1,218 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <link rel="stylesheet" href="styles.css"/>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="stylesheet" href="styles.css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>QuickBasket - Grocery Delivery in Minutes</title>
-    <link rel="icon" href="https://cdn-icons-png.flaticon.com/512/3081/3081559.png" type="image/png">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap">
-</head>
-<body>
+    <link
+      rel="icon"
+      href="https://cdn-icons-png.flaticon.com/512/3081/3081559.png"
+      type="image/png"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+    />
+  </head>
+  <body>
     <!-- Header -->
     <header>
-        <div class="container">
-            <div class="header-content">
-                <div class="logo">
-                    <i class="fas fa-shopping-basket"></i>
-                    <span>QuickBasket</span>
-                </div>
-                <div class="search-bar">
-                    <input type="text" placeholder="Search for products...">
-                    <button><i class="fas fa-search"></i></button>
-                </div>
-                <div class="header-actions">
-                    <div class="action-item" onclick="openUserModal()">
-                        <i class="fas fa-user"></i>
-                        <span>Account</span>
-                    </div>
-                    <div class="action-item" style="position: relative;" onclick="openCart()">
-                        <i class="fas fa-shopping-cart"></i>
-                        <span>Cart</span>
-                        <div class="cart-count">0</div>
-                    </div>
-                </div>
+      <div class="container">
+        <div class="header-content">
+          <div class="logo">
+            <i class="fas fa-shopping-basket"></i>
+            <span>QuickBasket</span>
+          </div>
+          <div class="search-bar">
+            <input type="text" placeholder="Search for products..." />
+            <button><i class="fas fa-search"></i></button>
+          </div>
+          <div class="header-actions">
+            <div class="action-item" onclick="openUserModal()">
+              <i class="fas fa-user"></i>
+              <span>Account</span>
             </div>
+            <div
+              class="action-item"
+              style="position: relative"
+              onclick="openCart()"
+            >
+              <i class="fas fa-shopping-cart"></i>
+              <span>Cart</span>
+              <div class="cart-count">0</div>
+            </div>
+          </div>
         </div>
+      </div>
     </header>
 
     <!-- Navigation -->
     <nav>
-        <div class="container">
-            <ul class="nav-links">
-                <li><a href="#"><i class="fas fa-home"></i> <span>Home</span></a></li>
-                <li><a href="#"><i class="fas fa-utensils"></i> <span>Food</span></a></li>
-                <li><a href="#"><i class="fas fa-pepper-hot"></i> <span>Vegetables</span></a></li>
-                <li><a href="#"><i class="fas fa-apple-alt"></i> <span>Fruits</span></a></li>
-                <li><a href="#"><i class="fas fa-wine-bottle"></i> <span>Beverages</span></a></li>
-                <li><a href="#"><i class="fas fa-ice-cream"></i> <span>Snacks</span></a></li>
-                <li><a href="#"><i class="fas fa-soap"></i> <span>Home Care</span></a></li>
-            </ul>
-        </div>
+      <div class="container">
+        <ul class="nav-links">
+          <li>
+            <a href="#"><i class="fas fa-home"></i> <span>Home</span></a>
+          </li>
+          <li>
+            <a href="#"><i class="fas fa-utensils"></i> <span>Food</span></a>
+          </li>
+          <li>
+            <a href="#"
+              ><i class="fas fa-pepper-hot"></i> <span>Vegetables</span></a
+            >
+          </li>
+          <li>
+            <a href="#"><i class="fas fa-apple-alt"></i> <span>Fruits</span></a>
+          </li>
+          <li>
+            <a href="#"
+              ><i class="fas fa-wine-bottle"></i> <span>Beverages</span></a
+            >
+          </li>
+          <li>
+            <a href="#"><i class="fas fa-ice-cream"></i> <span>Snacks</span></a>
+          </li>
+          <li>
+            <a href="#"><i class="fas fa-soap"></i> <span>Home Care</span></a>
+          </li>
+        </ul>
+      </div>
     </nav>
 
     <!-- Main Content -->
     <div class="container">
-        <!-- Hero Section -->
-        <section class="hero">
-            <h1>Groceries Delivered in Minutes</h1>
-            <p>Get fresh groceries, snacks, and household essentials delivered to your doorstep in just minutes.</p>
-            <a href="#products" class="btn">Shop Now</a>
-        </section>
+      <!-- Hero Section -->
+      <section class="hero">
+        <h1>Groceries Delivered in Minutes</h1>
+        <p>
+          Get fresh groceries, snacks, and household essentials delivered to
+          your doorstep in just minutes.
+        </p>
+        <a href="#products" class="btn">Shop Now</a>
+      </section>
 
-        <!-- Categories Section -->
-        <h2 class="section-title">Shop by Category</h2>
-        <div class="categories">
-            <div class="category-item">
-                <div class="category-icon">
-                    <i class="fas fa-utensils"></i>
-                </div>
-                <h3>Food</h3>
-            </div>
-            <div class="category-item">
-                <div class="category-icon">
-                    <i class="fas fa-pepper-hot"></i>
-                </div>
-                <h3>Vegetables</h3>
-            </div>
-            <div class="category-item">
-                <div class="category-icon">
-                    <i class="fas fa-apple-alt"></i>
-                </div>
-                <h3>Fruits</h3>
-            </div>
-            <div class="category-item">
-                <div class="category-icon">
-                    <i class="fas fa-wine-bottle"></i>
-                </div>
-                <h3>Beverages</h3>
-            </div>
-            <div class="category-item">
-                <div class="category-icon">
-                    <i class="fas fa-ice-cream"></i>
-                </div>
-                <h3>Snacks</h3>
-            </div>
-            <div class="category-item">
-                <div class="category-icon">
-                    <i class="fas fa-soap"></i>
-                </div>
-                <h3>Home Care</h3>
-            </div>
+      <!-- Categories Section -->
+      <h2 class="section-title">Shop by Category</h2>
+      <div class="categories">
+        <div class="category-item">
+          <div class="category-icon">
+            <i class="fas fa-utensils"></i>
+          </div>
+          <h3>Food</h3>
         </div>
+        <div class="category-item">
+          <div class="category-icon">
+            <i class="fas fa-pepper-hot"></i>
+          </div>
+          <h3>Vegetables</h3>
+        </div>
+        <div class="category-item">
+          <div class="category-icon">
+            <i class="fas fa-apple-alt"></i>
+          </div>
+          <h3>Fruits</h3>
+        </div>
+        <div class="category-item">
+          <div class="category-icon">
+            <i class="fas fa-wine-bottle"></i>
+          </div>
+          <h3>Beverages</h3>
+        </div>
+        <div class="category-item">
+          <div class="category-icon">
+            <i class="fas fa-ice-cream"></i>
+          </div>
+          <h3>Snacks</h3>
+        </div>
+        <div class="category-item">
+          <div class="category-icon">
+            <i class="fas fa-soap"></i>
+          </div>
+          <h3>Home Care</h3>
+        </div>
+      </div>
 
-        <!-- Products Section -->
-        <h2 class="section-title" id="products">Popular Products</h2>
-        <div class="products" id="popularProducts">
-            <!-- Products will be loaded dynamically here -->
-        </div>
+      <!-- Products Section -->
+      <h2 class="section-title" id="products">Popular Products</h2>
+      <div class="products" id="popularProducts">
+        <!-- Products will be loaded dynamically here -->
+      </div>
 
-        <!-- Deals Section -->
-        <h2 class="section-title">Today's Best Deals</h2>
-        <div class="products" id="dealsProducts">
-            <!-- Deals will be loaded dynamically here -->
-        </div>
+      <!-- Deals Section -->
+      <h2 class="section-title">Today's Best Deals</h2>
+      <div class="products" id="dealsProducts">
+        <!-- Deals will be loaded dynamically here -->
+      </div>
     </div>
 
     <!-- Footer -->
     <footer>
-        <div class="container">
-            <div class="footer-content">
-                <div class="footer-column">
-                    <h3>Quick Links</h3>
-                    <ul>
-                        <li><a href="#">Home</a></li>
-                        <li><a href="#">Products</a></li>
-                        <li><a href="#">Categories</a></li>
-                        <li><a href="#">Offers</a></li>
-                        <li><a href="#">My Account</a></li>
-                    </ul>
-                </div>
-                <div class="footer-column">
-                    <h3>Customer Service</h3>
-                    <ul>
-                        <li><a href="#">Contact Us</a></li>
-                        <li><a href="#">FAQ</a></li>
-                        <li><a href="#">Shipping Policy</a></li>
-                        <li><a href="#">Returns & Refunds</a></li>
-                        <li><a href="#">Privacy Policy</a></li>
-                    </ul>
-                </div>
-                <div class="footer-column">
-                    <h3>Contact Info</h3>
-                    <ul>
-                        <li><i class="fas fa-map-marker-alt"></i> QuickMart, Sector 8, Pratap Nagar, Jaipur</li>
-                        <li><i class="fas fa-phone"></i> +91 9800800808</li>
-                        <li><i class="fas fa-envelope"></i> hello@quickbasket.com</li>
-                    </ul>
-                </div>
-                <div class="footer-column">
-                    <h3>Newsletter</h3>
-                    <p>Subscribe to get special offers, free giveaways, and new product alerts</p>
-                    <form>
-                        <input type="email" placeholder="Your email address" style="padding: 10px; width: 100%; margin-bottom: 10px; border-radius: 5px; border: none;">
-                        <button type="submit" class="btn" style="width: 100%;">Subscribe</button>
-                    </form>
-                </div>
-            </div>
-            <div class="footer-bottom">
-                <p>&copy; 2025 QuickBasket. All rights reserved.</p>
-            </div>
+      <div class="container">
+        <div class="footer-content">
+          <div class="footer-column">
+            <h3>Quick Links</h3>
+            <ul>
+              <li><a href="#">Home</a></li>
+              <li><a href="#">Products</a></li>
+              <li><a href="#">Categories</a></li>
+              <li><a href="#">Offers</a></li>
+              <li><a href="#">My Account</a></li>
+            </ul>
+          </div>
+          <div class="footer-column">
+            <h3>Customer Service</h3>
+            <ul>
+              <li><a href="#">Contact Us</a></li>
+              <li><a href="#">FAQ</a></li>
+              <li><a href="#">Shipping Policy</a></li>
+              <li><a href="#">Returns & Refunds</a></li>
+              <li><a href="#">Privacy Policy</a></li>
+            </ul>
+          </div>
+          <div class="footer-column">
+            <h3>Contact Info</h3>
+            <ul>
+              <li>
+                <i class="fas fa-map-marker-alt"></i> QuickMart, Sector 8,
+                Pratap Nagar, Jaipur
+              </li>
+              <li><i class="fas fa-phone"></i> +91 9800800808</li>
+              <li><i class="fas fa-envelope"></i> hello@quickbasket.com</li>
+            </ul>
+          </div>
+          <div class="footer-column">
+            <h3>Newsletter</h3>
+            <p>
+              Subscribe to get special offers, free giveaways, and new product
+              alerts
+            </p>
+            <form>
+              <input
+                type="email"
+                placeholder="Your email address"
+                style="
+                  padding: 10px;
+                  width: 100%;
+                  margin-bottom: 10px;
+                  border-radius: 5px;
+                  border: none;
+                "
+              />
+              <button type="submit" class="btn" style="width: 100%">
+                Subscribe
+              </button>
+            </form>
+          </div>
         </div>
+        <div class="footer-bottom">
+          <p>&copy; 2025 QuickBasket. All rights reserved.</p>
+        </div>
+      </div>
     </footer>
 
     <!-- Cart Modal -->
@@ -209,9 +262,25 @@
                 <div class="coupon-section">
                     <h4>Apply Coupon</h4>
                     <div class="coupon-input">
+<<<<<<< HEAD
                         <input type="text" id="couponInput" placeholder="Enter coupon code">
                         <button type="button" id="couponBtn">Apply</button>
                         <div id="couponMsg" style="margin-top:8px;color:#28a745;font-size:0.95em;"></div>
+=======
+                        <input type="text" placeholder="Enter coupon code" maxlength="20">
+                        <button onclick="applyCoupon()">Apply</button>
+                    </div>
+                    
+                    <div id="couponMessage" class="coupon-message"></div>
+                    
+                    <div id="appliedCoupon" class="applied-coupon"></div>
+                    
+                    <div class="available-coupons">
+                        <h5>Available Coupons:</h5>
+                        <div id="availableCoupons">
+                            <!-- Available coupons will be displayed here -->
+                        </div>
+>>>>>>> main
                     </div>
                 </div>
                 
@@ -232,51 +301,89 @@
 
     <!-- User Modal -->
     <div class="user-modal" id="userModal">
-        <div class="user-modal-content">
-            <div class="user-tabs">
-                <div class="user-tab active" onclick="switchTab('login')">Login</div>
-                <div class="user-tab" onclick="switchTab('signup')">Sign Up</div>
-            </div>
-            
-            <form class="user-form active" id="loginForm">
-                <div class="form-group">
-                    <label for="loginEmail">Email</label>
-                    <input type="email" id="loginEmail" placeholder="Enter your email" required>
-                </div>
-                <div class="form-group">
-                    <label for="loginPassword">Password</label>
-                    <input type="password" id="loginPassword" placeholder="Enter your password" required>
-                </div>
-                <button type="submit" class="form-submit">Login</button>
-            </form>
-            
-            <form class="user-form" id="signupForm">
-                <div class="form-group">
-                    <label for="signupName">Full Name</label>
-                    <input type="text" id="signupName" placeholder="Enter your full name" required>
-                </div>
-                <div class="form-group">
-                    <label for="signupEmail">Email</label>
-                    <input type="email" id="signupEmail" placeholder="Enter your email" required>
-                </div>
-                <div class="form-group">
-                    <label for="signupPassword">Password</label>
-                    <input type="password" id="signupPassword" placeholder="Create a password" required>
-                </div>
-                <div class="form-group">
-                    <label for="signupPhone">Phone Number</label>
-                    <input type="tel" id="signupPhone" placeholder="Enter your phone number" required>
-                </div>
-                <button type="submit" class="form-submit">Create Account</button>
-            </form>
+      <div class="user-modal-content">
+        <div class="user-tabs">
+          <div class="user-tab active" onclick="switchTab('login')">Login</div>
+          <div class="user-tab" onclick="switchTab('signup')">Sign Up</div>
         </div>
+
+        <form class="user-form active" id="loginForm">
+          <div class="form-group">
+            <label for="loginEmail">Email</label>
+            <input
+              type="email"
+              id="loginEmail"
+              placeholder="Enter your email"
+              required
+            />
+          </div>
+          <div class="form-group">
+            <label for="loginPassword">Password</label>
+            <input
+              type="password"
+              id="loginPassword"
+              placeholder="Enter your password"
+              required
+            />
+          </div>
+          <button type="submit" class="form-submit">Login</button>
+        </form>
+
+        <form class="user-form" id="signupForm">
+          <div class="form-group">
+            <label for="signupName">Full Name</label>
+            <input
+              type="text"
+              id="signupName"
+              placeholder="Enter your full name"
+              required
+            />
+          </div>
+          <div class="form-group">
+            <label for="signupEmail">Email</label>
+            <input
+              type="email"
+              id="signupEmail"
+              placeholder="Enter your email"
+              required
+            />
+          </div>
+          <div class="form-group">
+            <label for="signupPassword">Password</label>
+            <input
+              type="password"
+              id="signupPassword"
+              placeholder="Create a password"
+              required
+            />
+          </div>
+          <div class="form-group">
+            <label for="signupPhone">Phone Number</label>
+            <input
+              type="tel"
+              id="signupPhone"
+              placeholder="Enter your phone number"
+              required
+            />
+          </div>
+          <button type="submit" class="form-submit">Create Account</button>
+        </form>
+      </div>
     </div>
 
     <!-- Toast Notification -->
-    <div class="toast" id="toast">
-        <i class="fas fa-check-circle"></i>
-        <span id="toastMessage">Item added to cart!</span>
+    <div class="toast success" id="toast">
+      <i class="fas fa-check-circle"></i>
+      <span class="toast-message" id="toastMessage">Item added to cart!</span>
+      <button
+        class="toast-close"
+        onclick="hideToast()"
+        aria-label="Close notification"
+      >
+        <i class="fas fa-times"></i>
+      </button>
+      <div class="toast-progress-bar" id="toastProgressBar"></div>
     </div>
     <script src="script.js"></script>
-</body>
+  </body>
 </html>

@@ -13,6 +13,14 @@ This project is created for **Hacktoberfest** and aims to help contributors lear
   </a>
 </p>
 
+<p align="center">
+  <img src="https://img.shields.io/github/contributors/cu-sanjay/QuickBasket-Hacktoberfest?style=for-the-badge&color=0e8a16&logo=github" alt="👥 Contributors">
+  <img src="https://img.shields.io/github/issues/cu-sanjay/QuickBasket-Hacktoberfest?style=for-the-badge&color=ff9800&logo=gitbook" alt="🐞 Open Issues">
+  <img src="https://img.shields.io/github/last-commit/cu-sanjay/QuickBasket-Hacktoberfest?style=for-the-badge&color=6f42c1&logo=git" alt="🕒 Last Commit">
+  <img src="https://img.shields.io/badge/beginner-friendly-2196f3?style=for-the-badge&logo=bookstack&logoColor=white" alt="📘 Beginner Friendly">
+  <img src="https://img.shields.io/badge/Hacktoberfest-2025-e91e63?style=for-the-badge&logo=hacktoberfest&logoColor=white" alt="🎉 Hacktoberfest 2025">
+</p>
+
 ## 🚀 Built With
 
 <p align="center">
@@ -72,5 +80,11 @@ Use this project as a base and extend it further for learning:
    git push origin feature-branch
    ```
 6. Submit a pull request 🎉
-
+>[!IMPORTANT]
 > This project is beginner-friendly and open for Hacktoberfest contributions. Feel free to work on the listed issues or suggest new ones.
+
+## 👥 Contributors
+
+Thanks to all these amazing people:
+
+[![Contributors](https://contrib.rocks/image?repo=cu-sanjay/QuickBasket-Hacktoberfest)](https://github.com/cu-sanjay/QuickBasket-Hacktoberfest/graphs/contributors)
