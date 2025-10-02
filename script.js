@@ -59,11 +59,51 @@ async function loadProducts() {
     const response = await fetch("./products.json");
     productsData = await response.json();
     renderProducts();
+
+    // --- SEARCH FUNCTIONALITY ---
+    const searchInput = document.querySelector(".search-bar input");
+    const searchButton = document.querySelector(".search-bar button");
+
+    function filterProducts() {
+      const query = searchInput.value.toLowerCase().trim();
+
+      if (!productsData) return;
+
+      // Filter both popularProducts and deals sections
+      filterSection("popularProducts", productsData.popularProducts, query);
+      filterSection("dealsProducts", productsData.deals, query);
+    }
+
+    function filterSection(containerId, products, query) {
+      const container = document.getElementById(containerId);
+      container.innerHTML = "";
+
+      const filtered = products.filter(product =>
+        product.name.toLowerCase().includes(query)
+      );
+
+      if (filtered.length === 0) {
+        container.innerHTML = `<p style="padding:10px; text-align:center;">No products found</p>`;
+        return;
+      }
+
+      filtered.forEach(product => {
+        const productCard = createProductCard(product);
+        container.appendChild(productCard);
+      });
+    }
+
+    // Trigger filter on input change and search button click
+    searchInput.addEventListener("input", filterProducts);
+    searchButton.addEventListener("click", filterProducts);
+
   } catch (error) {
     console.error("Error loading products:", error);
     showErrorToast("Failed to load products. Please refresh the page.");
   }
 }
+
+
 
 // Render products dynamically
 function renderProducts() {
@@ -564,3 +604,4 @@ document.addEventListener("DOMContentLoaded", function () {
       document.getElementById("userModal").style.display = "none";
     });
 });
+
