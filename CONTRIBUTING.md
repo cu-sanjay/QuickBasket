@@ -100,4 +100,11 @@ Hacktoberfest is about **learning and contributing meaningfully**. Please:
 
 By contributing, you not only help improve QuickBasket but also **gain experience, enhance your portfolio, and become part of the open-source community**.
 
+## 👥 Contributors
+
+Thanks to everyone who has contributed to this project:
+
+- ![Sanjay CU](https://github.com/cu-sanjay.png?size=30) **Sanjay CU** - [GitHub](https://github.com/cu-sanjay)  
+- ![Rishan Menezes](https://github.com/rishanmenezes.png?size=30) **Rishan Menezes** - [GitHub](https://github.com/rishanmenezes)  
+
 > Happy Coding 💻 and welcome to the **QuickBasket Community** 🚀

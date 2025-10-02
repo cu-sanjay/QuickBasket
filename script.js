@@ -22,17 +22,54 @@ function renderProducts() {
     renderProductSection('dealsProducts', productsData.deals);
 }
 
-// Render a specific product section
-function renderProductSection(containerId, products) {
-    const container = document.getElementById(containerId);
-    if (!container) return;
-    
-    container.innerHTML = '';
-    
-    products.forEach(product => {
-        const productCard = createProductCard(product);
-        container.appendChild(productCard);
-    });
+
+// Coupon logic
+let appliedCoupon = null;
+const coupons = {
+    'SAVE10': { type: 'percent', value: 10, description: '10% off your order' },
+    'FLAT50': { type: 'flat', value: 50, description: '₹50 off on orders above ₹500', min: 500 },
+};
+
+function getCartTotal() {
+    return cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
+}
+
+function getDiscountedTotal() {
+    let total = getCartTotal();
+    if (!appliedCoupon) return total;
+    const coupon = coupons[appliedCoupon];
+    if (!coupon) return total;
+    if (coupon.type === 'percent') {
+        return Math.round(total * (1 - coupon.value / 100));
+    } else if (coupon.type === 'flat' && total >= (coupon.min || 0)) {
+        return Math.max(0, total - coupon.value);
+    }
+    return total;
+}
+
+function applyCouponCode() {
+    const input = document.getElementById('couponInput');
+    const code = input.value.trim().toUpperCase();
+    if (!code) {
+        showToast('Please enter a coupon code.');
+        return;
+    }
+    if (!coupons[code]) {
+        showToast('Invalid coupon code!');
+        appliedCoupon = null;
+        updateCartDisplay();
+        return;
+    }
+    // Check min order for flat coupons
+    if (coupons[code].type === 'flat' && getCartTotal() < (coupons[code].min || 0)) {
+        showToast(`Order must be at least ₹${coupons[code].min} for this coupon.`);
+        appliedCoupon = null;
+        updateCartDisplay();
+        return;
+    }
+    appliedCoupon = code;
+    showToast(`Coupon applied: ${coupons[code].description}`);
+    updateCartDisplay();
 }
 
 // Create product card element
@@ -101,20 +138,17 @@ function updateCartDisplay() {
     const cartItems = document.querySelector('.cart-items');
     const cartTotal = document.getElementById('cartTotal');
     const qrAmount = document.getElementById('qrAmount');
-    
+    const couponMsg = document.getElementById('couponMsg');
     // Clear current display
     cartItems.innerHTML = '';
-    
-    // Add items to display
-    let total = 0;
-    
+    let total = getCartTotal();
+    let discounted = getDiscountedTotal();
     if (cart.length === 0) {
         cartItems.innerHTML = '<p style="text-align: center; padding: 20px;">Your cart is empty</p>';
+        if (couponMsg) couponMsg.textContent = '';
     } else {
         cart.forEach(item => {
             const itemTotal = item.price * item.quantity;
-            total += itemTotal;
-            
             const cartItem = document.createElement('div');
             cartItem.className = 'cart-item';
             cartItem.innerHTML = `
@@ -131,17 +165,17 @@ function updateCartDisplay() {
                     <button class="quantity-btn" onclick="changeQuantity('${item.name}', 1)">+</button>
                 </div>
             `;
-            
             cartItems.appendChild(cartItem);
         });
+        if (appliedCoupon && coupons[appliedCoupon]) {
+            if (couponMsg) couponMsg.textContent = `Coupon (${appliedCoupon}): ${coupons[appliedCoupon].description} - Saved ₹${total - discounted}`;
+        } else if (couponMsg) {
+            couponMsg.textContent = '';
+        }
     }
-    
-    // Update total
-    cartTotal.textContent = `₹${total}`;
-    qrAmount.textContent = `₹${total}`;
-    
-    // Update QR code with new total - demo only
-    document.querySelector('.qr-code img').src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=QuickBasket-Payment-Total-₹${total}`;
+    cartTotal.textContent = `₹${discounted}`;
+    qrAmount.textContent = `₹${discounted}`;
+    document.querySelector('.qr-code img').src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=QuickBasket-Payment-Total-₹${discounted}`;
 }
 
 function changeQuantity(name, change) {
@@ -263,10 +297,14 @@ document.addEventListener('DOMContentLoaded', function() {
         showToast('Login successful!');
         document.getElementById('userModal').style.display = 'none';
     });
-    
     document.getElementById('signupForm').addEventListener('submit', function(e) {
         e.preventDefault();
         showToast('Account created successfully!');
         document.getElementById('userModal').style.display = 'none';
     });
+    // Coupon apply button
+    const couponBtn = document.getElementById('couponBtn');
+    if (couponBtn) {
+        couponBtn.addEventListener('click', applyCouponCode);
+    }
 });
