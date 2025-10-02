@@ -1360,3 +1360,41 @@ footer {
         align-self: flex-start;
     }
 }
+/* Category Filter Styles */
+.category-item {
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border-radius: 10px;
+  padding: 1rem;
+  border: 2px solid transparent;
+}
+
+.category-item:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+  background: var(--primary);
+  color: white;
+  border-color: var(--primary);
+}
+
+.category-item.active {
+  background: var(--primary);
+  color: white;
+  transform: translateY(-3px);
+  box-shadow: 0 6px 20px rgba(11, 125, 250, 0.3);
+  border-color: var(--primary);
+}
+
+.category-item:hover .category-icon i,
+.category-item.active .category-icon i {
+  color: white !important;
+}
+
+.category-item:hover h3,
+.category-item.active h3 {
+  color: white !important;
+}
+
+.category-item:active {
+  transform: translateY(-1px);
+}

@@ -59,6 +59,7 @@ async function loadProducts() {
     const response = await fetch("./products.json");
     productsData = await response.json();
     renderProducts();
+    initializeFilters();
   } catch (error) {
     console.error("Error loading products:", error);
     showErrorToast("Failed to load products. Please refresh the page.");
@@ -71,6 +72,35 @@ function renderProducts() {
 
   renderProductSection("popularProducts", productsData.popularProducts);
   renderProductSection("dealsProducts", productsData.deals);
+}
+
+function initializeFilters() {
+  const categoryItems = document.querySelectorAll('.category-item');
+  categoryItems.forEach(item => {
+    item.addEventListener('click', () => {
+      const category = item.dataset.category;
+      filterProducts(category);
+      categoryItems.forEach(cat => cat.classList.remove('active'));
+      item.classList.add('active');
+    });
+  });
+  
+  if (categoryItems.length > 0) {
+    categoryItems[0].classList.add('active');
+  }
+}
+
+function filterProducts(category) {
+  if (category === 'all') {
+    renderProductSection('popularProducts', productsData.popularProducts);
+    renderProductSection('dealsProducts', productsData.deals);
+  } else {
+    const filteredPopular = productsData.popularProducts.filter(product => product.category === category);
+    const filteredDeals = productsData.deals.filter(product => product.category === category);
+    
+    renderProductSection('popularProducts', filteredPopular);
+    renderProductSection('dealsProducts', filteredDeals);
+  }
 }
 
 // Render a specific product section
