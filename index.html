@@ -22,15 +22,21 @@
                     <input type="text" placeholder="Search for products...">
                     <button><i class="fas fa-search"></i></button>
                 </div>
+              <!-- add wishlist -->
                 <div class="header-actions">
                     <div class="action-item" onclick="openUserModal()">
                         <i class="fas fa-user"></i>
                         <span>Account</span>
                     </div>
+                    <div class="action-item" style="position: relative;" onclick="openWishlist()">
+                        <i class="far fa-heart"></i>
+                        <span>Wishlist</span>
+                        <div class="cart-count wishlist-count">0</div>
+                    </div>
                     <div class="action-item" style="position: relative;" onclick="openCart()">
                         <i class="fas fa-shopping-cart"></i>
                         <span>Cart</span>
-                        <div class="cart-count">0</div>
+                        <div class="cart-count cart-item-count">0</div>
                     </div>
                 </div>
             </div>
@@ -268,6 +274,22 @@
                 </div>
                 <button type="submit" class="form-submit">Create Account</button>
             </form>
+        </div>
+    </div>
+
+    <!-- add Wishlist Modal -->
+    <div class="modal" id="wishlistModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Your Wishlist</h2>
+                <span class="close" onclick="closeWishlist()">&times;</span>
+            </div>
+            <div class="wishlist-items">
+                </div>
+            <div class="wishlist-actions">
+                <button class="btn btn-secondary" onclick="closeWishlist()">Continue Shopping</button>
+                <button class="btn" onclick="moveAllToCart()">Move All to Cart</button>
+            </div>
         </div>
     </div>
 

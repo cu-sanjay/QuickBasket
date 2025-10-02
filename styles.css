@@ -830,3 +830,152 @@ footer {
     border-radius: var(--radius);
     cursor: pointer;
 }
+
+
+.wishlist {
+    color: var(--gray);
+    border: none;
+    background: none;
+    cursor: pointer;
+    font-size: 1.2rem;
+    transition: var(--transition);
+}
+
+.wishlist:hover {
+    color: var(--danger);
+}
+
+.wishlist.active {
+    color: var(--danger);
+}
+
+.wishlist-count {
+    background: var(--danger);
+    color: white;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.8rem;
+    position: absolute;
+    top: -5px;
+    right: -5px;
+}
+
+/* Wishlist Modal */
+#wishlistModal .modal-content {
+    max-height: 80vh;
+    overflow-y: auto;
+}
+
+.wishlist-items {
+    margin-bottom: 20px;
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.wishlist-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 0;
+    border-bottom: 1px solid #eee;
+}
+
+.wishlist-item-info {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    flex: 1;
+}
+
+.wishlist-item-image {
+    width: 80px;
+    height: 80px;
+    object-fit: cover;
+    border-radius: 8px;
+}
+
+.wishlist-item-details {
+    flex: 1;
+}
+
+.wishlist-item-details h4 {
+    font-size: 1.1rem;
+    margin-bottom: 5px;
+}
+
+.wishlist-item-desc {
+    color: var(--gray);
+    font-size: 0.9rem;
+    margin-bottom: 5px;
+}
+
+.wishlist-item-price {
+    color: var(--primary);
+    font-weight: 600;
+    font-size: 1.1rem;
+}
+
+.wishlist-item-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.btn-small {
+    background: var(--primary);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 8px 12px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    transition: var(--transition);
+}
+
+.btn-small:hover {
+    background: #0a6ad8;
+}
+
+.btn-remove {
+    background: var(--danger);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: var(--transition);
+}
+
+.btn-remove:hover {
+    background: #c82333;
+}
+
+.wishlist-actions {
+    display: flex;
+    gap: 10px;
+    padding-top: 15px;
+    border-top: 2px solid #eee;
+}
+
+.wishlist-actions .btn {
+    flex: 1;
+}
+
+.btn-secondary {
+    background: var(--gray);
+}
+
+.btn-secondary:hover {
+    background: #5a6268;
+}
