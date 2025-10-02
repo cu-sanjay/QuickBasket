@@ -202,6 +202,9 @@ nav {
     background: #0a6ad8;
     transform: translateY(-2px);
 }
+.btn:active {
+    background-color: #28a745;
+}
 
 /* Categories Section */
 .section-title {
@@ -324,18 +327,22 @@ nav {
 .add-to-cart:hover {
     background: #0a6ad8;
 }
+.add-to-cart:active {
+    background-color: #27a544;
+    }
 
 .wishlist {
-    color: var(--gray);
     border: none;
     background: none;
     cursor: pointer;
-    font-size: 1.2rem;
-    transition: var(--transition);
+    font-size: 1.5rem;
+    color: var(--gray);
+    transition: color 0.3s;
+    padding: 0;
 }
 
-.wishlist:hover {
-    color: var(--danger);
+.wishlist:hover i {
+    color: var(--danger); 
 }
 
 /* Footer */
