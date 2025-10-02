@@ -33,6 +33,15 @@
             <button><i class="fas fa-search"></i></button>
           </div>
           <div class="header-actions">
+            <div
+              class="action-item theme-toggle-nav"
+              onclick="toggleTheme()"
+              title="Toggle dark mode"
+            >
+              <i class="fas fa-sun icon sun-icon"></i>
+              <i class="fas fa-moon icon moon-icon"></i>
+              <span>Theme</span>
+            </div>
             <div class="action-item" onclick="openUserModal()">
               <i class="fas fa-user"></i>
               <span>Account</span>
@@ -94,6 +103,14 @@
           your doorstep in just minutes.
         </p>
         <a href="#products" class="btn">Shop Now</a>
+      </section>
+
+      <!-- Recently Viewed Products Section -->
+      <section id="recently-viewed" class="recently-viewed">
+        <h2 class="section-title">Recently Viewed</h2>
+        <div class="products" id="recentlyViewedProducts">
+          <!-- Recently viewed product cards will be inserted here via JavaScript -->
+        </div>
       </section>
 
       <!-- Categories Section -->
@@ -229,17 +246,37 @@
 
     <!-- Cart Modal -->
     <div class="modal" id="cartModal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2>Your Cart</h2>
-                <span class="close" onclick="closeCart()">&times;</span>
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2>Your Cart</h2>
+          <span class="close" onclick="closeCart()">&times;</span>
+        </div>
+        <div class="cart-items">
+          <!-- Cart items will be dynamically added here -->
+        </div>
+        <div class="cart-total">
+          <span>Total:</span>
+          <span id="cartTotal">₹0</span>
+        </div>
+        <button class="checkout-btn" onclick="showPaymentSection()">
+          Proceed to Checkout
+        </button>
+
+        <!-- Payment Section -->
+        <div class="payment-section" id="paymentSection">
+          <h3>Select Payment Method</h3>
+          <div class="payment-options">
+            <div class="payment-option" onclick="selectPayment(this)">
+              <i class="fas fa-credit-card"></i>
+              <p>Card</p>
             </div>
-            <div class="cart-items">
-                <!-- Cart items will be dynamically added here -->
+            <div class="payment-option" onclick="selectPayment(this)">
+              <i class="fas fa-wallet"></i>
+              <p>Wallet</p>
             </div>
-            <div class="cart-total">
-                <span>Total:</span>
-                <span id="cartTotal">₹0</span>
+            <div class="payment-option" onclick="selectPayment(this)">
+              <i class="fas fa-money-bill-wave"></i>
+              <p>Cash</p>
             </div>
             <button class="checkout-btn" onclick="showPaymentSection()">Proceed to Checkout</button>
             
@@ -289,20 +326,45 @@
                         </div>
                     </div>
                 </div>
-                
                 <button class="checkout-btn" onclick="placeOrder()">Complete Payment</button>
             </div>
-            
-            <!-- Order Success Section -->
-            <div class="order-success" id="orderSuccess" style="display: none;">
-                <div class="success-icon">
-                    <i class="fas fa-check-circle"></i>
-                </div>
-                <h3 class="success-title">Order Placed Successfully!</h3>
-                <p class="success-message">Your order will be delivered within 30 minutes. Thank you for shopping with QuickBasket!</p>
-                <button class="btn" onclick="closeCart()">Continue Shopping</button>
+          </div>
+
+          <div class="qr-code">
+            <h4>Scan to Pay</h4>
+            <img
+              src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=QuickBasket-Payment-Total-₹1000"
+              alt="QR Code"
+            />
+            <p>Total Amount: <strong id="qrAmount">₹0</strong></p>
+          </div>
+
+          <div class="coupon-section">
+            <h4>Apply Coupon</h4>
+            <div class="coupon-input">
+              <input type="text" placeholder="Enter coupon code" />
+              <button>Apply</button>
             </div>
+          </div>
+
+          <button class="checkout-btn" onclick="placeOrder()">
+            Complete Payment
+          </button>
         </div>
+
+        <!-- Order Success Section -->
+        <div class="order-success" id="orderSuccess" style="display: none">
+          <div class="success-icon">
+            <i class="fas fa-check-circle"></i>
+          </div>
+          <h3 class="success-title">Order Placed Successfully!</h3>
+          <p class="success-message">
+            Your order will be delivered within 30 minutes. Thank you for
+            shopping with QuickBasket!
+          </p>
+          <button class="btn" onclick="closeCart()">Continue Shopping</button>
+        </div>
+      </div>
     </div>
 
     <!-- User Modal -->

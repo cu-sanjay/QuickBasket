@@ -44,6 +44,24 @@ body,
   padding: 0 15px;
 }
 
+/* Recently Viewed Products */
+.recently-viewed {
+  margin: 2rem 0;
+}
+
+#recentlyViewedProducts {
+  margin-top: 1rem;
+}
+
+.recently-viewed .no-products {
+  text-align: center;
+  color: var(--gray);
+  padding: 2rem;
+  background: white;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+}
+
 /* Header Styles */
 header {
   background: linear-gradient(to right, #4b6cb7, #182848);

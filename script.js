@@ -60,6 +60,7 @@ async function loadProducts() {
     productsData = await response.json();
     renderProducts();
     initializeFilters();
+    renderRecentlyViewed(); // Initialize recently viewed section
   } catch (error) {
     console.error("Error loading products:", error);
     showErrorToast("Failed to load products. Please refresh the page.");
@@ -137,9 +138,6 @@ function createProductCard(product) {
             </div>
         </div>
     `;
-
-  return productCard;
-}
 // Initialize products and cart when page loads
 document.addEventListener("DOMContentLoaded", function () {
   loadProducts();
@@ -277,7 +275,6 @@ function changeQuantity(name, change) {
     if (window.cartStorage && window.cartStorage.debouncedSave) {
       window.cartStorage.debouncedSave(cart);
     }
-
     // Update display
     updateCartDisplay();
   }
@@ -528,13 +525,13 @@ function switchTab(tabName) {
 }
 
 function selectPayment(element) {
-    // Remove selected class from all options
-    document.querySelectorAll('.payment-option').forEach(opt => {
-        opt.classList.remove('selected');
-    });
-    
-    // Add selected class to clicked option
-    element.classList.add('selected');
+  // Remove selected class from all options
+  document.querySelectorAll(".payment-option").forEach((opt) => {
+    opt.classList.remove("selected");
+  });
+
+  // Add selected class to clicked option
+  element.classList.add("selected");
 }
 
 function placeOrder() {
@@ -572,7 +569,6 @@ window.onclick = function (event) {
   if (event.target === cartModal) {
     closeCart();
   }
-
   if (event.target === userModal) {
     userModal.style.display = "none";
   }
@@ -593,4 +589,48 @@ document.addEventListener("DOMContentLoaded", function () {
       showSuccessToast("Account created successfully!");
       document.getElementById("userModal").style.display = "none";
     });
+
+  // Initialize theme on page load
+  initializeTheme();
 });
+
+// Dark Mode Toggle Functionality
+function toggleTheme() {
+  const currentTheme = document.documentElement.getAttribute("data-theme");
+  const newTheme = currentTheme === "dark" ? "light" : "dark";
+
+  setTheme(newTheme);
+}
+
+function setTheme(theme) {
+  document.documentElement.setAttribute("data-theme", theme);
+  localStorage.setItem("theme", theme);
+
+  // Add a subtle feedback animation to the navbar toggle
+  const toggleButton = document.querySelector(".theme-toggle-nav");
+  if (toggleButton) {
+    toggleButton.style.transform = "scale(0.9)";
+    setTimeout(() => {
+      toggleButton.style.transform = "scale(1)";
+    }, 150);
+  }
+}
+
+function initializeTheme() {
+  // Check for saved theme preference or default to light mode
+  const savedTheme = localStorage.getItem("theme");
+  const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+
+  const theme = savedTheme || (prefersDark ? "dark" : "light");
+  setTheme(theme);
+}
+
+// Listen for system theme changes
+window
+  .matchMedia("(prefers-color-scheme: dark)")
+  .addEventListener("change", (e) => {
+    // Only auto-switch if user hasn't manually set a preference
+    if (!localStorage.getItem("theme")) {
+      setTheme(e.matches ? "dark" : "light");
+    }
+  });
