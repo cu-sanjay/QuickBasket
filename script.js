@@ -530,3 +530,49 @@ document.addEventListener("DOMContentLoaded", function () {
       document.getElementById("userModal").style.display = "none";
     });
 });
+
+// search functionality
+function setupSearch() {
+  const searchInput = document.querySelector('.search-bar input');
+  const searchButton = document.querySelector('.search-bar button');
+  
+  searchButton.addEventListener('click', performSearch);
+  searchInput.addEventListener('keypress', function(e) {
+    if (e.key === 'Enter') performSearch();
+  });
+}
+
+function performSearch() {
+  const searchTerm = document.querySelector('.search-bar input').value.toLowerCase().trim();
+  
+  if (!searchTerm) {
+    renderProducts(); // Show all if empty
+    return;
+  }
+  
+  // Search in both popular and deals
+  const popularResults = productsData.popularProducts.filter(product =>
+    product.name.toLowerCase().includes(searchTerm)
+  );
+  
+  const dealsResults = productsData.deals.filter(product =>
+    product.name.toLowerCase().includes(searchTerm)
+  );
+  
+  // Show results
+  renderProductSection("popularProducts", popularResults);
+  renderProductSection("dealsProducts", dealsResults);
+  
+  // Show message if no results
+    if (popularResults.length === 0) {
+      document.getElementById('popularProducts').innerHTML = 
+        '<p style="text-align:center; padding:20px;">No popular products found</p>';
+    }
+    if (dealsResults.length === 0) {
+      document.getElementById('dealsProducts').innerHTML = 
+        '<p style="text-align:center; padding:20px;">No deals products found</p>';
+    }
+}
+
+// Initialize search
+setupSearch();
