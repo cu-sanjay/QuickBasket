@@ -82,5 +82,107 @@
       "image": "https://images.unsplash.com/photo-1740325927180-6e57faaae5db?q=80&w=735&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=400&q=80",
       "category": "home-care"
     }
+  ],
+  "newProducts": [
+    {
+      "id": 9,
+      "name": "Organic Avocado Pack",
+      "price": 299,
+      "originalPrice": 349,
+      "discount": 50,
+      "description": "Premium ripe avocados, pack of 4",
+      "image": "https://images.unsplash.com/photo-1601039641847-7857b994d704?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80",
+      "category": "fruits"
+    },
+    {
+      "id": 10,
+      "name": "Fresh Herbs Bundle",
+      "price": 149,
+      "originalPrice": 179,
+      "discount": 30,
+      "description": "Mix of basil, mint, and cilantro",
+      "image": "https://images.unsplash.com/photo-1466637574441-749b8f19452f?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80",
+      "category": "vegetables"
+    },
+    {
+      "id": 11,
+      "name": "Artisan Sourdough",
+      "price": 189,
+      "originalPrice": 219,
+      "discount": 30,
+      "description": "Freshly baked artisan sourdough bread",
+      "image": "https://images.unsplash.com/photo-1620921592619-652411a0d01a?q=80&w=1335&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+      "category": "bakery"
+    },
+    {
+      "id": 12,
+      "name": "Green Tea Collection",
+      "price": 279,
+      "originalPrice": 329,
+      "discount": 50,
+      "description": "Premium green tea varieties pack",
+      "image": "https://images.unsplash.com/photo-1564890369478-c89ca6d9cde9?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80",
+      "category": "beverages"
+    },
+    {
+      "id": 13,
+      "name": "Mixed Berry Yogurt",
+      "price": 159,
+      "originalPrice": 189,
+      "discount": 30,
+      "description": "Creamy yogurt with fresh berries",
+      "image": "https://images.unsplash.com/photo-1488477181946-6428a0291777?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80",
+      "category": "dairy"
+    },
+    {
+      "id": 14,
+      "name": "Trail Mix Premium",
+      "price": 249,
+      "originalPrice": 299,
+      "discount": 50,
+      "description": "Mixed nuts, dried fruits, and dark chocolate",
+      "image": "https://images.unsplash.com/photo-1594489428504-5c0c480a15fd?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80",
+      "category": "snacks"
+    },
+    {
+      "id": 15,
+      "name": "Fresh Mushroom Mix",
+      "price": 199,
+      "originalPrice": 239,
+      "discount": 40,
+      "description": "Assorted gourmet mushrooms",
+      "image": "https://images.unsplash.com/photo-1504545102780-26774c1bb073?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80",
+      "category": "vegetables"
+    },
+    {
+      "id": 16,
+      "name": "Eco Cleaning Bundle",
+      "price": 449,
+      "originalPrice": 529,
+      "discount": 80,
+      "description": "Natural and eco-friendly cleaning products",
+      "image": "https://images.unsplash.com/photo-1563453392212-326f5e854473?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80",
+      "category": "home-care"
+    },
+    {
+      "id": 17,
+      "name": "Craft Coffee Pack",
+      "price": 399,
+      "originalPrice": 459,
+      "discount": 60,
+      "description": "Specialty roasted coffee beans, 500g",
+      "image": "https://images.unsplash.com/photo-1497515114629-f71d768fd07c?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80",
+      "category": "beverages"
+    },
+    {
+      "id": 18,
+      "name": "Seasonal Berry Box",
+      "price": 349,
+      "originalPrice": 399,
+      "discount": 50,
+      "description": "Mix of fresh seasonal berries",
+      "image": "https://images.unsplash.com/photo-1563746098251-d35aef196e83?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80",
+      "category": "fruits"
+    }
   ]
 }
