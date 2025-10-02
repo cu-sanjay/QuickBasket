@@ -18,12 +18,18 @@
   padding: 0;
   box-sizing: border-box;
   font-family: "Poppins", sans-serif;
+  scroll-behavior: smooth;
+
 }
 
 body {
-  background-color: #f5f7fa;
+  background-color: black;
   color: var(--dark);
   line-height: 1.6;
+  font-size: 16px;
+  overflow-x: hidden;
+  background-attachment: fixed;
+  
 }
 
 ::-webkit-scrollbar {
@@ -59,6 +65,8 @@ header {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: 15px;
+
 }
 
 .logo {
@@ -67,6 +75,10 @@ header {
   gap: 10px;
   font-size: 1.8rem;
   font-weight: 700;
+  color: white;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  cursor: pointer;
+  user-select: none;
 }
 
 .logo i {
@@ -87,6 +99,8 @@ header {
   border: none;
   font-size: 1rem;
   box-shadow: var(--shadow);
+  transition: var(--transition);
+
 }
 
 .search-bar button {
@@ -99,6 +113,8 @@ header {
   border-radius: 50px;
   padding: 7px 15px;
   cursor: pointer;
+  transition: var(--transition);
+
 }
 
 .header-actions {
@@ -213,6 +229,9 @@ nav {
   margin: 30px 0 20px;
   position: relative;
   padding-left: 15px;
+  font-weight: 600;
+  color: var(--dark);
+  color: wheat;
 }
 
 .section-title::before {
@@ -298,6 +317,8 @@ nav {
   font-weight: 700;
   font-size: 1.2rem;
   margin-bottom: 10px;
+  display: flex;  align-items: center;
+  align-items: center;
 }
 
 .product-price span {
@@ -466,6 +487,8 @@ footer {
 
 .coupon-item:hover {
     background: #e9ecef;
+    transform: translateY(-2px);
+
 }
 
 .coupon-info {
