@@ -1416,3 +1416,267 @@ footer {
 .category-item:active {
   transform: translateY(-1px);
 }
+
+/* Theme Toggle Icons */
+.theme-toggle-nav .icon {
+  display: none;
+}
+
+.theme-toggle-nav .sun-icon {
+  display: inline-block;
+}
+
+.theme-toggle-nav .moon-icon {
+  display: none;
+}
+
+[data-theme="dark"] .theme-toggle-nav .sun-icon {
+  display: none;
+}
+
+[data-theme="dark"] .theme-toggle-nav .moon-icon {
+  display: inline-block;
+}
+
+/* Dark Theme Variables and Styles */
+[data-theme="dark"] {
+  --primary: #4a9eff;
+  --secondary: #ff8787;
+  --accent: #5dd4a4;
+  --dark: #e8eaed;
+  --light: #1e1e1e;
+  --gray: #9aa0a6;
+  --shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+[data-theme="dark"] body {
+  background-color: #121212;
+  color: #e8eaed;
+}
+
+[data-theme="dark"] header {
+  background: linear-gradient(to right, #1a237e, #0d1117);
+}
+
+[data-theme="dark"] nav {
+  background-color: #1e1e1e;
+  border-bottom: 1px solid #2d2d2d;
+}
+
+[data-theme="dark"] .hero {
+  background: linear-gradient(135deg, #1a237e 0%, #311b92 100%);
+}
+
+[data-theme="dark"] .product-card,
+[data-theme="dark"] .category-item,
+[data-theme="dark"] .modal-content,
+[data-theme="dark"] .user-modal-content {
+  background-color: #1e1e1e;
+  color: #e8eaed;
+  border-color: #2d2d2d;
+}
+
+[data-theme="dark"] .product-card:hover,
+[data-theme="dark"] .category-item:hover {
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.4);
+}
+
+[data-theme="dark"] .cart-item {
+  background-color: #2d2d2d;
+  border-color: #3d3d3d;
+}
+
+[data-theme="dark"] .payment-option {
+  background-color: #2d2d2d;
+  border-color: #3d3d3d;
+}
+
+[data-theme="dark"] .payment-option:hover,
+[data-theme="dark"] .payment-option.selected {
+  background-color: #1a3a52;
+  border-color: var(--primary);
+}
+
+[data-theme="dark"] .qr-code {
+  background-color: #2d2d2d;
+}
+
+[data-theme="dark"] .coupon-item {
+  background-color: #2d2d2d;
+  border-color: #3d3d3d;
+}
+
+[data-theme="dark"] .coupon-item:hover {
+  background-color: #3d3d3d;
+}
+
+[data-theme="dark"] .search-bar input,
+[data-theme="dark"] .coupon-input input,
+[data-theme="dark"] .form-group input {
+  background-color: #2d2d2d;
+  color: #e8eaed;
+  border-color: #3d3d3d;
+}
+
+[data-theme="dark"] .user-tab {
+  color: #9aa0a6;
+}
+
+[data-theme="dark"] .user-tab.active {
+  color: var(--primary);
+  border-bottom-color: var(--primary);
+}
+
+[data-theme="dark"] footer {
+  background-color: #1e1e1e;
+  color: #e8eaed;
+}
+
+
+.wishlist {
+  color: var(--gray);
+  border: none;
+  background: none;
+  cursor: pointer;
+  font-size: 1.2rem;
+  transition: var(--transition);
+}
+
+.wishlist:hover {
+  color: var(--danger);
+}
+
+.wishlist.active {
+  color: var(--danger);
+}
+
+.wishlist-count {
+  background: var(--danger);
+  color: white;
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.8rem;
+  position: absolute;
+  top: -5px;
+  right: -5px;
+}
+
+/* Wishlist Modal */
+#wishlistModal .modal-content {
+  max-height: 80vh;
+  overflow-y: auto;
+}
+
+.wishlist-items {
+  margin-bottom: 20px;
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.wishlist-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 0;
+  border-bottom: 1px solid #eee;
+}
+
+.wishlist-item-info {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  flex: 1;
+}
+
+.wishlist-item-image {
+  width: 80px;
+  height: 80px;
+  object-fit: cover;
+  border-radius: 8px;
+}
+
+.wishlist-item-details {
+  flex: 1;
+}
+
+.wishlist-item-details h4 {
+  font-size: 1.1rem;
+  margin-bottom: 5px;
+}
+
+.wishlist-item-desc {
+  color: var(--gray);
+  font-size: 0.9rem;
+  margin-bottom: 5px;
+}
+
+.wishlist-item-price {
+  color: var(--primary);
+  font-weight: 600;
+  font-size: 1.1rem;
+}
+
+.wishlist-item-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.btn-small {
+  background: var(--primary);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 8px 12px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  transition: var(--transition);
+}
+
+.btn-small:hover {
+  background: #0a6ad8;
+}
+
+.btn-remove {
+  background: var(--danger);
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 30px;
+  height: 30px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: var(--transition);
+}
+
+.btn-remove:hover {
+  background: #c82333;
+}
+
+.wishlist-actions {
+  display: flex;
+  gap: 10px;
+  padding-top: 15px;
+  border-top: 2px solid #eee;
+}
+
+.wishlist-actions .btn {
+  flex: 1;
+}
+
+.btn-secondary {
+  background: var(--gray);
+}
+
+.btn-secondary:hover {
+  background: #5a6268;
+}

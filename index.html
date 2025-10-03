@@ -32,6 +32,7 @@
             <input type="text" placeholder="Search for products..." />
             <button><i class="fas fa-search"></i></button>
           </div>
+              <!-- add wishlist -->
           <div class="header-actions">
             <div
               class="action-item theme-toggle-nav"
@@ -46,6 +47,11 @@
               <i class="fas fa-user"></i>
               <span>Account</span>
             </div>
+                    <div class="action-item" style="position: relative;" onclick="openWishlist()">
+                        <i class="far fa-heart"></i>
+                        <span>Wishlist</span>
+                        <div class="cart-count wishlist-count">0</div>
+                    </div>
             <div
               class="action-item"
               style="position: relative"
@@ -53,7 +59,7 @@
             >
               <i class="fas fa-shopping-cart"></i>
               <span>Cart</span>
-              <div class="cart-count">0</div>
+              <div class="cart-count cart-item-count">0</div>
             </div>
           </div>
         </div>
@@ -278,78 +284,37 @@
               <i class="fas fa-money-bill-wave"></i>
               <p>Cash</p>
             </div>
-            <button class="checkout-btn" onclick="showPaymentSection()">Proceed to Checkout</button>
-            
-            <!-- Payment Section -->
-            <div class="payment-section" id="paymentSection">
-                <h3>Select Payment Method</h3>
-                <div class="payment-options">
-                    <div class="payment-option" onclick="selectPayment(this)">
-                        <i class="fas fa-credit-card"></i>
-                        <p>Card</p>
-                    </div>
-                    <div class="payment-option" onclick="selectPayment(this)">
-                        <i class="fas fa-wallet"></i>
-                        <p>Wallet</p>
-                    </div>
-                    <div class="payment-option" onclick="selectPayment(this)">
-                        <i class="fas fa-money-bill-wave"></i>
-                        <p>Cash</p>
-                    </div>
-                    <div class="payment-option" onclick="selectPayment(this)">
-                        <i class="fas fa-qrcode"></i>
-                        <p>UPI</p>
-                    </div>
-                </div>
-                
-                <div class="qr-code">
-                    <h4>Scan to Pay</h4>
-                    <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=QuickBasket-Payment-Total-₹1000" alt="QR Code">
-                    <p>Total Amount: <strong id="qrAmount">₹0</strong></p>
-                </div>
-                
-                <div class="coupon-section">
-                    <h4>Apply Coupon</h4>
-                    <div class="coupon-input">
-                        <input type="text" placeholder="Enter coupon code" maxlength="20">
-                        <button onclick="applyCoupon()">Apply</button>
-                    </div>
-                    
-                    <div id="couponMessage" class="coupon-message"></div>
-                    
-                    <div id="appliedCoupon" class="applied-coupon"></div>
-                    
-                    <div class="available-coupons">
-                        <h5>Available Coupons:</h5>
-                        <div id="availableCoupons">
-                            <!-- Available coupons will be displayed here -->
-                        </div>
-                    </div>
-                </div>
-                <button class="checkout-btn" onclick="placeOrder()">Complete Payment</button>
+            <div class="payment-option" onclick="selectPayment(this)">
+              <i class="fas fa-qrcode"></i>
+              <p>UPI</p>
             </div>
           </div>
-
+          
           <div class="qr-code">
             <h4>Scan to Pay</h4>
-            <img
-              src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=QuickBasket-Payment-Total-₹1000"
-              alt="QR Code"
-            />
+            <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=QuickBasket-Payment-Total-₹1000" alt="QR Code">
             <p>Total Amount: <strong id="qrAmount">₹0</strong></p>
           </div>
-
+          
           <div class="coupon-section">
             <h4>Apply Coupon</h4>
             <div class="coupon-input">
-              <input type="text" placeholder="Enter coupon code" />
-              <button>Apply</button>
+              <input type="text" placeholder="Enter coupon code" maxlength="20">
+              <button onclick="applyCoupon()">Apply</button>
+            </div>
+            
+            <div id="couponMessage" class="coupon-message"></div>
+            
+            <div id="appliedCoupon" class="applied-coupon"></div>
+            
+            <div class="available-coupons">
+              <h5>Available Coupons:</h5>
+              <div id="availableCoupons">
+                <!-- Available coupons will be displayed here -->
+              </div>
             </div>
           </div>
-
-          <button class="checkout-btn" onclick="placeOrder()">
-            Complete Payment
-          </button>
+          <button class="checkout-btn" onclick="placeOrder()">Complete Payment</button>
         </div>
 
         <!-- Order Success Section -->
@@ -437,6 +402,22 @@
           <button type="submit" class="form-submit">Create Account</button>
         </form>
       </div>
+    </div>
+
+    <!-- add Wishlist Modal -->
+    <div class="modal" id="wishlistModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Your Wishlist</h2>
+                <span class="close" onclick="closeWishlist()">&times;</span>
+            </div>
+            <div class="wishlist-items">
+                </div>
+            <div class="wishlist-actions">
+                <button class="btn btn-secondary" onclick="closeWishlist()">Continue Shopping</button>
+                <button class="btn" onclick="moveAllToCart()">Move All to Cart</button>
+            </div>
+        </div>
     </div>
 
     <!-- Toast Notification -->
