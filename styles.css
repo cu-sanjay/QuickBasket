@@ -1378,3 +1378,118 @@ footer {
         align-self: flex-start;
     }
 }
+
+/* Theme Toggle Icons */
+.theme-toggle-nav .icon {
+  display: none;
+}
+
+.theme-toggle-nav .sun-icon {
+  display: inline-block;
+}
+
+.theme-toggle-nav .moon-icon {
+  display: none;
+}
+
+[data-theme="dark"] .theme-toggle-nav .sun-icon {
+  display: none;
+}
+
+[data-theme="dark"] .theme-toggle-nav .moon-icon {
+  display: inline-block;
+}
+
+/* Dark Theme Variables and Styles */
+[data-theme="dark"] {
+  --primary: #4a9eff;
+  --secondary: #ff8787;
+  --accent: #5dd4a4;
+  --dark: #e8eaed;
+  --light: #1e1e1e;
+  --gray: #9aa0a6;
+  --shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+[data-theme="dark"] body {
+  background-color: #121212;
+  color: #e8eaed;
+}
+
+[data-theme="dark"] header {
+  background: linear-gradient(to right, #1a237e, #0d1117);
+}
+
+[data-theme="dark"] nav {
+  background-color: #1e1e1e;
+  border-bottom: 1px solid #2d2d2d;
+}
+
+[data-theme="dark"] .hero {
+  background: linear-gradient(135deg, #1a237e 0%, #311b92 100%);
+}
+
+[data-theme="dark"] .product-card,
+[data-theme="dark"] .category-item,
+[data-theme="dark"] .modal-content,
+[data-theme="dark"] .user-modal-content {
+  background-color: #1e1e1e;
+  color: #e8eaed;
+  border-color: #2d2d2d;
+}
+
+[data-theme="dark"] .product-card:hover,
+[data-theme="dark"] .category-item:hover {
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.4);
+}
+
+[data-theme="dark"] .cart-item {
+  background-color: #2d2d2d;
+  border-color: #3d3d3d;
+}
+
+[data-theme="dark"] .payment-option {
+  background-color: #2d2d2d;
+  border-color: #3d3d3d;
+}
+
+[data-theme="dark"] .payment-option:hover,
+[data-theme="dark"] .payment-option.selected {
+  background-color: #1a3a52;
+  border-color: var(--primary);
+}
+
+[data-theme="dark"] .qr-code {
+  background-color: #2d2d2d;
+}
+
+[data-theme="dark"] .coupon-item {
+  background-color: #2d2d2d;
+  border-color: #3d3d3d;
+}
+
+[data-theme="dark"] .coupon-item:hover {
+  background-color: #3d3d3d;
+}
+
+[data-theme="dark"] .search-bar input,
+[data-theme="dark"] .coupon-input input,
+[data-theme="dark"] .form-group input {
+  background-color: #2d2d2d;
+  color: #e8eaed;
+  border-color: #3d3d3d;
+}
+
+[data-theme="dark"] .user-tab {
+  color: #9aa0a6;
+}
+
+[data-theme="dark"] .user-tab.active {
+  color: var(--primary);
+  border-bottom-color: var(--primary);
+}
+
+[data-theme="dark"] footer {
+  background-color: #1e1e1e;
+  color: #e8eaed;
+}

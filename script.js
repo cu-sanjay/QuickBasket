@@ -87,6 +87,25 @@ function renderProductSection(containerId, products) {
   });
 }
 
+// Render recently viewed products
+function renderRecentlyViewed() {
+  const container = document.getElementById("recentlyViewedProducts");
+  if (!container) return;
+
+  const recentlyViewed = JSON.parse(localStorage.getItem("recentlyViewed") || "[]");
+  
+  if (recentlyViewed.length === 0) {
+    container.innerHTML = '<p style="text-align: center; padding: 20px; color: #999;">No recently viewed products</p>';
+    return;
+  }
+
+  container.innerHTML = "";
+  recentlyViewed.slice(0, 4).forEach((product) => {
+    const productCard = createProductCard(product);
+    container.appendChild(productCard);
+  });
+}
+
 // Create product card element
 function createProductCard(product) {
   const productCard = document.createElement("div");
@@ -108,10 +127,70 @@ function createProductCard(product) {
             </div>
         </div>
     `;
+  
+  return productCard;
+}
+
+// Search functionality
+function initializeSearch() {
+  const searchInput = document.querySelector('.search-bar input');
+  const searchButton = document.querySelector('.search-bar button');
+  
+  if (!searchInput) return;
+  
+  function performSearch() {
+    const searchTerm = searchInput.value.toLowerCase().trim();
+    
+    if (!productsData) return;
+    
+    if (searchTerm === '') {
+      renderProducts();
+      return;
+    }
+    
+    const filteredPopular = productsData.popularProducts.filter(product =>
+      product.name.toLowerCase().includes(searchTerm) ||
+      product.description.toLowerCase().includes(searchTerm) ||
+      product.category.toLowerCase().includes(searchTerm)
+    );
+    
+    const filteredDeals = productsData.deals.filter(product =>
+      product.name.toLowerCase().includes(searchTerm) ||
+      product.description.toLowerCase().includes(searchTerm) ||
+      product.category.toLowerCase().includes(searchTerm)
+    );
+    
+    renderProductSection("popularProducts", filteredPopular);
+    renderProductSection("dealsProducts", filteredDeals);
+    
+    const totalResults = filteredPopular.length + filteredDeals.length;
+    if (totalResults === 0) {
+      const popularContainer = document.getElementById("popularProducts");
+      const dealsContainer = document.getElementById("dealsProducts");
+      if (popularContainer) {
+        popularContainer.innerHTML = '<p style="text-align: center; padding: 20px; color: #999;">No products found</p>';
+      }
+      if (dealsContainer) {
+        dealsContainer.innerHTML = '';
+      }
+    }
+  }
+  
+  searchInput.addEventListener('input', performSearch);
+  searchButton.addEventListener('click', performSearch);
+  searchInput.addEventListener('keypress', function(e) {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      performSearch();
+    }
+  });
+}
+
 // Initialize products and cart when page loads
 document.addEventListener("DOMContentLoaded", function () {
   loadProducts();
   initializeCart();
+  initializeSearch();
 });
 
 function openCart() {

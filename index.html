@@ -266,78 +266,37 @@
               <i class="fas fa-money-bill-wave"></i>
               <p>Cash</p>
             </div>
-            <button class="checkout-btn" onclick="showPaymentSection()">Proceed to Checkout</button>
-            
-            <!-- Payment Section -->
-            <div class="payment-section" id="paymentSection">
-                <h3>Select Payment Method</h3>
-                <div class="payment-options">
-                    <div class="payment-option" onclick="selectPayment(this)">
-                        <i class="fas fa-credit-card"></i>
-                        <p>Card</p>
-                    </div>
-                    <div class="payment-option" onclick="selectPayment(this)">
-                        <i class="fas fa-wallet"></i>
-                        <p>Wallet</p>
-                    </div>
-                    <div class="payment-option" onclick="selectPayment(this)">
-                        <i class="fas fa-money-bill-wave"></i>
-                        <p>Cash</p>
-                    </div>
-                    <div class="payment-option" onclick="selectPayment(this)">
-                        <i class="fas fa-qrcode"></i>
-                        <p>UPI</p>
-                    </div>
-                </div>
-                
-                <div class="qr-code">
-                    <h4>Scan to Pay</h4>
-                    <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=QuickBasket-Payment-Total-₹1000" alt="QR Code">
-                    <p>Total Amount: <strong id="qrAmount">₹0</strong></p>
-                </div>
-                
-                <div class="coupon-section">
-                    <h4>Apply Coupon</h4>
-                    <div class="coupon-input">
-                        <input type="text" placeholder="Enter coupon code" maxlength="20">
-                        <button onclick="applyCoupon()">Apply</button>
-                    </div>
-                    
-                    <div id="couponMessage" class="coupon-message"></div>
-                    
-                    <div id="appliedCoupon" class="applied-coupon"></div>
-                    
-                    <div class="available-coupons">
-                        <h5>Available Coupons:</h5>
-                        <div id="availableCoupons">
-                            <!-- Available coupons will be displayed here -->
-                        </div>
-                    </div>
-                </div>
-                <button class="checkout-btn" onclick="placeOrder()">Complete Payment</button>
+            <div class="payment-option" onclick="selectPayment(this)">
+              <i class="fas fa-qrcode"></i>
+              <p>UPI</p>
             </div>
           </div>
-
+          
           <div class="qr-code">
             <h4>Scan to Pay</h4>
-            <img
-              src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=QuickBasket-Payment-Total-₹1000"
-              alt="QR Code"
-            />
+            <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=QuickBasket-Payment-Total-₹1000" alt="QR Code">
             <p>Total Amount: <strong id="qrAmount">₹0</strong></p>
           </div>
-
+          
           <div class="coupon-section">
             <h4>Apply Coupon</h4>
             <div class="coupon-input">
-              <input type="text" placeholder="Enter coupon code" />
-              <button>Apply</button>
+              <input type="text" placeholder="Enter coupon code" maxlength="20">
+              <button onclick="applyCoupon()">Apply</button>
+            </div>
+            
+            <div id="couponMessage" class="coupon-message"></div>
+            
+            <div id="appliedCoupon" class="applied-coupon"></div>
+            
+            <div class="available-coupons">
+              <h5>Available Coupons:</h5>
+              <div id="availableCoupons">
+                <!-- Available coupons will be displayed here -->
+              </div>
             </div>
           </div>
-
-          <button class="checkout-btn" onclick="placeOrder()">
-            Complete Payment
-          </button>
+          <button class="checkout-btn" onclick="placeOrder()">Complete Payment</button>
         </div>
 
         <!-- Order Success Section -->
