@@ -38,6 +38,7 @@ const coupons = {
 };
 
 let productsData = null;
+let currentCategory = 'all'; // active category filter from URL or clicks
 
 // Initialize cart from localStorage on startup
 function initializeCart() {
@@ -109,8 +110,29 @@ async function loadProducts() {
 function renderProducts() {
   if (!productsData) return;
 
-  renderProductSection("popularProducts", productsData.popularProducts);
-  renderProductSection("dealsProducts", productsData.deals);
+  const category = (currentCategory || 'all').toLowerCase();
+
+  // Filter helpers
+  const byCategory = (p) => category === 'all' || (p.category || '').toLowerCase() === category;
+
+  const popular = (productsData.popularProducts || []).filter(byCategory);
+  const deals = (productsData.deals || []).filter(byCategory);
+
+  renderProductSection("popularProducts", popular);
+  renderProductSection("dealsProducts", deals);
+
+  // Update headings to reflect active category
+  try {
+    const popularTitle = document.querySelector('h2.section-title#products');
+    const dealsTitle = Array.from(document.querySelectorAll('h2.section-title'))
+      .find(h => h.textContent.trim().startsWith("Today's Best Deals"));
+
+    const prettyCat = category === 'all' ? '' : ` – ${category.replace('-', ' ').replace(/\b\w/g, c => c.toUpperCase())}`;
+    if (popularTitle) popularTitle.textContent = `Popular Products${prettyCat}`;
+    if (dealsTitle) dealsTitle.textContent = `Today's Best Deals${prettyCat}`;
+  } catch (_) {
+    // non-fatal UI update
+  }
 }
 
 // Render a specific product section
@@ -124,6 +146,106 @@ function renderProductSection(containerId, products) {
     const productCard = createProductCard(product);
     container.appendChild(productCard);
   });
+}
+
+// Category filter initialization and URL helpers
+function getCategoryFromURL() {
+  try {
+    const params = new URLSearchParams(window.location.search);
+    const cat = (params.get('category') || 'all').toLowerCase();
+    return cat;
+  } catch (_) {
+    return 'all';
+  }
+}
+
+function setCategoryInURL(cat) {
+  const params = new URLSearchParams(window.location.search);
+  if (!cat || cat === 'all') {
+    params.delete('category');
+  } else {
+    params.set('category', cat);
+  }
+  const newUrl = `${window.location.pathname}?${params.toString()}`.replace(/\?$/, '');
+  window.history.pushState({ category: cat || 'all' }, '', newUrl);
+}
+
+function applyCategoryFromURL() {
+  currentCategory = getCategoryFromURL();
+  highlightActiveCategory(currentCategory);
+  highlightActiveNav(currentCategory);
+  renderProducts();
+}
+
+function highlightActiveCategory(cat) {
+  document.querySelectorAll('.category-item').forEach(el => {
+    const c = (el.getAttribute('data-category') || '').toLowerCase();
+    if ((cat === 'all' && c === 'all') || c === cat) {
+      el.classList.add('active');
+    } else {
+      el.classList.remove('active');
+    }
+  });
+}
+
+function initializeCategoryFiltering() {
+  document.querySelectorAll('.category-item').forEach(el => {
+    el.addEventListener('click', () => {
+      const cat = (el.getAttribute('data-category') || 'all').toLowerCase();
+      currentCategory = cat;
+      setCategoryInURL(cat);
+      highlightActiveCategory(cat);
+      highlightActiveNav(cat);
+      // Optional: clear search when category changes
+      const searchInput = document.querySelector('.search-bar input');
+      if (searchInput) searchInput.value = '';
+      renderProducts();
+      scrollToProducts();
+    });
+  });
+
+  // Apply initial category from URL
+  applyCategoryFromURL();
+
+  // Handle back/forward navigation
+  window.addEventListener('popstate', () => {
+    applyCategoryFromURL();
+  });
+}
+
+function highlightActiveNav(cat) {
+  document.querySelectorAll('.nav-links a[data-category]').forEach(a => {
+    const c = (a.getAttribute('data-category') || '').toLowerCase();
+    if ((cat === 'all' && c === 'all') || c === cat) {
+      a.classList.add('active');
+    } else {
+      a.classList.remove('active');
+    }
+  });
+}
+
+function initializeNavFiltering() {
+  document.querySelectorAll('.nav-links a[data-category]').forEach(a => {
+    a.addEventListener('click', (e) => {
+      e.preventDefault();
+      const cat = (a.getAttribute('data-category') || 'all').toLowerCase();
+      currentCategory = cat;
+      setCategoryInURL(cat);
+      highlightActiveCategory(cat);
+      highlightActiveNav(cat);
+      const searchInput = document.querySelector('.search-bar input');
+      if (searchInput) searchInput.value = '';
+      renderProducts();
+      scrollToProducts();
+    });
+  });
+}
+
+function scrollToProducts() {
+  const anchor = document.getElementById('products');
+  if (anchor && typeof anchor.scrollIntoView === 'function') {
+    anchor.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
 }
 
 // Render recently viewed products
@@ -189,24 +311,22 @@ function initializeSearch() {
 
     if (!productsData) return;
 
+    // When search term is empty, render by current category
     if (searchTerm === "") {
       renderProducts();
       return;
     }
 
-    const filteredPopular = productsData.popularProducts.filter(
-      (product) =>
-        product.name.toLowerCase().includes(searchTerm) ||
-        product.description.toLowerCase().includes(searchTerm) ||
-        product.category.toLowerCase().includes(searchTerm),
-    );
+    const category = (currentCategory || 'all').toLowerCase();
+    const inCategory = (p) => category === 'all' || (p.category || '').toLowerCase() === category;
 
-    const filteredDeals = productsData.deals.filter(
-      (product) =>
-        product.name.toLowerCase().includes(searchTerm) ||
-        product.description.toLowerCase().includes(searchTerm) ||
-        product.category.toLowerCase().includes(searchTerm),
-    );
+    const matches = (p) =>
+      p.name.toLowerCase().includes(searchTerm) ||
+      p.description.toLowerCase().includes(searchTerm) ||
+      (p.category || '').toLowerCase().includes(searchTerm);
+
+    const filteredPopular = (productsData.popularProducts || []).filter(p => inCategory(p) && matches(p));
+    const filteredDeals = (productsData.deals || []).filter(p => inCategory(p) && matches(p));
 
     renderProductSection("popularProducts", filteredPopular);
     renderProductSection("dealsProducts", filteredDeals);
@@ -220,7 +340,8 @@ function initializeSearch() {
           '<p style="text-align: center; padding: 20px; color: #999;">No products found</p>';
       }
       if (dealsContainer) {
-        dealsContainer.innerHTML = "";
+        dealsContainer.innerHTML =
+          '<p style="text-align: center; padding: 20px; color: #999;">No products found</p>';
       }
     }
   }
@@ -241,6 +362,8 @@ document.addEventListener("DOMContentLoaded", function () {
   initializeCart();
   initializeWishlist();
   initializeSearch();
+  initializeCategoryFiltering();
+  initializeNavFiltering();
 });
 
 // --- Cart Functions ---
