@@ -186,6 +186,348 @@ nav {
   color: var(--primary);
 }
 
+/* Compact Pincode Banner */
+.pincode-banner {
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  padding: 8px 0;
+  border-bottom: 1px solid #e9ecef;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.pincode-banner:hover {
+  background: linear-gradient(135deg, #e9ecef 0%, #dee2e6 100%);
+}
+
+.banner-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 15px;
+}
+
+.delivery-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.9rem;
+  color: var(--dark);
+}
+
+.delivery-info i {
+  color: var(--primary);
+  font-size: 0.9rem;
+}
+
+.change-pincode-btn {
+  background: var(--primary);
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 0.8rem;
+  transition: var(--transition);
+}
+
+.change-pincode-btn:hover {
+  background: #0a6ad8;
+  transform: scale(1.05);
+}
+
+/* Pincode Modal */
+.pincode-modal {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1000;
+  animation: fadeIn 0.3s ease;
+}
+
+.pincode-modal.show {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(4px);
+}
+
+.pincode-modal-content {
+  background: white;
+  border-radius: var(--radius);
+  width: 90%;
+  max-width: 400px;
+  position: relative;
+  z-index: 1001;
+  animation: slideUp 0.3s ease;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 20px 10px;
+  border-bottom: 1px solid #eee;
+}
+
+.modal-header h3 {
+  margin: 0;
+  font-size: 1.2rem;
+  color: var(--dark);
+}
+
+.close-modal {
+  background: none;
+  border: none;
+  font-size: 1.2rem;
+  color: var(--gray);
+  cursor: pointer;
+  padding: 5px;
+  border-radius: 50%;
+  transition: var(--transition);
+}
+
+.close-modal:hover {
+  background: #f8f9fa;
+  color: var(--dark);
+}
+
+.modal-body {
+  padding: 20px;
+}
+
+.pincode-input-group {
+  display: flex;
+  align-items: center;
+  background: #f8f9fa;
+  border-radius: 25px;
+  padding: 5px;
+  margin-bottom: 15px;
+  border: 2px solid transparent;
+  transition: var(--transition);
+}
+
+.pincode-input-group:focus-within {
+  border-color: var(--primary);
+  background: white;
+}
+
+.pincode-icon {
+  color: var(--primary);
+  font-size: 1.1rem;
+  padding: 0 15px;
+}
+
+#pincodeInput {
+  flex: 1;
+  border: none;
+  outline: none;
+  padding: 12px 5px;
+  font-size: 1rem;
+  background: transparent;
+  border-radius: 20px;
+}
+
+#pincodeInput::placeholder {
+  color: var(--gray);
+}
+
+#checkDeliveryBtn {
+  background: var(--primary);
+  color: white;
+  border: none;
+  border-radius: 20px;
+  padding: 10px 18px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: var(--transition);
+  min-width: 90px;
+  font-size: 0.9rem;
+}
+
+#checkDeliveryBtn:hover {
+  background: #0a6ad8;
+}
+
+#checkDeliveryBtn:disabled {
+  background: var(--gray);
+  cursor: not-allowed;
+}
+
+.delivery-status {
+  margin-top: 10px;
+  padding: 12px 15px;
+  border-radius: 15px;
+  font-weight: 500;
+  transition: var(--transition);
+  display: none;
+  font-size: 0.9rem;
+  text-align: center;
+}
+
+.delivery-status.available {
+  background: #d4edda;
+  border: 1px solid #c3e6cb;
+  color: #155724;
+  display: block;
+}
+
+.delivery-status.not-available {
+  background: #f8d7da;
+  border: 1px solid #f5c6cb;
+  color: #721c24;
+  display: block;
+}
+
+.delivery-status.checking {
+  background: #fff3cd;
+  border: 1px solid #ffeaa7;
+  color: #856404;
+  display: block;
+}
+
+.delivery-status.error {
+  background: #f8d7da;
+  border: 1px solid #f5c6cb;
+  color: #721c24;
+  display: block;
+}
+
+/* Modal Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(30px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+/* Banner States */
+.delivery-info.has-location {
+  color: var(--success);
+  font-weight: 500;
+}
+
+.delivery-info.has-location i {
+  color: var(--success);
+}
+
+/* Loading spinner for delivery check */
+.delivery-spinner {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  border: 2px solid #f3f3f3;
+  border-top: 2px solid var(--primary);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-right: 8px;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Dark theme for pincode components */
+[data-theme="dark"] .pincode-banner {
+  background: linear-gradient(135deg, #2d2d2d 0%, #1e1e1e 100%);
+  border-bottom-color: #3d3d3d;
+}
+
+[data-theme="dark"] .pincode-banner:hover {
+  background: linear-gradient(135deg, #3d3d3d 0%, #2d2d2d 100%);
+}
+
+[data-theme="dark"] .delivery-info {
+  color: #e8eaed;
+}
+
+[data-theme="dark"] .pincode-modal-content {
+  background: #1e1e1e;
+  color: #e8eaed;
+}
+
+[data-theme="dark"] .modal-header {
+  border-bottom-color: #3d3d3d;
+}
+
+[data-theme="dark"] .modal-header h3 {
+  color: #e8eaed;
+}
+
+[data-theme="dark"] .close-modal:hover {
+  background: #2d2d2d;
+  color: #e8eaed;
+}
+
+[data-theme="dark"] .pincode-input-group {
+  background: #2d2d2d;
+}
+
+[data-theme="dark"] .pincode-input-group:focus-within {
+  background: #1e1e1e;
+  border-color: var(--primary);
+}
+
+[data-theme="dark"] #pincodeInput {
+  color: #e8eaed;
+}
+
+[data-theme="dark"] #pincodeInput::placeholder {
+  color: #9aa0a6;
+}
+
+[data-theme="dark"] .delivery-status.available {
+  background: #1e3a32;
+  border-color: #2d5a4a;
+  color: #4caf50;
+}
+
+[data-theme="dark"] .delivery-status.not-available,
+[data-theme="dark"] .delivery-status.error {
+  background: #3a1e1e;
+  border-color: #5a2d2d;
+  color: #ff6b6b;
+}
+
+[data-theme="dark"] .delivery-status.checking {
+  background: #3a3a1e;
+  border-color: #5a5a2d;
+  color: #ffc107;
 /* Active nav reflects selected category */
 .nav-links li a.active {
   color: var(--primary);
@@ -642,6 +984,34 @@ footer {
     grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
   }
 
+  /* Pincode responsive */
+  .banner-content {
+    padding: 0 10px;
+  }
+
+  .delivery-info {
+    font-size: 0.85rem;
+  }
+
+  .change-pincode-btn {
+    width: 24px;
+    height: 24px;
+    font-size: 0.7rem;
+  }
+
+  .pincode-modal-content {
+    width: 95%;
+    margin: 10px;
+  }
+
+  .modal-header {
+    padding: 15px 15px 10px;
+  }
+
+  .modal-body {
+    padding: 15px;
+  }
+
   footer {
     padding: 30px 0 15px;
   }
@@ -692,6 +1062,44 @@ footer {
 
   .products {
     grid-template-columns: 1fr;
+  }
+
+  /* Mobile pincode styles */
+  .delivery-info {
+    font-size: 0.8rem;
+  }
+
+  .change-pincode-btn {
+    width: 22px;
+    height: 22px;
+    font-size: 0.65rem;
+  }
+
+  .pincode-input-group {
+    flex-direction: column;
+    gap: 10px;
+    padding: 10px;
+    border-radius: var(--radius);
+  }
+
+  .pincode-icon {
+    display: none;
+  }
+
+  #pincodeInput {
+    text-align: center;
+    font-size: 16px; /* Prevents zoom on iOS */
+    padding: 12px;
+  }
+
+  #checkDeliveryBtn {
+    width: 100%;
+    justify-content: center;
+    border-radius: var(--radius);
+  }
+
+  .modal-header h3 {
+    font-size: 1.1rem;
   }
 
   .footer-content {

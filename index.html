@@ -103,6 +103,51 @@
       </div>
     </nav>
 
+    <!-- Compact Pincode Status Banner -->
+    <div class="pincode-banner" id="pincodeBanner">
+      <div class="container">
+        <div class="banner-content">
+          <div class="delivery-info">
+            <i class="fas fa-map-marker-alt"></i>
+            <span id="deliveryLocationText">Click to set delivery location</span>
+          </div>
+          <button class="change-pincode-btn" id="changePincodeBtn">
+            <i class="fas fa-edit"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Pincode Modal -->
+    <div class="pincode-modal" id="pincodeModal">
+      <div class="modal-overlay" onclick="closePincodeModal()"></div>
+      <div class="pincode-modal-content">
+        <div class="modal-header">
+          <h3>Check Delivery Availability</h3>
+          <button class="close-modal" onclick="closePincodeModal()">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="pincode-input-group">
+            <i class="fas fa-map-marker-alt pincode-icon"></i>
+            <input 
+              type="text" 
+              id="pincodeInput" 
+              placeholder="Enter your 6-digit pincode" 
+              maxlength="6"
+              pattern="[0-9]{6}"
+            />
+            <button id="checkDeliveryBtn">
+              <i class="fas fa-search"></i>
+              Check
+            </button>
+          </div>
+          <div id="deliveryStatus" class="delivery-status"></div>
+        </div>
+      </div>
+    </div>
+
     <!-- Main Content -->
     <div class="container">
       <!-- Hero Section -->
