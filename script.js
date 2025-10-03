@@ -38,38 +38,7 @@ const coupons = {
 };
 
 let productsData = null;
-
-// Pincode delivery data - Indian pincodes with delivery status
-const deliveryPincodes = {
-  // Major cities - available
-  '110001': { city: 'New Delhi', state: 'Delhi', available: true, deliveryTime: '30-45 minutes' },
-  '400001': { city: 'Mumbai', state: 'Maharashtra', available: true, deliveryTime: '30-45 minutes' },
-  '560001': { city: 'Bangalore', state: 'Karnataka', available: true, deliveryTime: '30-45 minutes' },
-  '600001': { city: 'Chennai', state: 'Tamil Nadu', available: true, deliveryTime: '30-45 minutes' },
-  '700001': { city: 'Kolkata', state: 'West Bengal', available: true, deliveryTime: '30-45 minutes' },
-  '500001': { city: 'Hyderabad', state: 'Telangana', available: true, deliveryTime: '30-45 minutes' },
-  '411001': { city: 'Pune', state: 'Maharashtra', available: true, deliveryTime: '30-45 minutes' },
-  '380001': { city: 'Ahmedabad', state: 'Gujarat', available: true, deliveryTime: '30-45 minutes' },
-  '302001': { city: 'Jaipur', state: 'Rajasthan', available: true, deliveryTime: '30-45 minutes' },
-  '226001': { city: 'Lucknow', state: 'Uttar Pradesh', available: true, deliveryTime: '30-45 minutes' },
-  '201001': { city: 'Ghaziabad', state: 'Uttar Pradesh', available: true, deliveryTime: '45-60 minutes' },
-  '122001': { city: 'Gurgaon', state: 'Haryana', available: true, deliveryTime: '30-45 minutes' },
-  '160001': { city: 'Chandigarh', state: 'Chandigarh', available: true, deliveryTime: '30-45 minutes' },
-  '395001': { city: 'Surat', state: 'Gujarat', available: true, deliveryTime: '45-60 minutes' },
-  '462001': { city: 'Bhopal', state: 'Madhya Pradesh', available: true, deliveryTime: '45-60 minutes' },
-  
-  // Some areas - limited delivery
-  '110020': { city: 'New Delhi', state: 'Delhi', available: true, deliveryTime: '45-60 minutes' },
-  '400050': { city: 'Mumbai', state: 'Maharashtra', available: true, deliveryTime: '60-75 minutes' },
-  '560050': { city: 'Bangalore', state: 'Karnataka', available: true, deliveryTime: '60-75 minutes' },
-  
-  // Remote areas - not available
-  '795001': { city: 'Imphal', state: 'Manipur', available: false, reason: 'Service not available in this area' },
-  '797001': { city: 'Kohima', state: 'Nagaland', available: false, reason: 'Service not available in this area' },
-  '796001': { city: 'Aizawl', state: 'Mizoram', available: false, reason: 'Service not available in this area' },
-  '793001': { city: 'Shillong', state: 'Meghalaya', available: false, reason: 'Service not available in this area' },
-  '791001': { city: 'Itanagar', state: 'Arunachal Pradesh', available: false, reason: 'Service not available in this area' }
-};
+let currentCategory = 'all'; // active category filter from URL or clicks
 
 // Initialize cart from localStorage on startup
 function initializeCart() {
@@ -141,8 +110,29 @@ async function loadProducts() {
 function renderProducts() {
   if (!productsData) return;
 
-  renderProductSection("popularProducts", productsData.popularProducts);
-  renderProductSection("dealsProducts", productsData.deals);
+  const category = (currentCategory || 'all').toLowerCase();
+
+  // Filter helpers
+  const byCategory = (p) => category === 'all' || (p.category || '').toLowerCase() === category;
+
+  const popular = (productsData.popularProducts || []).filter(byCategory);
+  const deals = (productsData.deals || []).filter(byCategory);
+
+  renderProductSection("popularProducts", popular);
+  renderProductSection("dealsProducts", deals);
+
+  // Update headings to reflect active category
+  try {
+    const popularTitle = document.querySelector('h2.section-title#products');
+    const dealsTitle = Array.from(document.querySelectorAll('h2.section-title'))
+      .find(h => h.textContent.trim().startsWith("Today's Best Deals"));
+
+    const prettyCat = category === 'all' ? '' : ` – ${category.replace('-', ' ').replace(/\b\w/g, c => c.toUpperCase())}`;
+    if (popularTitle) popularTitle.textContent = `Popular Products${prettyCat}`;
+    if (dealsTitle) dealsTitle.textContent = `Today's Best Deals${prettyCat}`;
+  } catch (_) {
+    // non-fatal UI update
+  }
 }
 
 // Render a specific product section
@@ -156,6 +146,106 @@ function renderProductSection(containerId, products) {
     const productCard = createProductCard(product);
     container.appendChild(productCard);
   });
+}
+
+// Category filter initialization and URL helpers
+function getCategoryFromURL() {
+  try {
+    const params = new URLSearchParams(window.location.search);
+    const cat = (params.get('category') || 'all').toLowerCase();
+    return cat;
+  } catch (_) {
+    return 'all';
+  }
+}
+
+function setCategoryInURL(cat) {
+  const params = new URLSearchParams(window.location.search);
+  if (!cat || cat === 'all') {
+    params.delete('category');
+  } else {
+    params.set('category', cat);
+  }
+  const newUrl = `${window.location.pathname}?${params.toString()}`.replace(/\?$/, '');
+  window.history.pushState({ category: cat || 'all' }, '', newUrl);
+}
+
+function applyCategoryFromURL() {
+  currentCategory = getCategoryFromURL();
+  highlightActiveCategory(currentCategory);
+  highlightActiveNav(currentCategory);
+  renderProducts();
+}
+
+function highlightActiveCategory(cat) {
+  document.querySelectorAll('.category-item').forEach(el => {
+    const c = (el.getAttribute('data-category') || '').toLowerCase();
+    if ((cat === 'all' && c === 'all') || c === cat) {
+      el.classList.add('active');
+    } else {
+      el.classList.remove('active');
+    }
+  });
+}
+
+function initializeCategoryFiltering() {
+  document.querySelectorAll('.category-item').forEach(el => {
+    el.addEventListener('click', () => {
+      const cat = (el.getAttribute('data-category') || 'all').toLowerCase();
+      currentCategory = cat;
+      setCategoryInURL(cat);
+      highlightActiveCategory(cat);
+      highlightActiveNav(cat);
+      // Optional: clear search when category changes
+      const searchInput = document.querySelector('.search-bar input');
+      if (searchInput) searchInput.value = '';
+      renderProducts();
+      scrollToProducts();
+    });
+  });
+
+  // Apply initial category from URL
+  applyCategoryFromURL();
+
+  // Handle back/forward navigation
+  window.addEventListener('popstate', () => {
+    applyCategoryFromURL();
+  });
+}
+
+function highlightActiveNav(cat) {
+  document.querySelectorAll('.nav-links a[data-category]').forEach(a => {
+    const c = (a.getAttribute('data-category') || '').toLowerCase();
+    if ((cat === 'all' && c === 'all') || c === cat) {
+      a.classList.add('active');
+    } else {
+      a.classList.remove('active');
+    }
+  });
+}
+
+function initializeNavFiltering() {
+  document.querySelectorAll('.nav-links a[data-category]').forEach(a => {
+    a.addEventListener('click', (e) => {
+      e.preventDefault();
+      const cat = (a.getAttribute('data-category') || 'all').toLowerCase();
+      currentCategory = cat;
+      setCategoryInURL(cat);
+      highlightActiveCategory(cat);
+      highlightActiveNav(cat);
+      const searchInput = document.querySelector('.search-bar input');
+      if (searchInput) searchInput.value = '';
+      renderProducts();
+      scrollToProducts();
+    });
+  });
+}
+
+function scrollToProducts() {
+  const anchor = document.getElementById('products');
+  if (anchor && typeof anchor.scrollIntoView === 'function') {
+    anchor.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
 }
 
 // Render recently viewed products
@@ -221,24 +311,22 @@ function initializeSearch() {
 
     if (!productsData) return;
 
+    // When search term is empty, render by current category
     if (searchTerm === "") {
       renderProducts();
       return;
     }
 
-    const filteredPopular = productsData.popularProducts.filter(
-      (product) =>
-        product.name.toLowerCase().includes(searchTerm) ||
-        product.description.toLowerCase().includes(searchTerm) ||
-        product.category.toLowerCase().includes(searchTerm),
-    );
+    const category = (currentCategory || 'all').toLowerCase();
+    const inCategory = (p) => category === 'all' || (p.category || '').toLowerCase() === category;
 
-    const filteredDeals = productsData.deals.filter(
-      (product) =>
-        product.name.toLowerCase().includes(searchTerm) ||
-        product.description.toLowerCase().includes(searchTerm) ||
-        product.category.toLowerCase().includes(searchTerm),
-    );
+    const matches = (p) =>
+      p.name.toLowerCase().includes(searchTerm) ||
+      p.description.toLowerCase().includes(searchTerm) ||
+      (p.category || '').toLowerCase().includes(searchTerm);
+
+    const filteredPopular = (productsData.popularProducts || []).filter(p => inCategory(p) && matches(p));
+    const filteredDeals = (productsData.deals || []).filter(p => inCategory(p) && matches(p));
 
     renderProductSection("popularProducts", filteredPopular);
     renderProductSection("dealsProducts", filteredDeals);
@@ -252,7 +340,8 @@ function initializeSearch() {
           '<p style="text-align: center; padding: 20px; color: #999;">No products found</p>';
       }
       if (dealsContainer) {
-        dealsContainer.innerHTML = "";
+        dealsContainer.innerHTML =
+          '<p style="text-align: center; padding: 20px; color: #999;">No products found</p>';
       }
     }
   }
@@ -275,6 +364,8 @@ document.addEventListener("DOMContentLoaded", function () {
   initializeSearch();
   initializePincodeChecker();
   loadSavedPincode();
+  initializeCategoryFiltering();
+  initializeNavFiltering();
 });
 
 // --- Pincode Delivery Functions ---
@@ -417,119 +508,95 @@ function validatePincode(pincode) {
 /**
  * Check delivery availability for given pincode
  */
-function checkDelivery() {
+async function checkDelivery() {
   const pincodeInput = document.getElementById('pincodeInput');
   const checkBtn = document.getElementById('checkDeliveryBtn');
-  
+
   if (!pincodeInput) {
     console.error('Pincode input element not found');
     return;
   }
-  
+
   const pincode = pincodeInput.value.trim();
-  
-  // Validate pincode format
+
   if (!validatePincode(pincode)) {
     showDeliveryStatus('error', 'Please enter a valid 6-digit Indian pincode');
     return;
   }
-  
-  // Disable button and show loading state
+
   if (checkBtn) {
     checkBtn.disabled = true;
     checkBtn.innerHTML = '<span class="delivery-spinner"></span>Checking...';
   }
   showDeliveryStatus('checking', 'Checking delivery availability...');
-  
-  // Simulate API call with setTimeout
-  setTimeout(() => {
-    try {
-      const deliveryInfo = checkPincodeDelivery(pincode);
-      
-      if (deliveryInfo.available) {
-        showDeliveryStatus(
-          'available', 
-          `🎉 Great! We deliver to ${deliveryInfo.city}, ${deliveryInfo.state}.\nExpected delivery: ${deliveryInfo.deliveryTime}`
-        );
-        
-        // Save and close modal after success
-        setTimeout(() => {
-          savePincode(pincode, deliveryInfo);
-          closePincodeModal();
-        }, 2000);
-      } else {
-        showDeliveryStatus(
-          'not-available', 
-          `😔 Sorry, we don't deliver to ${deliveryInfo.city || 'this area'} yet.\n${deliveryInfo.reason || 'We are working to expand our service.'}`
-        );
-      }
-    } catch (error) {
-      console.error('Error checking delivery:', error);
-      showDeliveryStatus('error', 'Something went wrong. Please try again.');
-    } finally {
-      // Re-enable button
-      if (checkBtn) {
-        checkBtn.disabled = false;
-        checkBtn.innerHTML = '<i class="fas fa-search"></i>Check';
-      }
+
+  try {
+    const deliveryInfo = await checkPincodeDelivery(pincode);
+
+    if (deliveryInfo.available) {
+      showDeliveryStatus(
+        'available', 
+        `🎉 Great! We deliver to ${deliveryInfo.city}, ${deliveryInfo.state}.\nExpected delivery: ${deliveryInfo.deliveryTime}`
+      );
+      setTimeout(() => {
+        savePincode(pincode, deliveryInfo);
+        closePincodeModal();
+      }, 2000);
+    } else {
+      showDeliveryStatus(
+        'not-available', 
+        `😔 Sorry, we don't deliver to this location.\n${deliveryInfo.reason || ''}`
+      );
     }
-  }, 1500); // Simulate network delay
+  } catch (error) {
+    console.error('Error checking delivery:', error);
+    showDeliveryStatus('error', 'Something went wrong. Please try again.');
+  } finally {
+    if (checkBtn) {
+      checkBtn.disabled = false;
+      checkBtn.innerHTML = '<i class="fas fa-search"></i>Check';
+    }
+  }
 }
 
 /**
- * Check if delivery is available for a specific pincode
+ * Check if delivery is available for a specific pincode using Postal Pincode API
  * @param {string} pincode - 6 digit pincode
- * @returns {object} - delivery information
+ * @returns {Promise<object>} - delivery information
  */
-function checkPincodeDelivery(pincode) {
-  // Check if pincode exists in our delivery database
-  if (deliveryPincodes[pincode]) {
-    return deliveryPincodes[pincode];
-  }
-  
-  // For unknown pincodes, simulate checking based on first digit
-  const firstDigit = parseInt(pincode.charAt(0));
-  const stateInfo = getStateByPincodePrefix(firstDigit);
-  
-  // Simulate availability based on region (metro cities more likely to be available)
-  const isMetroRegion = ['1', '2', '3', '4', '5', '6'].includes(pincode.charAt(0));
-  const randomFactor = Math.random();
-  
-  if (isMetroRegion && randomFactor > 0.3) {
-    return {
-      city: stateInfo.sampleCity,
-      state: stateInfo.state,
-      available: true,
-      deliveryTime: randomFactor > 0.7 ? '30-45 minutes' : '45-60 minutes'
-    };
-  } else {
-    return {
-      city: stateInfo.sampleCity,
-      state: stateInfo.state,
-      available: false,
-      reason: 'Service expansion in progress'
-    };
-  }
-}
+async function checkPincodeDelivery(pincode) {
+  try {
+    const res = await fetch(`https://api.postalpincode.in/pincode/${pincode}`);
+    const data = await res.json();
 
-/**
- * Get state information based on pincode prefix
- * @param {number} firstDigit - First digit of pincode
- * @returns {object} - State information
- */
-function getStateByPincodePrefix(firstDigit) {
-  const stateMap = {
-    1: { state: 'Delhi/Punjab/Haryana', sampleCity: 'Delhi' },
-    2: { state: 'Uttar Pradesh/Uttarakhand', sampleCity: 'Lucknow' },
-    3: { state: 'Rajasthan/Gujarat', sampleCity: 'Jaipur' },
-    4: { state: 'Maharashtra/Madhya Pradesh/Chhattisgarh', sampleCity: 'Mumbai' },
-    5: { state: 'Karnataka/Andhra Pradesh/Telangana', sampleCity: 'Bangalore' },
-    6: { state: 'Tamil Nadu/Kerala', sampleCity: 'Chennai' },
-    7: { state: 'West Bengal/Odisha/Northeast', sampleCity: 'Kolkata' },
-    8: { state: 'Bihar/Jharkhand', sampleCity: 'Patna' }
-  };
-  
-  return stateMap[firstDigit] || { state: 'India', sampleCity: 'Unknown' };
+    if (!data || data[0].Status !== "Success" || !data[0].PostOffice) {
+      return {
+        city: null,
+        state: null,
+        available: false,
+        reason: "Invalid or unsupported pincode"
+      };
+    }
+
+    // Take the top result (first PostOffice)
+    const office = data[0].PostOffice[0];
+
+    return {
+      city: office.District || office.Name,
+      state: office.State,
+      available: true, // all pincodes are serviceable
+      deliveryTime: "45-60 minutes"
+    };
+
+  } catch (err) {
+    console.error("Error fetching pincode:", err);
+    return {
+      city: null,
+      state: null,
+      available: false,
+      reason: "Service temporarily unavailable"
+    };
+  }
 }
 
 /**
