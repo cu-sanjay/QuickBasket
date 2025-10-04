@@ -78,6 +78,205 @@ function initializeWishlist() {
   }
 }
 
+// --- Ratings & Reviews Storage ---
+function loadReviews() {
+  const saved = localStorage.getItem("productReviews");
+  return saved ? JSON.parse(saved) : {};
+}
+
+function saveReviews(reviews) {
+  localStorage.setItem("productReviews", JSON.stringify(reviews));
+}
+
+function displayReviews(productId) {
+  const reviews = loadReviews();
+  const container = document.getElementById("reviewsContainer");
+  if (!container) return;
+
+  container.innerHTML = "";
+
+  if (reviews[productId] && reviews[productId].length > 0) {
+    reviews[productId].forEach(r => {
+      const div = document.createElement("div");
+      div.className = "review-item";
+      div.innerHTML = `<p class="review-rating">Rating: ${r.rating}/5</p><p>${r.text}</p>`;
+      container.appendChild(div);
+    });
+  } else {
+    container.innerHTML = "<p>No reviews yet.</p>";
+  }
+}
+
+let currentProduct = null; // holds product for modal
+function openProductDetail(product) {
+  document.getElementById("detailName").innerText = product.name;
+  document.getElementById("detailImage").src = product.image;
+  document.getElementById("detailDescription").innerText = product.description;
+  document.getElementById("detailPrice").innerText = product.price;
+  document.getElementById("detailRating").innerText = product.rating || "N/A";
+
+  document.getElementById("productDetailModal").style.display = "flex";
+  currentProduct = product;
+
+  // Clear review input
+  document.getElementById("userReview").value = "";
+
+// Initialize star rating
+const stars = document.querySelectorAll('#productDetailModal .star');
+stars.forEach(star => {
+  star.addEventListener('click', function () {
+    const rating = parseInt(this.getAttribute('data-value'));
+    stars.forEach((s, index) => {
+      if (index < rating) {
+        s.classList.add('active');
+        s.textContent = '★';
+      } else {
+        s.classList.remove('active');
+        s.textContent = '☆';
+      }
+    });
+  });
+
+  star.addEventListener('mouseenter', function () {
+    const rating = parseInt(this.getAttribute('data-value'));
+    stars.forEach((s, index) => {
+      s.textContent = index < rating ? '★' : '☆';
+    });
+  });
+});
+
+  setTimeout(() => {
+    initStarRating(product.id);
+  }, 50);
+
+  // Handle review submission
+  document.getElementById("submitReviewBtn").onclick = () => {
+    const reviewText = document.getElementById("userReview").value.trim();
+    if (selectedRating === 0 || reviewText === "") {
+      alert("Please select a star rating and write a review!");
+      return;
+    }
+
+    const reviews = loadReviews();
+    if (!reviews[product.id]) reviews[product.id] = [];
+    reviews[product.id].push({ rating: selectedRating, text: reviewText });
+    saveReviews(reviews);
+
+    displayReviews(product.id); // Refresh reviews in modal
+    document.getElementById("userReview").value = "";
+
+    selectedRating = 0;
+    initStarRating(product.id); // Reset stars
+
+    showSuccessToast("Your review has been submitted!");
+  };
+
+  // Show existing reviews
+  displayReviews(product.id);
+}
+
+function closeProductDetail() {
+  document.getElementById("productDetailModal").style.display = "none";
+}
+
+function addToCartFromDetail() {
+  if (currentProduct) {
+    addToCart(currentProduct.name, currentProduct.price, currentProduct.image, currentProduct.id);
+    showSuccessToast(`${currentProduct.name} added to cart!`);
+  }
+  closeProductDetail();
+}
+
+function addToWishlistFromDetail() {
+  if (currentProduct) {
+    const productToAdd = productsData.allProducts.find(p => p.id === currentProduct.id);
+
+    // Check if already in wishlist
+    const exists = wishlist.some(item => item.id === currentProduct.id);
+    if (!exists && productToAdd) {
+      wishlist.push(productToAdd);
+      showSuccessToast(`${currentProduct.name} added to wishlist!`);
+    } else {
+      showWarningToast(`${currentProduct.name} is already in wishlist!`);
+    }
+
+    saveWishlist();
+    updateWishlistDisplay();
+  }
+  closeProductDetail();
+}
+
+function createProductCard(product) {
+  const productCard = document.createElement("div");
+  productCard.className = "product-card";
+
+  // Open detail modal when card is clicked
+  productCard.addEventListener("click", () => {
+    openProductDetail(product);
+  });
+
+  // Check if the product is in the wishlist
+  const isInWishlist = wishlist.some((item) => item.id === product.id);
+  const heartIconClass = isInWishlist ? "fas fa-heart active" : "far fa-heart";
+
+  productCard.innerHTML = `
+    <img src="${product.image}" alt="${product.name}" class="product-image">
+    <div class="product-info">
+      <h3 class="product-title">${product.name}</h3>
+      <div class="product-price">₹${product.price} <span>(₹${product.discount} off)</span></div>
+      <p>${product.description}</p>
+      <div class="product-actions">
+        <button class="add-to-cart" onclick="event.stopPropagation(); addToCart('${product.name}', ${product.price}, '${product.image}', ${product.id})">
+          <i class="fas fa-plus"></i> Add to Cart
+        </button>
+        <button class="wishlist" onclick="event.stopPropagation(); toggleWishlist(${product.id}, event)">
+          <i class="${heartIconClass}"></i>
+        </button>
+      </div>
+    </div>
+  `;
+
+  return productCard;
+}
+
+let selectedRating = 0; // global for modal
+
+function initStarRating(productId) {
+  const stars = document.querySelectorAll(".modal-rating-stars .star");
+  if (!stars || stars.length === 0) return;
+
+  // Reset stars
+  stars.forEach(s => s.classList.remove("filled"));
+
+  const reviews = loadReviews();
+
+  // Load last saved rating (if exists)
+  if (reviews[productId] && reviews[productId].length > 0) {
+    const latest = reviews[productId][reviews[productId].length - 1];
+    selectedRating = latest.rating;
+    stars.forEach(s => {
+      if (parseInt(s.dataset.value) <= selectedRating) s.classList.add("filled");
+    });
+  } else {
+    selectedRating = 0;
+  }
+
+  // Add fresh click events
+  stars.forEach(star => {
+    star.onclick = () => {
+      selectedRating = parseInt(star.dataset.value);
+
+      stars.forEach(s => {
+        if (parseInt(s.dataset.value) <= selectedRating) {
+          s.classList.add("filled");
+        } else {
+          s.classList.remove("filled");
+        }
+      });
+    };
+  });
+}
+
 // Save wishlist to localStorage
 function saveWishlist() {
   try {
@@ -270,34 +469,34 @@ function renderRecentlyViewed() {
   });
 }
 
-// Create product card element
-function createProductCard(product) {
-  const productCard = document.createElement("div");
-  productCard.className = "product-card";
+// // Create product card element
+// function createProductCard(product) {
+//   const productCard = document.createElement("div");
+//   productCard.className = "product-card";
 
-  // Check if the product is in the wishlist to set the correct icon
-  const isInWishlist = wishlist.some((item) => item.id === product.id);
-  const heartIconClass = isInWishlist ? "fas fa-heart active" : "far fa-heart";
+//   // Check if the product is in the wishlist to set the correct icon
+//   const isInWishlist = wishlist.some((item) => item.id === product.id);
+//   const heartIconClass = isInWishlist ? "fas fa-heart active" : "far fa-heart";
 
-  productCard.innerHTML = `
-        <img src="${product.image}" alt="${product.name}" class="product-image">
-        <div class="product-info">
-            <h3 class="product-title">${product.name}</h3>
-            <div class="product-price">₹${product.price} <span>(₹${product.discount} off)</span></div>
-            <p>${product.description}</p>
-            <div class="product-actions">
-                <button class="add-to-cart" onclick="addToCart('${product.name}', ${product.price}, '${product.image}', ${product.id})">
-                    <i class="fas fa-plus"></i> Add to Cart
-                </button>
-                <button class="wishlist" onclick="toggleWishlist(${product.id}, event)">
-                    <i class="${heartIconClass}"></i>
-                </button>
-            </div>
-        </div>
-    `;
+//   productCard.innerHTML = `
+//         <img src="${product.image}" alt="${product.name}" class="product-image">
+//         <div class="product-info">
+//             <h3 class="product-title">${product.name}</h3>
+//             <div class="product-price">₹${product.price} <span>(₹${product.discount} off)</span></div>
+//             <p>${product.description}</p>
+//             <div class="product-actions">
+//                 <button class="add-to-cart" onclick="addToCart('${product.name}', ${product.price}, '${product.image}', ${product.id})">
+//                     <i class="fas fa-plus"></i> Add to Cart
+//                 </button>
+//                 <button class="wishlist" onclick="toggleWishlist(${product.id}, event)">
+//                     <i class="${heartIconClass}"></i>
+//                 </button>
+//             </div>
+//         </div>
+//     `;
 
-  return productCard;
-}
+//   return productCard;
+// }
 
 // Search functionality
 function initializeSearch() {
@@ -967,6 +1166,10 @@ function switchTab(tabName) {
 
 // Close modal when clicking outside
 window.onclick = function (event) {
+  const productDetailModal = document.getElementById("productDetailModal");
+  if (event.target === productDetailModal) {
+    closeProductDetail();
+  }
   const cartModal = document.getElementById("cartModal");
   const userModal = document.getElementById("userModal");
   const wishlistModal = document.getElementById("wishlistModal");
