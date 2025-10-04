@@ -87,4 +87,4 @@ Use this project as a base and extend it further for learning:
 
 Thanks to all these amazing people:
 
-[![Contributors](https://contrib.rocks/image?repo=cu-sanjay/QuickBasket-Hacktoberfest)](https://github.com/cu-sanjay/QuickBasket-Hacktoberfest/graphs/contributors)
+[![Contributors](https://contrib.rocks/image?repo=cu-sanjay/QuickBasket)](https://github.com/cu-sanjay/QuickBasket/graphs/contributors)
