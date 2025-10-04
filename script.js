@@ -561,9 +561,376 @@ document.addEventListener("DOMContentLoaded", function () {
   initializeCart();
   initializeWishlist();
   initializeSearch();
+  initializePincodeChecker();
+  loadSavedPincode();
   initializeCategoryFiltering();
   initializeNavFiltering();
 });
+
+// --- Pincode Delivery Functions ---
+
+/**
+ * Initialize pincode checker functionality
+ */
+function initializePincodeChecker() {
+  const banner = document.getElementById('pincodeBanner');
+  const changePincodeBtn = document.getElementById('changePincodeBtn');
+  const pincodeInput = document.getElementById('pincodeInput');
+  const checkBtn = document.getElementById('checkDeliveryBtn');
+
+  // Banner click to open modal
+  if (banner) {
+    banner.addEventListener('click', openPincodeModal);
+  }
+
+  // Change pincode button
+  if (changePincodeBtn) {
+    changePincodeBtn.addEventListener('click', function(e) {
+      e.stopPropagation();
+      openPincodeModal();
+    });
+  }
+
+  if (!pincodeInput || !checkBtn) return;
+
+  // Add click event listener to check button
+  checkBtn.addEventListener('click', checkDelivery);
+
+  // Add input validation and formatting
+  pincodeInput.addEventListener('input', function(e) {
+    // Allow only numbers
+    let value = e.target.value.replace(/\D/g, '');
+    
+    // Limit to 6 digits
+    if (value.length > 6) {
+      value = value.substring(0, 6);
+    }
+    
+    e.target.value = value;
+    
+    // Enable/disable check button
+    checkBtn.disabled = value.length !== 6;
+    
+    // Clear previous status when input changes
+    if (value.length < 6) {
+      hideDeliveryStatus();
+    }
+  });
+
+  // Add enter key support
+  pincodeInput.addEventListener('keypress', function(e) {
+    if (e.key === 'Enter' && pincodeInput.value.length === 6) {
+      checkDelivery();
+    }
+  });
+
+  // Add paste event handling
+  pincodeInput.addEventListener('paste', function(e) {
+    e.preventDefault();
+    const paste = (e.clipboardData || window.clipboardData).getData('text');
+    const numbers = paste.replace(/\D/g, '').substring(0, 6);
+    pincodeInput.value = numbers;
+    checkBtn.disabled = numbers.length !== 6;
+    
+    // Trigger input event to update button state
+    const inputEvent = new Event('input', { bubbles: true });
+    pincodeInput.dispatchEvent(inputEvent);
+  });
+}
+
+/**
+ * Open pincode modal
+ */
+function openPincodeModal() {
+  const modal = document.getElementById('pincodeModal');
+  const pincodeInput = document.getElementById('pincodeInput');
+  
+  if (modal) {
+    modal.classList.add('show');
+    document.body.style.overflow = 'hidden';
+    
+    // Focus on input after animation
+    setTimeout(() => {
+      if (pincodeInput) {
+        pincodeInput.focus();
+      }
+    }, 100);
+  }
+}
+
+/**
+ * Close pincode modal
+ */
+function closePincodeModal() {
+  const modal = document.getElementById('pincodeModal');
+  const pincodeInput = document.getElementById('pincodeInput');
+  
+  if (modal) {
+    modal.classList.remove('show');
+    document.body.style.overflow = '';
+    
+    // Clear input and status
+    if (pincodeInput) {
+      pincodeInput.value = '';
+    }
+    hideDeliveryStatus();
+  }
+}
+
+/**
+ * Validate Indian pincode format
+ * @param {string} pincode - 6 digit pincode
+ * @returns {boolean} - true if valid format
+ */
+function validatePincode(pincode) {
+  if (!pincode || typeof pincode !== 'string') {
+    return false;
+  }
+
+  // Remove any spaces or special characters
+  const cleanPincode = pincode.replace(/\D/g, '');
+  
+  // Check if it's exactly 6 digits
+  if (cleanPincode.length !== 6) {
+    return false;
+  }
+  
+  // Indian pincodes start from 1 and go up to 8 (first digit)
+  const firstDigit = parseInt(cleanPincode.charAt(0));
+  if (firstDigit < 1 || firstDigit > 8) {
+    return false;
+  }
+  
+  return true;
+}
+
+/**
+ * Check delivery availability for given pincode
+ */
+async function checkDelivery() {
+  const pincodeInput = document.getElementById('pincodeInput');
+  const checkBtn = document.getElementById('checkDeliveryBtn');
+
+  if (!pincodeInput) {
+    console.error('Pincode input element not found');
+    return;
+  }
+
+  const pincode = pincodeInput.value.trim();
+
+  if (!validatePincode(pincode)) {
+    showDeliveryStatus('error', 'Please enter a valid 6-digit Indian pincode');
+    return;
+  }
+
+  if (checkBtn) {
+    checkBtn.disabled = true;
+    checkBtn.innerHTML = '<span class="delivery-spinner"></span>Checking...';
+  }
+  showDeliveryStatus('checking', 'Checking delivery availability...');
+
+  try {
+    const deliveryInfo = await checkPincodeDelivery(pincode);
+
+    if (deliveryInfo.available) {
+      showDeliveryStatus(
+        'available', 
+        `🎉 Great! We deliver to ${deliveryInfo.city}, ${deliveryInfo.state}.\nExpected delivery: ${deliveryInfo.deliveryTime}`
+      );
+      setTimeout(() => {
+        savePincode(pincode, deliveryInfo);
+        closePincodeModal();
+      }, 2000);
+    } else {
+      showDeliveryStatus(
+        'not-available', 
+        `😔 Sorry, we don't deliver to this location.\n${deliveryInfo.reason || ''}`
+      );
+    }
+  } catch (error) {
+    console.error('Error checking delivery:', error);
+    showDeliveryStatus('error', 'Something went wrong. Please try again.');
+  } finally {
+    if (checkBtn) {
+      checkBtn.disabled = false;
+      checkBtn.innerHTML = '<i class="fas fa-search"></i>Check';
+    }
+  }
+}
+
+/**
+ * Check if delivery is available for a specific pincode using Postal Pincode API
+ * @param {string} pincode - 6 digit pincode
+ * @returns {Promise<object>} - delivery information
+ */
+async function checkPincodeDelivery(pincode) {
+  try {
+    const res = await fetch(`https://api.postalpincode.in/pincode/${pincode}`);
+    const data = await res.json();
+
+    if (!data || data[0].Status !== "Success" || !data[0].PostOffice) {
+      return {
+        city: null,
+        state: null,
+        available: false,
+        reason: "Invalid or unsupported pincode"
+      };
+    }
+
+    // Take the top result (first PostOffice)
+    const office = data[0].PostOffice[0];
+
+    return {
+      city: office.District || office.Name,
+      state: office.State,
+      available: true, // all pincodes are serviceable
+      deliveryTime: "45-60 minutes"
+    };
+
+  } catch (err) {
+    console.error("Error fetching pincode:", err);
+    return {
+      city: null,
+      state: null,
+      available: false,
+      reason: "Service temporarily unavailable"
+    };
+  }
+}
+
+/**
+ * Show delivery status message
+ * @param {string} type - Status type (available, not-available, checking, error)
+ * @param {string} message - Status message
+ */
+function showDeliveryStatus(type, message) {
+  const statusDiv = document.getElementById('deliveryStatus');
+  if (!statusDiv) return;
+  
+  statusDiv.className = `delivery-status ${type}`;
+  
+  if (type === 'checking') {
+    statusDiv.innerHTML = `<span class="delivery-spinner"></span>${message}`;
+  } else {
+    statusDiv.textContent = message;
+  }
+  
+  statusDiv.style.display = 'block';
+}
+
+/**
+ * Hide delivery status
+ */
+function hideDeliveryStatus() {
+  const statusDiv = document.getElementById('deliveryStatus');
+  if (statusDiv) {
+    statusDiv.style.display = 'none';
+  }
+}
+
+/**
+ * Save selected pincode to sessionStorage
+ * @param {string} pincode - Selected pincode
+ * @param {object} deliveryInfo - Delivery information
+ */
+function savePincode(pincode, deliveryInfo) {
+  try {
+    const pincodeData = {
+      pincode: pincode,
+      city: deliveryInfo.city,
+      state: deliveryInfo.state,
+      available: deliveryInfo.available,
+      deliveryTime: deliveryInfo.deliveryTime,
+      savedAt: Date.now()
+    };
+    
+    sessionStorage.setItem('quickbasket_pincode', JSON.stringify(pincodeData));
+    updateDeliveryBanner(pincodeData);
+    
+    // Show success toast
+    showSuccessToast(`Delivery location set to ${deliveryInfo.city}, ${deliveryInfo.state}`);
+  } catch (error) {
+    console.error('Error saving pincode:', error);
+  }
+}
+
+/**
+ * Load saved pincode from sessionStorage
+ */
+function loadSavedPincode() {
+  try {
+    const savedData = sessionStorage.getItem('quickbasket_pincode');
+    if (savedData) {
+      const pincodeData = JSON.parse(savedData);
+      
+      // Check if data is not too old (24 hours)
+      const isRecent = Date.now() - pincodeData.savedAt < 24 * 60 * 60 * 1000;
+      
+      if (isRecent && pincodeData.available) {
+        updateDeliveryBanner(pincodeData);
+      } else {
+        // Clear old data
+        sessionStorage.removeItem('quickbasket_pincode');
+      }
+    }
+  } catch (error) {
+    console.error('Error loading saved pincode:', error);
+  }
+}
+
+/**
+ * Update delivery banner with saved location
+ * @param {object} pincodeData - Saved pincode data
+ */
+function updateDeliveryBanner(pincodeData) {
+  const deliveryText = document.getElementById('deliveryLocationText');
+  const deliveryInfo = document.querySelector('.delivery-info');
+  const changePincodeBtn = document.getElementById('changePincodeBtn');
+  
+  if (!deliveryText || !pincodeData.available) return;
+  
+  deliveryText.textContent = `Delivering to ${pincodeData.city}, ${pincodeData.state} (${pincodeData.pincode})`;
+  
+  if (deliveryInfo) {
+    deliveryInfo.classList.add('has-location');
+  }
+  
+  // Update button to show clear option on right-click or long press
+  if (changePincodeBtn) {
+    changePincodeBtn.addEventListener('contextmenu', function(e) {
+      e.preventDefault();
+      e.stopPropagation();
+      if (confirm('Clear delivery location?')) {
+        clearSavedPincode();
+      }
+    });
+  }
+}
+
+/**
+ * Clear saved pincode and reset banner
+ */
+function clearSavedPincode() {
+  try {
+    sessionStorage.removeItem('quickbasket_pincode');
+    
+    // Reset banner text
+    const deliveryText = document.getElementById('deliveryLocationText');
+    const deliveryInfo = document.querySelector('.delivery-info');
+    
+    if (deliveryText) {
+      deliveryText.textContent = 'Click to set delivery location';
+    }
+    
+    if (deliveryInfo) {
+      deliveryInfo.classList.remove('has-location');
+    }
+    
+    showSuccessToast('Delivery location cleared');
+  } catch (error) {
+    console.error('Error clearing pincode:', error);
+  }
+}
 
 // --- Cart Functions ---
 
