@@ -1,229 +1,189 @@
-/**
- * Cart Storage Utility Module
- * Handles localStorage operations for shopping cart persistence
- */
+// src/utils/cartStorage.js
+(function () {
+  "use strict";
 
-// Storage configuration
-const STORAGE_KEY = 'shopping_cart';
-const SAVE_DEBOUNCE_DELAY = 300; // 300ms debounce delay
+  /** Primary key used by the app */
+  const KEY_PRIMARY = "quickbasket_cart";
+  /** Legacy keys we’ll try to migrate from (older experiments) */
+  const LEGACY_KEYS = ["shopping_cart"];
 
-// Debounce timer reference
-let saveTimer = null;
+  /** Debounce timer for saves */
+  let timer = null;
 
-/**
- * Check if localStorage is available and accessible
- * @returns {boolean} True if localStorage is available, false otherwise
- */
-function isAvailable() {
+  /** Schema version for what we store now */
+  const VERSION = "2.0";
+
+  /** Check localStorage availability */
+  function isAvailable() {
     try {
-        if (typeof Storage === 'undefined' || !window.localStorage) {
-            console.warn('localStorage is not supported in this browser');
-            return false;
-        }
+      if (typeof window === "undefined" || !("localStorage" in window)) return false;
+      const t = "__storage_test__";
+      localStorage.setItem(t, "1");
+      localStorage.removeItem(t);
+      return true;
+    } catch (_) {
+      return false;
+    }
+  }
 
-        // Test localStorage availability
-        const testKey = '__storage_test__';
-        localStorage.setItem(testKey, 'test');
-        localStorage.removeItem(testKey);
+  /** Safe JSON parse */
+  function tryParse(json) {
+    try {
+      return JSON.parse(json);
+    } catch {
+      return null;
+    }
+  }
 
+  /** Normalize a single cart item; return null if invalid */
+  function normalizeItem(item) {
+    if (!item || typeof item !== "object") return null;
+
+    const name = typeof item.name === "string" ? item.name.trim() : null;
+    const image = typeof item.image === "string" ? item.image : "";
+    const id = item.id ?? null;
+
+    const priceNum = Number(item.price);
+    const qtyNum = Number(item.quantity);
+
+    if (!name || !Number.isFinite(priceNum) || !Number.isFinite(qtyNum)) return null;
+    if (priceNum <= 0 || qtyNum <= 0) return null;
+
+    return {
+      id,
+      name,
+      image,
+      price: Math.round(priceNum * 100) / 100, // 2-decimal safety
+      quantity: Math.floor(qtyNum) // integers only
+    };
+  }
+
+  /** Validate/clean an array of items */
+  function sanitizeItems(arr) {
+    if (!Array.isArray(arr)) return [];
+    const cleaned = arr.map(normalizeItem).filter(Boolean);
+    return cleaned;
+  }
+
+  /** Build the storage envelope we persist */
+  function makeEnvelope(items) {
+    return {
+      type: "quickbasket-cart",
+      version: VERSION,
+      updatedAt: Date.now(),
+      items
+    };
+  }
+
+  /** Save cart (immediate) */
+  function saveCart(cartItems) {
+    if (!isAvailable()) return false;
+
+    const items = sanitizeItems(cartItems);
+    try {
+      localStorage.setItem(KEY_PRIMARY, JSON.stringify(makeEnvelope(items)));
+      return true;
+    } catch (err) {
+      // Handle quota politely
+      if (err && (err.name === "QuotaExceededError" || err.code === 22)) {
+        try {
+          // last-ditch: clear and retry a minimal save (empty)
+          localStorage.removeItem(KEY_PRIMARY);
+          localStorage.setItem(KEY_PRIMARY, JSON.stringify(makeEnvelope([])));
+        } catch (_) {}
+      }
+      return false;
+    }
+  }
+
+  /** Save cart (debounced) */
+  function debouncedSave(cartItems, delay = 250) {
+    if (timer) clearTimeout(timer);
+    timer = setTimeout(() => saveCart(cartItems), delay);
+  }
+
+  /** Load cart and return just the items array */
+  function loadCart() {
+    if (!isAvailable()) return [];
+
+    // Try primary first
+    const raw = localStorage.getItem(KEY_PRIMARY);
+    let env = tryParse(raw);
+
+    // If not present or broken, try legacy keys and migrate
+    if (!env || !env.items) {
+      const migrated = migrateFromLegacy();
+      if (migrated) env = tryParse(localStorage.getItem(KEY_PRIMARY));
+    }
+
+    if (!env || !Array.isArray(env.items)) return [];
+    return sanitizeItems(env.items);
+  }
+
+  /** Clear cart storage */
+  function clearCart() {
+    if (!isAvailable()) return false;
+    try {
+      localStorage.removeItem(KEY_PRIMARY);
+      return true;
+    } catch {
+      return false;
+    }
+  }
+
+  /** Migrate from legacy keys if found; returns true if migrated */
+  function migrateFromLegacy() {
+    if (!isAvailable()) return false;
+
+    for (const key of LEGACY_KEYS) {
+      const raw = localStorage.getItem(key);
+      if (!raw) continue;
+
+      const parsed = tryParse(raw);
+      let items = [];
+
+      // Legacy may be: { items: [...] } or raw array [...]
+      if (Array.isArray(parsed)) {
+        items = parsed;
+      } else if (parsed && Array.isArray(parsed.items)) {
+        items = parsed.items;
+      }
+
+      const cleaned = sanitizeItems(items);
+      try {
+        localStorage.setItem(KEY_PRIMARY, JSON.stringify(makeEnvelope(cleaned)));
+        localStorage.removeItem(key);
         return true;
-    } catch (error) {
-        console.warn('localStorage is not available:', error.message);
+      } catch {
+        // If migration write fails, leave legacy as-is
         return false;
+      }
     }
-}
+    return false;
+  }
 
-/**
- * Save cart data to localStorage with timestamp
- * @param {Array} cartData - Array of cart items
- * @returns {boolean} Success status
- */
-function saveCart(cartData) {
-    // Validate input
-    if (!Array.isArray(cartData)) {
-        console.error('Invalid cart data: expected array, got', typeof cartData);
-        return false;
-    }
+  /** Info for debugging */
+  function getStorageInfo() {
+    if (!isAvailable()) return { available: false };
+    const raw = localStorage.getItem(KEY_PRIMARY);
+    const size = raw ? new Blob([raw]).size : 0;
+    const env = tryParse(raw) || {};
+    return {
+      available: true,
+      key: KEY_PRIMARY,
+      version: env.version || null,
+      items: Array.isArray(env.items) ? env.items.length : 0,
+      bytes: size
+    };
+  }
 
-    // Check if localStorage is available
-    if (!isAvailable()) {
-        console.warn('Cannot save cart: localStorage not available');
-        return false;
-    }
-
-    try {
-        const dataToStore = {
-            items: cartData,
-            timestamp: Date.now(),
-            version: '1.0'
-        };
-
-        const serializedData = JSON.stringify(dataToStore);
-        localStorage.setItem(STORAGE_KEY, serializedData);
-
-        return true;
-    } catch (error) {
-        if (error.name === 'QuotaExceededError') {
-            console.error('Cannot save cart: localStorage quota exceeded');
-            // Optionally clear old data or show user notification
-            handleStorageQuotaExceeded();
-        } else {
-            console.error('Error saving cart to localStorage:', error);
-        }
-        return false;
-    }
-}
-
-/**
- * Load cart data from localStorage
- * @returns {Array|null} Cart items array or null if no data/invalid data
- */
-function loadCart() {
-    // Check if localStorage is available
-    if (!isAvailable()) {
-        console.warn('Cannot load cart: localStorage not available');
-        return null;
-    }
-
-    try {
-        const storedData = localStorage.getItem(STORAGE_KEY);
-
-        if (!storedData) {
-            // No stored data found
-            return null;
-        }
-
-        const parsedData = JSON.parse(storedData);
-
-        // Validate data structure
-        if (!parsedData || typeof parsedData !== 'object') {
-            console.warn('Invalid cart data structure in localStorage');
-            clearCart(); // Clear corrupted data
-            return null;
-        }
-
-        // Check if data has required fields
-        if (!Array.isArray(parsedData.items)) {
-            console.warn('Cart data missing items array');
-            clearCart(); // Clear corrupted data
-            return null;
-        }
-
-        // Validate each item in the cart
-        const validItems = parsedData.items.filter(item => {
-            return item &&
-                   typeof item === 'object' &&
-                   typeof item.name === 'string' &&
-                   typeof item.price === 'number' &&
-                   item.price > 0 &&
-                   typeof item.quantity === 'number' &&
-                   item.quantity > 0 &&
-                   typeof item.image === 'string';
-        });
-
-        if (validItems.length !== parsedData.items.length) {
-            console.warn('Some cart items were invalid and filtered out');
-        }
-
-        return validItems;
-
-    } catch (error) {
-        console.error('Error loading cart from localStorage:', error);
-        // Clear corrupted data
-        clearCart();
-        return null;
-    }
-}
-
-/**
- * Clear cart data from localStorage
- * @returns {boolean} Success status
- */
-function clearCart() {
-    // Check if localStorage is available
-    if (!isAvailable()) {
-        console.warn('Cannot clear cart: localStorage not available');
-        return false;
-    }
-
-    try {
-        localStorage.removeItem(STORAGE_KEY);
-        return true;
-    } catch (error) {
-        console.error('Error clearing cart from localStorage:', error);
-        return false;
-    }
-}
-
-/**
- * Handle storage quota exceeded error
- * Attempts to clear old data or reduce cart size
- */
-function handleStorageQuotaExceeded() {
-    try {
-        // Try to clear the cart data first
-        clearCart();
-
-        // If we still can't save, the storage might be full with other data
-        // In a real application, you might want to show a user notification here
-        console.warn('Storage quota exceeded. Cart data cleared to free up space.');
-
-        // Optional: Show user notification
-        if (typeof showToast === 'function') {
-            showToast('Storage full. Cart data cleared to free up space.');
-        }
-    } catch (error) {
-        console.error('Failed to handle storage quota exceeded:', error);
-    }
-}
-
-/**
- * Debounced save function to prevent excessive localStorage writes
- * @param {Array} cartData - Cart data to save
- */
-function debouncedSave(cartData) {
-    if (saveTimer) {
-        clearTimeout(saveTimer);
-    }
-
-    saveTimer = setTimeout(() => {
-        saveCart(cartData);
-    }, SAVE_DEBOUNCE_DELAY);
-}
-
-/**
- * Get storage info for debugging
- * @returns {Object} Storage information
- */
-function getStorageInfo() {
-    if (!isAvailable()) {
-        return { available: false };
-    }
-
-    try {
-        const storedData = localStorage.getItem(STORAGE_KEY);
-        const dataSize = storedData ? new Blob([storedData]).size : 0;
-
-        return {
-            available: true,
-            hasData: !!storedData,
-            dataSize: `${dataSize} bytes`,
-            key: STORAGE_KEY
-        };
-    } catch (error) {
-        return {
-            available: false,
-            error: error.message
-        };
-    }
-}
-
-// Export functions for use in other modules
-window.cartStorage = {
+  // Public API
+  window.cartStorage = {
+    isAvailable,
     saveCart,
+    debouncedSave,
     loadCart,
     clearCart,
-    isAvailable,
-    debouncedSave,
     getStorageInfo
-};
+  };
+})();

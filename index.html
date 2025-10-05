@@ -5,6 +5,7 @@
     <link rel="stylesheet" href="styles.css" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>QuickBasket - Grocery Delivery in Minutes</title>
+
     <link
       rel="icon"
       href="https://cdn-icons-png.flaticon.com/512/3081/3081559.png"
@@ -24,15 +25,27 @@
     <header>
       <div class="container">
         <div class="header-content">
+          <!-- Hamburger (visible on small screens) -->
+          <button
+            class="nav-toggle"
+            aria-expanded="false"
+            aria-controls="siteNav"
+            aria-label="Toggle navigation"
+            title="Menu"
+          >
+            <i class="fas fa-bars"></i>
+          </button>
+
           <div class="logo">
             <i class="fas fa-shopping-basket"></i>
             <span>QuickBasket</span>
           </div>
+
           <div class="search-bar">
             <input type="text" placeholder="Search for products..." />
             <button><i class="fas fa-search"></i></button>
           </div>
-              <!-- add wishlist -->
+
           <div class="header-actions">
             <div
               class="action-item theme-toggle-nav"
@@ -47,11 +60,15 @@
               <i class="fas fa-user"></i>
               <span>Account</span>
             </div>
-                    <div class="action-item" style="position: relative;" onclick="openWishlist()">
-                        <i class="far fa-heart"></i>
-                        <span>Wishlist</span>
-                        <div class="cart-count wishlist-count">0</div>
-                    </div>
+            <div
+              class="action-item"
+              style="position: relative"
+              onclick="openWishlist()"
+            >
+              <i class="far fa-heart"></i>
+              <span>Wishlist</span>
+              <div class="cart-count wishlist-count">0</div>
+            </div>
             <div
               class="action-item"
               style="position: relative"
@@ -66,42 +83,71 @@
       </div>
     </header>
 
-    <!-- Navigation -->
-    <nav>
+    <!-- Navigation (desktop by default; turns into drawer on mobile via CSS) -->
+    <nav id="siteNav" role="navigation">
       <div class="container">
         <ul class="nav-links">
           <li>
-            <a href="?" data-category="all" title="All Products"><i class="fas fa-home"></i> <span>Home</span></a>
+            <a href="?" data-category="all" title="All Products"
+              ><i class="fas fa-home"></i> <span>Home</span></a
+            >
           </li>
           <li>
-            <a href="?category=all" data-category="all" title="All Food"><i class="fas fa-utensils"></i> <span>Food</span></a>
+            <a href="?category=all" data-category="all" title="All Food"
+              ><i class="fas fa-utensils"></i> <span>Food</span></a
+            >
           </li>
           <li>
-            <a href="?category=vegetables" data-category="vegetables" title="Vegetables"
-              ><i class="fas fa-pepper-hot"></i> <span>Vegetables</span></a>
+            <a
+              href="?category=vegetables"
+              data-category="vegetables"
+              title="Vegetables"
+              ><i class="fas fa-pepper-hot"></i>
+              <span>Vegetables</span></a
+            >
           </li>
           <li>
-            <a href="?category=fruits" data-category="fruits" title="Fruits"><i class="fas fa-apple-alt"></i> <span>Fruits</span></a>
+            <a href="?category=fruits" data-category="fruits" title="Fruits"
+              ><i class="fas fa-apple-alt"></i> <span>Fruits</span></a
+            >
           </li>
           <li>
-            <a href="?category=dairy" data-category="dairy" title="Dairy"><i class="fas fa-cheese"></i> <span>Dairy</span></a>
+            <a href="?category=dairy" data-category="dairy" title="Dairy"
+              ><i class="fas fa-cheese"></i> <span>Dairy</span></a
+            >
           </li>
           <li>
-            <a href="?category=bakery" data-category="bakery" title="Bakery"><i class="fas fa-bread-slice"></i> <span>Bakery</span></a>
+            <a href="?category=bakery" data-category="bakery" title="Bakery"
+              ><i class="fas fa-bread-slice"></i> <span>Bakery</span></a
+            >
           </li>
           <li>
-            <a href="?category=beverages" data-category="beverages" title="Beverages"
-              ><i class="fas fa-wine-bottle"></i> <span>Beverages</span></a>
+            <a
+              href="?category=beverages"
+              data-category="beverages"
+              title="Beverages"
+              ><i class="fas fa-wine-bottle"></i>
+              <span>Beverages</span></a
+            >
           </li>
           <li>
-            <a href="?category=snacks" data-category="snacks" title="Snacks"><i class="fas fa-ice-cream"></i> <span>Snacks</span></a>
+            <a href="?category=snacks" data-category="snacks" title="Snacks"
+              ><i class="fas fa-ice-cream"></i> <span>Snacks</span></a
+            >
           </li>
           <li>
-            <a href="?category=home-care" data-category="home-care" title="Home Care"><i class="fas fa-soap"></i> <span>Home Care</span></a>
+            <a
+              href="?category=home-care"
+              data-category="home-care"
+              title="Home Care"
+              ><i class="fas fa-soap"></i> <span>Home Care</span></a
+            >
           </li>
         </ul>
       </div>
     </nav>
+
+    <!-- (Backdrop is inserted by JS for the drawer; no extra markup needed) -->
 
     <!-- Compact Pincode Status Banner -->
     <div class="pincode-banner" id="pincodeBanner">
@@ -131,10 +177,10 @@
         <div class="modal-body">
           <div class="pincode-input-group">
             <i class="fas fa-map-marker-alt pincode-icon"></i>
-            <input 
-              type="text" 
-              id="pincodeInput" 
-              placeholder="Enter your 6-digit pincode" 
+            <input
+              type="text"
+              id="pincodeInput"
+              placeholder="Enter your 6-digit pincode"
               maxlength="6"
               pattern="[0-9]{6}"
             />
@@ -163,63 +209,45 @@
       <!-- Recently Viewed Products Section -->
       <section id="recently-viewed" class="recently-viewed">
         <h2 class="section-title">Recently Viewed</h2>
-        <div class="products" id="recentlyViewedProducts">
-          <!-- Recently viewed product cards will be inserted here via JavaScript -->
-        </div>
+        <div class="products" id="recentlyViewedProducts"></div>
       </section>
 
       <!-- Categories Section -->
       <h2 class="section-title">Shop by Category</h2>
       <div class="categories">
         <div class="category-item" data-category="all" title="All Products">
-          <div class="category-icon">
-            <i class="fas fa-utensils"></i>
-          </div>
+          <div class="category-icon"><i class="fas fa-utensils"></i></div>
           <h3>Food</h3>
         </div>
         <div class="category-item" data-category="vegetables" title="Vegetables">
-          <div class="category-icon">
-            <i class="fas fa-pepper-hot"></i>
-          </div>
+          <div class="category-icon"><i class="fas fa-pepper-hot"></i></div>
           <h3>Vegetables</h3>
         </div>
         <div class="category-item" data-category="fruits" title="Fruits">
-          <div class="category-icon">
-            <i class="fas fa-apple-alt"></i>
-          </div>
+          <div class="category-icon"><i class="fas fa-apple-alt"></i></div>
           <h3>Fruits</h3>
         </div>
         <div class="category-item" data-category="beverages" title="Beverages">
-          <div class="category-icon">
-            <i class="fas fa-wine-bottle"></i>
-          </div>
+          <div class="category-icon"><i class="fas fa-wine-bottle"></i></div>
           <h3>Beverages</h3>
         </div>
         <div class="category-item" data-category="snacks" title="Snacks">
-          <div class="category-icon">
-            <i class="fas fa-ice-cream"></i>
-          </div>
+          <div class="category-icon"><i class="fas fa-ice-cream"></i></div>
           <h3>Snacks</h3>
         </div>
         <div class="category-item" data-category="home-care" title="Home Care">
-          <div class="category-icon">
-            <i class="fas fa-soap"></i>
-          </div>
+          <div class="category-icon"><i class="fas fa-soap"></i></div>
           <h3>Home Care</h3>
         </div>
       </div>
 
       <!-- Products Section -->
       <h2 class="section-title" id="products">Popular Products</h2>
-      <div class="products" id="popularProducts">
-        <!-- Products will be loaded dynamically here -->
-      </div>
+      <div class="products" id="popularProducts"></div>
 
       <!-- Deals Section -->
       <h2 class="section-title">Today's Best Deals</h2>
-      <div class="products" id="dealsProducts">
-        <!-- Deals will be loaded dynamically here -->
-      </div>
+      <div class="products" id="dealsProducts"></div>
     </div>
 
     <!-- Footer -->
@@ -294,9 +322,7 @@
           <h2>Your Cart</h2>
           <span class="close" onclick="closeCart()">&times;</span>
         </div>
-        <div class="cart-items">
-          <!-- Cart items will be dynamically added here -->
-        </div>
+        <div class="cart-items"></div>
         <div class="cart-total">
           <span>Total:</span>
           <span id="cartTotal">₹0</span>
@@ -326,32 +352,38 @@
               <p>UPI</p>
             </div>
           </div>
-          
+
           <div class="qr-code">
             <h4>Scan to Pay</h4>
-            <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=QuickBasket-Payment-Total-₹1000" alt="QR Code">
+            <img
+              src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=QuickBasket-Payment-Total-₹1000"
+              alt="QR Code"
+            />
             <p>Total Amount: <strong id="qrAmount">₹0</strong></p>
           </div>
-          
+
           <div class="coupon-section">
             <h4>Apply Coupon</h4>
             <div class="coupon-input">
-              <input type="text" placeholder="Enter coupon code" maxlength="20">
+              <input
+                type="text"
+                placeholder="Enter coupon code"
+                maxlength="20"
+              />
               <button onclick="applyCoupon()">Apply</button>
             </div>
-            
+
             <div id="couponMessage" class="coupon-message"></div>
-            
             <div id="appliedCoupon" class="applied-coupon"></div>
-            
+
             <div class="available-coupons">
               <h5>Available Coupons:</h5>
-              <div id="availableCoupons">
-                <!-- Available coupons will be displayed here -->
-              </div>
+              <div id="availableCoupons"></div>
             </div>
           </div>
-          <button class="checkout-btn" onclick="placeOrder()">Complete Payment</button>
+          <button class="checkout-btn" onclick="placeOrder()">
+            Complete Payment
+          </button>
         </div>
 
         <!-- Order Success Section -->
@@ -441,35 +473,34 @@
       </div>
     </div>
 
-    <!-- add Wishlist Modal -->
+    <!-- Wishlist Modal -->
     <div class="modal" id="wishlistModal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2>Your Wishlist</h2>
-                <span class="close" onclick="closeWishlist()">&times;</span>
-            </div>
-            <div class="wishlist-items">
-                </div>
-            <div class="wishlist-actions">
-                <button class="btn btn-secondary" onclick="closeWishlist()">Continue Shopping</button>
-                <button class="btn" onclick="moveAllToCart()">Move All to Cart</button>
-            </div>
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2>Your Wishlist</h2>
+          <span class="close" onclick="closeWishlist()">&times;</span>
         </div>
+        <div class="wishlist-items"></div>
+        <div class="wishlist-actions">
+          <button class="btn btn-secondary" onclick="closeWishlist()">
+            Continue Shopping
+          </button>
+          <button class="btn" onclick="moveAllToCart()">Move All to Cart</button>
+        </div>
+      </div>
     </div>
 
     <!-- Toast Notification -->
     <div class="toast success" id="toast">
       <i class="fas fa-check-circle"></i>
       <span class="toast-message" id="toastMessage">Item added to cart!</span>
-      <button
-        class="toast-close"
-        onclick="hideToast()"
-        aria-label="Close notification"
-      >
+      <button class="toast-close" onclick="hideToast()" aria-label="Close notification">
         <i class="fas fa-times"></i>
       </button>
       <div class="toast-progress-bar" id="toastProgressBar"></div>
     </div>
+
+    <!-- Scripts -->
     <script src="src/utils/cartStorage.js"></script>
     <script src="script.js"></script>
   </body>

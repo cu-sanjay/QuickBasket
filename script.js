@@ -1,119 +1,87 @@
-// Cart and Wishlist functionality
+/* ==========================================
+   QuickBasket – Main Client Script
+   ========================================== */
+
+// --- State ---
 let cart = [];
-let wishlist = []; // Initializing the wishlist array
+let wishlist = [];
 let cartCount = 0;
-let wishlistCount = 0;
 let appliedCoupon = null;
 
-// Predefined coupons
 const coupons = {
-  NEW50: {
-    code: "NEW50",
-    description: "Flat ₹50 off on all orders",
-    type: "flat",
-    value: 50,
-    minOrder: 0,
-  },
-  SALE25: {
-    code: "SALE25",
-    description: "25% off on your order",
-    type: "percentage",
-    value: 25,
-    minOrder: 0,
-  },
-  FESTIVEDAY: {
-    code: "FESTIVEDAY",
-    description: "₹100 off on orders above ₹299",
-    type: "flat",
-    value: 100,
-    minOrder: 299,
-  },
-  MEGA40: {
-    code: "MEGA40",
-    description: "40% off on orders above ₹500",
-    type: "percentage",
-    value: 40,
-    minOrder: 500,
-  },
+  NEW50: { code: "NEW50", description: "Flat ₹50 off on all orders", type: "flat", value: 50, minOrder: 0 },
+  SALE25: { code: "SALE25", description: "25% off on your order", type: "percentage", value: 25, minOrder: 0 },
+  FESTIVEDAY: { code: "FESTIVEDAY", description: "₹100 off on orders above ₹299", type: "flat", value: 100, minOrder: 299 },
+  MEGA40: { code: "MEGA40", description: "40% off on orders above ₹500", type: "percentage", value: 40, minOrder: 500 },
 };
 
 let productsData = null;
-let currentCategory = 'all'; // active category filter from URL or clicks
+let currentCategory = "all";
 
-// Initialize cart from localStorage on startup
+/* ==========================================
+   Cart Storage (via src/utils/cartStorage.js)
+   ========================================== */
+
 function initializeCart() {
   const savedCart = window.cartStorage ? window.cartStorage.loadCart() : null;
-
   if (savedCart && Array.isArray(savedCart) && savedCart.length > 0) {
     cart = savedCart;
-    cartCount = cart.reduce((total, item) => total + item.quantity, 0);
-    const cartCountElement = document.querySelector(".cart-item-count");
-    if (cartCountElement) {
-      cartCountElement.textContent = cartCount;
-    }
-    console.log(`Loaded ${cart.length} items from localStorage`);
+    cartCount = cart.reduce((t, i) => t + i.quantity, 0);
+    const badge = document.querySelector(".cart-item-count");
+    if (badge) badge.textContent = cartCount;
   } else {
-    cart = [];
-    cartCount = 0;
+    cart = []; cartCount = 0;
   }
 }
 
-// Initialize wishlist from localStorage on startup
+/* ==========================================
+   Wishlist persistence (localStorage)
+   ========================================== */
 function initializeWishlist() {
   try {
-    const savedWishlist = localStorage.getItem('quickbasket_wishlist');
-    if (savedWishlist) {
-      wishlist = JSON.parse(savedWishlist);
-      wishlistCount = wishlist.length;
-      const wishlistCountElement = document.querySelector(".wishlist-count");
-      if (wishlistCountElement) {
-        wishlistCountElement.textContent = wishlistCount;
-      }
-      console.log(`Loaded ${wishlist.length} items from wishlist`);
-    }
-  } catch (error) {
-    console.error('Error loading wishlist from localStorage:', error);
+    const saved = localStorage.getItem("quickbasket_wishlist");
+    wishlist = saved ? JSON.parse(saved) : [];
+    const el = document.querySelector(".wishlist-count");
+    if (el) el.textContent = wishlist.length;
+  } catch (err) {
+    console.error("Wishlist load failed:", err);
     wishlist = [];
-    wishlistCount = 0;
   }
 }
-
-// Save wishlist to localStorage
 function saveWishlist() {
-  try {
-    localStorage.setItem('quickbasket_wishlist', JSON.stringify(wishlist));
-  } catch (error) {
-    console.error('Error saving wishlist to localStorage:', error);
-  }
+  try { localStorage.setItem("quickbasket_wishlist", JSON.stringify(wishlist)); }
+  catch (err) { console.error("Wishlist save failed:", err); }
 }
 
-// Load products from JSON
+/* ==========================================
+   Products
+   ========================================== */
 async function loadProducts() {
   try {
     const response = await fetch("./products.json");
     productsData = await response.json();
-    // Combine all products for easy lookup by ID
+
+    // Build lookup of all products by ID for wishlist/cart use
     productsData.allProducts = [
       ...(productsData.popularProducts || []),
       ...(productsData.deals || []),
     ];
+
     renderProducts();
-    renderRecentlyViewed(); // Initialize recently viewed section
-    updateWishlistDisplay(); // Call to initialize the count
-  } catch (error) {
-    console.error("Error loading products:", error);
+    renderRecentlyViewed();
+    updateWishlistDisplay();
+  } catch (err) {
+    console.error("Error loading products:", err);
     showErrorToast("Failed to load products. Please refresh the page.");
   }
 }
 
-// Render products dynamically
 function renderProducts() {
   if (!productsData) return;
 
-  const category = (currentCategory || 'all').toLowerCase();
-
-  // Filter helpers
-  const byCategory = (p) => category === 'all' || (p.category || '').toLowerCase() === category;
+  const category = (currentCategory || "all").toLowerCase();
+  const byCategory = (p) =>
+    category === "all" || (p.category || "").toLowerCase() === category;
 
   const popular = (productsData.popularProducts || []).filter(byCategory);
   const deals = (productsData.deals || []).filter(byCategory);
@@ -123,118 +91,171 @@ function renderProducts() {
 
   // Update headings to reflect active category
   try {
-    const popularTitle = document.querySelector('h2.section-title#products');
-    const dealsTitle = Array.from(document.querySelectorAll('h2.section-title'))
-      .find(h => h.textContent.trim().startsWith("Today's Best Deals"));
+    const popularTitle = document.querySelector("h2.section-title#products");
+    const dealsTitle = Array.from(document.querySelectorAll("h2.section-title"))
+      .find((h) => h.textContent.trim().startsWith("Today's Best Deals"));
 
-    const prettyCat = category === 'all' ? '' : ` – ${category.replace('-', ' ').replace(/\b\w/g, c => c.toUpperCase())}`;
+    const prettyCat =
+      category === "all"
+        ? ""
+        : ` – ${category.replace("-", " ").replace(/\b\w/g, (c) => c.toUpperCase())}`;
     if (popularTitle) popularTitle.textContent = `Popular Products${prettyCat}`;
     if (dealsTitle) dealsTitle.textContent = `Today's Best Deals${prettyCat}`;
-  } catch (_) {
-    // non-fatal UI update
-  }
+  } catch (_) {}
 }
 
-// Render a specific product section
 function renderProductSection(containerId, products) {
   const container = document.getElementById(containerId);
   if (!container) return;
-
   container.innerHTML = "";
+  products.forEach((p) => container.appendChild(createProductCard(p)));
+}
 
-  products.forEach((product) => {
-    const productCard = createProductCard(product);
-    container.appendChild(productCard);
+function createProductCard(product) {
+  const card = document.createElement("div");
+  card.className = "product-card";
+
+  const isInWishlist = wishlist.some((i) => i.id === product.id);
+  const heartIcon = isInWishlist ? "fas fa-heart" : "far fa-heart";
+  const btnActive = isInWishlist ? " active" : "";
+
+  card.innerHTML = `
+    <img src="${product.image}" alt="${product.name}" class="product-image">
+    <div class="product-info">
+      <h3 class="product-title">${product.name}</h3>
+      <div class="product-price">₹${product.price} <span>(₹${product.discount} off)</span></div>
+      <p>${product.description}</p>
+      <div class="product-actions">
+        <button class="add-to-cart" onclick="addToCart('${product.name}', ${product.price}, '${product.image}', ${product.id})">
+          <i class="fas fa-plus"></i> Add to Cart
+        </button>
+        <button class="wishlist${btnActive}" onclick="toggleWishlist(${product.id}, event)">
+          <i class="${heartIcon}"></i>
+        </button>
+      </div>
+    </div>`;
+  return card;
+}
+
+/* ==========================================
+   Search
+   ========================================== */
+function initializeSearch() {
+  const input = document.querySelector(".search-bar input");
+  const button = document.querySelector(".search-bar button");
+  if (!input) return;
+
+  const perform = () => {
+    const term = input.value.toLowerCase().trim();
+    if (!productsData) return;
+    if (term === "") { renderProducts(); return; }
+
+    const cat = (currentCategory || "all").toLowerCase();
+    const inCat = (p) => cat === "all" || (p.category || "").toLowerCase() === cat;
+    const matches = (p) =>
+      p.name.toLowerCase().includes(term) ||
+      p.description.toLowerCase().includes(term) ||
+      (p.category || "").toLowerCase().includes(term);
+
+    const filteredPopular = (productsData.popularProducts || []).filter((p) => inCat(p) && matches(p));
+    const filteredDeals   = (productsData.deals || []).filter((p) => inCat(p) && matches(p));
+
+    renderProductSection("popularProducts", filteredPopular);
+    renderProductSection("dealsProducts", filteredDeals);
+
+    if (filteredPopular.length + filteredDeals.length === 0) {
+      const empty = '<p style="text-align: center; padding: 20px; color: #999;">No products found</p>';
+      const pop = document.getElementById("popularProducts");
+      const deal = document.getElementById("dealsProducts");
+      if (pop) pop.innerHTML = empty;
+      if (deal) deal.innerHTML = empty;
+    }
+  };
+
+  input.addEventListener("input", perform);
+  if (button) button.addEventListener("click", perform);
+  input.addEventListener("keypress", (e) => {
+    if (e.key === "Enter") { e.preventDefault(); perform(); }
   });
 }
 
-// Category filter initialization and URL helpers
+/* ==========================================
+   Recently viewed
+   ========================================== */
+function renderRecentlyViewed() {
+  const container = document.getElementById("recentlyViewedProducts");
+  if (!container) return;
+  const recent = JSON.parse(localStorage.getItem("recentlyViewed") || "[]");
+  if (recent.length === 0) {
+    container.innerHTML = '<p class="no-products">No recently viewed products</p>';
+    return;
+  }
+  container.innerHTML = "";
+  recent.slice(0, 4).forEach((p) => container.appendChild(createProductCard(p)));
+}
+
+/* ==========================================
+   Category filter + URL sync
+   ========================================== */
 function getCategoryFromURL() {
   try {
     const params = new URLSearchParams(window.location.search);
-    const cat = (params.get('category') || 'all').toLowerCase();
-    return cat;
-  } catch (_) {
-    return 'all';
-  }
+    return (params.get("category") || "all").toLowerCase();
+  } catch { return "all"; }
 }
-
 function setCategoryInURL(cat) {
   const params = new URLSearchParams(window.location.search);
-  if (!cat || cat === 'all') {
-    params.delete('category');
-  } else {
-    params.set('category', cat);
-  }
-  const newUrl = `${window.location.pathname}?${params.toString()}`.replace(/\?$/, '');
-  window.history.pushState({ category: cat || 'all' }, '', newUrl);
+  if (!cat || cat === "all") params.delete("category"); else params.set("category", cat);
+  const newUrl = `${window.location.pathname}?${params.toString()}`.replace(/\?$/, "");
+  window.history.pushState({ category: cat || "all" }, "", newUrl);
 }
-
 function applyCategoryFromURL() {
   currentCategory = getCategoryFromURL();
   highlightActiveCategory(currentCategory);
   highlightActiveNav(currentCategory);
   renderProducts();
 }
-
 function highlightActiveCategory(cat) {
-  document.querySelectorAll('.category-item').forEach(el => {
-    const c = (el.getAttribute('data-category') || '').toLowerCase();
-    if ((cat === 'all' && c === 'all') || c === cat) {
-      el.classList.add('active');
-    } else {
-      el.classList.remove('active');
-    }
+  document.querySelectorAll(".category-item").forEach((el) => {
+    const c = (el.getAttribute("data-category") || "").toLowerCase();
+    if ((cat === "all" && c === "all") || c === cat) el.classList.add("active"); else el.classList.remove("active");
   });
 }
-
+function highlightActiveNav(cat) {
+  document.querySelectorAll('.nav-links a[data-category]').forEach((a) => {
+    const c = (a.getAttribute("data-category") || "").toLowerCase();
+    if ((cat === "all" && c === "all") || c === cat) a.classList.add("active"); else a.classList.remove("active");
+  });
+}
 function initializeCategoryFiltering() {
-  document.querySelectorAll('.category-item').forEach(el => {
-    el.addEventListener('click', () => {
-      const cat = (el.getAttribute('data-category') || 'all').toLowerCase();
+  document.querySelectorAll(".category-item").forEach((el) => {
+    el.addEventListener("click", () => {
+      const cat = (el.getAttribute("data-category") || "all").toLowerCase();
       currentCategory = cat;
       setCategoryInURL(cat);
       highlightActiveCategory(cat);
       highlightActiveNav(cat);
-      // Optional: clear search when category changes
-      const searchInput = document.querySelector('.search-bar input');
-      if (searchInput) searchInput.value = '';
+      const sip = document.querySelector(".search-bar input");
+      if (sip) sip.value = "";
       renderProducts();
       scrollToProducts();
     });
   });
 
-  // Apply initial category from URL
   applyCategoryFromURL();
-
-  // Handle back/forward navigation
-  window.addEventListener('popstate', () => {
-    applyCategoryFromURL();
-  });
+  window.addEventListener("popstate", applyCategoryFromURL);
 }
-
-function highlightActiveNav(cat) {
-  document.querySelectorAll('.nav-links a[data-category]').forEach(a => {
-    const c = (a.getAttribute('data-category') || '').toLowerCase();
-    if ((cat === 'all' && c === 'all') || c === cat) {
-      a.classList.add('active');
-    } else {
-      a.classList.remove('active');
-    }
-  });
-}
-
 function initializeNavFiltering() {
-  document.querySelectorAll('.nav-links a[data-category]').forEach(a => {
-    a.addEventListener('click', (e) => {
+  document.querySelectorAll('.nav-links a[data-category]').forEach((a) => {
+    a.addEventListener("click", (e) => {
       e.preventDefault();
-      const cat = (a.getAttribute('data-category') || 'all').toLowerCase();
+      const cat = (a.getAttribute("data-category") || "all").toLowerCase();
       currentCategory = cat;
       setCategoryInURL(cat);
       highlightActiveCategory(cat);
       highlightActiveNav(cat);
-      const searchInput = document.querySelector('.search-bar input');
-      if (searchInput) searchInput.value = '';
+      const sip = document.querySelector(".search-bar input");
+      if (sip) sip.value = "";
       renderProducts();
       scrollToProducts();
     });
@@ -242,122 +263,581 @@ function initializeNavFiltering() {
 }
 
 function scrollToProducts() {
-  const anchor = document.getElementById('products');
-  if (anchor && typeof anchor.scrollIntoView === 'function') {
-    anchor.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  const anchor = document.getElementById("products");
+  if (anchor && typeof anchor.scrollIntoView === "function") {
+    anchor.scrollIntoView({ behavior: "smooth", block: "start" });
   }
 }
 
-// Render recently viewed products
-function renderRecentlyViewed() {
-  const container = document.getElementById("recentlyViewedProducts");
-  if (!container) return;
+/* ==========================================
+   Pincode checker
+   ========================================== */
+function initializePincodeChecker() {
+  const banner = document.getElementById("pincodeBanner");
+  const changeBtn = document.getElementById("changePincodeBtn");
+  const input = document.getElementById("pincodeInput");
+  const checkBtn = document.getElementById("checkDeliveryBtn");
 
-  const recentlyViewed = JSON.parse(
-    localStorage.getItem("recentlyViewed") || "[]",
-  );
+  if (banner) banner.addEventListener("click", openPincodeModal);
+  if (changeBtn) changeBtn.addEventListener("click", (e) => { e.stopPropagation(); openPincodeModal(); });
+  if (!input || !checkBtn) return;
 
-  if (recentlyViewed.length === 0) {
-    container.innerHTML =
-      '<p style="text-align: center; padding: 20px; color: #999;">No recently viewed products</p>';
+  checkBtn.addEventListener("click", checkDelivery);
+
+  input.addEventListener("input", (e) => {
+    let v = e.target.value.replace(/\D/g, "");
+    if (v.length > 6) v = v.slice(0, 6);
+    e.target.value = v;
+    checkBtn.disabled = v.length !== 6;
+    if (v.length < 6) hideDeliveryStatus();
+  });
+  input.addEventListener("keypress", (e) => {
+    if (e.key === "Enter" && input.value.length === 6) checkDelivery();
+  });
+  input.addEventListener("paste", (e) => {
+    e.preventDefault();
+    const paste = (e.clipboardData || window.clipboardData).getData("text");
+    const numbers = paste.replace(/\D/g, "").slice(0, 6);
+    input.value = numbers;
+    checkBtn.disabled = numbers.length !== 6;
+    input.dispatchEvent(new Event("input", { bubbles: true }));
+  });
+}
+
+function openPincodeModal() {
+  const modal = document.getElementById("pincodeModal");
+  const input = document.getElementById("pincodeInput");
+  if (modal) {
+    modal.classList.add("show");
+    document.body.style.overflow = "hidden";
+    setTimeout(() => input && input.focus(), 120);
+  }
+}
+function closePincodeModal() {
+  const modal = document.getElementById("pincodeModal");
+  const input = document.getElementById("pincodeInput");
+  if (modal) {
+    modal.classList.remove("show");
+    document.body.style.overflow = "";
+    if (input) input.value = "";
+    hideDeliveryStatus();
+  }
+}
+function validatePincode(pin) {
+  if (!pin || typeof pin !== "string") return false;
+  const clean = pin.replace(/\D/g, "");
+  if (clean.length !== 6) return false;
+  const first = parseInt(clean.charAt(0), 10);
+  return first >= 1 && first <= 8;
+}
+async function checkDelivery() {
+  const input = document.getElementById("pincodeInput");
+  const btn = document.getElementById("checkDeliveryBtn");
+  if (!input) return;
+  const pin = input.value.trim();
+
+  if (!validatePincode(pin)) {
+    showDeliveryStatus("error", "Please enter a valid 6-digit Indian pincode");
     return;
   }
 
-  container.innerHTML = "";
-  recentlyViewed.slice(0, 4).forEach((product) => {
-    const productCard = createProductCard(product);
-    container.appendChild(productCard);
-  });
+  if (btn) { btn.disabled = true; btn.innerHTML = '<span class="delivery-spinner"></span>Checking...'; }
+  showDeliveryStatus("checking", "Checking delivery availability...");
+
+  try {
+    const info = await checkPincodeDelivery(pin);
+    if (info.available) {
+      showDeliveryStatus("available", `🎉 Great! We deliver to ${info.city}, ${info.state}.\nExpected delivery: ${info.deliveryTime}`);
+      setTimeout(() => { savePincode(pin, info); closePincodeModal(); }, 1800);
+    } else {
+      showDeliveryStatus("not-available", `😔 Sorry, we don't deliver to this location.\n${info.reason || ""}`);
+    }
+  } catch (err) {
+    console.error("Pincode check error:", err);
+    showDeliveryStatus("error", "Something went wrong. Please try again.");
+  } finally {
+    if (btn) { btn.disabled = false; btn.innerHTML = '<i class="fas fa-search"></i>Check'; }
+  }
+}
+async function checkPincodeDelivery(pincode) {
+  try {
+    const res = await fetch(`https://api.postalpincode.in/pincode/${pincode}`);
+    const data = await res.json();
+    if (!data || data[0].Status !== "Success" || !data[0].PostOffice) {
+      return { city: null, state: null, available: false, reason: "Invalid or unsupported pincode" };
+    }
+    const office = data[0].PostOffice[0];
+    return { city: office.District || office.Name, state: office.State, available: true, deliveryTime: "45-60 minutes" };
+  } catch {
+    return { city: null, state: null, available: false, reason: "Service temporarily unavailable" };
+  }
+}
+function showDeliveryStatus(type, message) {
+  const box = document.getElementById("deliveryStatus");
+  if (!box) return;
+  box.className = `delivery-status ${type}`;
+  box.innerHTML = type === "checking" ? `<span class="delivery-spinner"></span>${message}` : message;
+  box.style.display = "block";
+}
+function hideDeliveryStatus() {
+  const box = document.getElementById("deliveryStatus");
+  if (box) box.style.display = "none";
+}
+function savePincode(pincode, info) {
+  try {
+    const payload = { pincode, city: info.city, state: info.state, available: info.available, deliveryTime: info.deliveryTime, savedAt: Date.now() };
+    sessionStorage.setItem("quickbasket_pincode", JSON.stringify(payload));
+    updateDeliveryBanner(payload);
+    showSuccessToast(`Delivery location set to ${info.city}, ${info.state}`);
+  } catch (err) { console.error("Save pincode error:", err); }
+}
+function loadSavedPincode() {
+  try {
+    const raw = sessionStorage.getItem("quickbasket_pincode");
+    if (!raw) return;
+    const data = JSON.parse(raw);
+    const fresh = Date.now() - data.savedAt < 24 * 60 * 60 * 1000;
+    if (fresh && data.available) updateDeliveryBanner(data);
+    else sessionStorage.removeItem("quickbasket_pincode");
+  } catch (err) { console.error("Load pincode error:", err); }
+}
+function updateDeliveryBanner(data) {
+  const text = document.getElementById("deliveryLocationText");
+  const info = document.querySelector(".delivery-info");
+  const change = document.getElementById("changePincodeBtn");
+  if (!text || !data.available) return;
+
+  text.textContent = `Delivering to ${data.city}, ${data.state} (${data.pincode})`;
+  if (info) info.classList.add("has-location");
+
+  if (change) {
+    change.addEventListener("contextmenu", (e) => {
+      e.preventDefault(); e.stopPropagation();
+      if (confirm("Clear delivery location?")) clearSavedPincode();
+    });
+  }
+}
+function clearSavedPincode() {
+  sessionStorage.removeItem("quickbasket_pincode");
+  const text = document.getElementById("deliveryLocationText");
+  const info = document.querySelector(".delivery-info");
+  if (text) text.textContent = "Click to set delivery location";
+  if (info) info.classList.remove("has-location");
+  showSuccessToast("Delivery location cleared");
 }
 
-// Create product card element
-function createProductCard(product) {
-  const productCard = document.createElement("div");
-  productCard.className = "product-card";
+/* ==========================================
+   Cart
+   ========================================== */
+function openCart() {
+  document.getElementById("cartModal").style.display = "flex";
+  document.getElementById("paymentSection").style.display = "none";
+  document.getElementById("orderSuccess").style.display = "none";
+  updateCartDisplay();
+}
+function closeCart() { document.getElementById("cartModal").style.display = "none"; }
+function addToCart(name, price, image, id = null) {
+  const found = cart.find((i) => i.name === name);
+  if (found) found.quantity += 1; else cart.push({ id, name, price, image, quantity: 1 });
 
-  // Check if the product is in the wishlist to set the correct icon
-  const isInWishlist = wishlist.some((item) => item.id === product.id);
-  const heartIconClass = isInWishlist ? "fas fa-heart active" : "far fa-heart";
+  cartCount = cart.reduce((t, i) => t + i.quantity, 0);
+  const badge = document.querySelector(".cart-item-count"); if (badge) badge.textContent = cartCount;
 
-  productCard.innerHTML = `
-        <img src="${product.image}" alt="${product.name}" class="product-image">
-        <div class="product-info">
-            <h3 class="product-title">${product.name}</h3>
-            <div class="product-price">₹${product.price} <span>(₹${product.discount} off)</span></div>
-            <p>${product.description}</p>
-            <div class="product-actions">
-                <button class="add-to-cart" onclick="addToCart('${product.name}', ${product.price}, '${product.image}', ${product.id})">
-                    <i class="fas fa-plus"></i> Add to Cart
-                </button>
-                <button class="wishlist" onclick="toggleWishlist(${product.id}, event)">
-                    <i class="${heartIconClass}"></i>
-                </button>
-            </div>
+  if (window.cartStorage?.debouncedSave) window.cartStorage.debouncedSave(cart);
+  showSuccessToast(`${name} added to cart!`);
+}
+function updateCartDisplay() {
+  const list = document.querySelector(".cart-items");
+  const cartTotalEl = document.getElementById("cartTotal");
+  const qrAmount = document.getElementById("qrAmount");
+
+  list.innerHTML = "";
+  let total = 0;
+
+  if (cart.length === 0) {
+    list.innerHTML = '<p style="text-align: center; padding: 20px;">Your cart is empty</p>';
+  } else {
+    cart.forEach((item) => {
+      const itemTotal = item.price * item.quantity; total += itemTotal;
+      const el = document.createElement("div");
+      el.className = "cart-item";
+      el.innerHTML = `
+        <div class="cart-item-info">
+          <img src="${item.image}" alt="${item.name}" class="cart-item-image">
+          <div class="cart-item-details">
+            <h4>${item.name}</h4>
+            <div class="cart-item-price">₹${item.price} x ${item.quantity}</div>
+          </div>
         </div>
-    `;
-
-  return productCard;
-}
-
-// Search functionality
-function initializeSearch() {
-  const searchInput = document.querySelector(".search-bar input");
-  const searchButton = document.querySelector(".search-bar button");
-
-  if (!searchInput) return;
-
-  function performSearch() {
-    const searchTerm = searchInput.value.toLowerCase().trim();
-
-    if (!productsData) return;
-
-    // When search term is empty, render by current category
-    if (searchTerm === "") {
-      renderProducts();
-      return;
-    }
-
-    const category = (currentCategory || 'all').toLowerCase();
-    const inCategory = (p) => category === 'all' || (p.category || '').toLowerCase() === category;
-
-    const matches = (p) =>
-      p.name.toLowerCase().includes(searchTerm) ||
-      p.description.toLowerCase().includes(searchTerm) ||
-      (p.category || '').toLowerCase().includes(searchTerm);
-
-    const filteredPopular = (productsData.popularProducts || []).filter(p => inCategory(p) && matches(p));
-    const filteredDeals = (productsData.deals || []).filter(p => inCategory(p) && matches(p));
-
-    renderProductSection("popularProducts", filteredPopular);
-    renderProductSection("dealsProducts", filteredDeals);
-
-    const totalResults = filteredPopular.length + filteredDeals.length;
-    if (totalResults === 0) {
-      const popularContainer = document.getElementById("popularProducts");
-      const dealsContainer = document.getElementById("dealsProducts");
-      if (popularContainer) {
-        popularContainer.innerHTML =
-          '<p style="text-align: center; padding: 20px; color: #999;">No products found</p>';
-      }
-      if (dealsContainer) {
-        dealsContainer.innerHTML =
-          '<p style="text-align: center; padding: 20px; color: #999;">No products found</p>';
-      }
-    }
+        <div class="cart-item-actions">
+          <button class="quantity-btn" onclick="changeQuantity('${item.name}', -1)">-</button>
+          <span>${item.quantity}</span>
+          <button class="quantity-btn" onclick="changeQuantity('${item.name}', 1)">+</button>
+        </div>`;
+      list.appendChild(el);
+    });
   }
 
-  searchInput.addEventListener("input", performSearch);
-  searchButton.addEventListener("click", performSearch);
-  searchInput.addEventListener("keypress", function (e) {
-    if (e.key === "Enter") {
-      e.preventDefault();
-      performSearch();
-    }
+  // coupon
+  let discount = 0;
+  let finalTotal = total;
+  if (appliedCoupon) {
+    discount = appliedCoupon.type === "flat"
+      ? appliedCoupon.value
+      : Math.round((total * appliedCoupon.value) / 100);
+    finalTotal = Math.max(0, total - discount);
+  }
+
+  if (appliedCoupon && discount > 0) {
+    cartTotalEl.innerHTML = `
+      <div>
+        <div style="text-decoration: line-through; color: #999; font-size: 0.9rem;">₹${total}</div>
+        <div style="color: var(--success);">₹${finalTotal} <span style="font-size: 0.8rem;">(₹${discount} off)</span></div>
+      </div>`;
+  } else {
+    cartTotalEl.textContent = `₹${finalTotal}`;
+  }
+
+  if (qrAmount) qrAmount.textContent = `₹${finalTotal}`;
+  const qrImg = document.querySelector(".qr-code img");
+  if (qrImg) qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=QuickBasket-Payment-Total-₹${finalTotal}`;
+
+  // header badge
+  cartCount = cart.reduce((t, i) => t + i.quantity, 0);
+  const badge = document.querySelector(".cart-item-count"); if (badge) badge.textContent = cartCount;
+}
+function changeQuantity(name, delta) {
+  const item = cart.find((i) => i.name === name);
+  if (!item) return;
+  item.quantity += delta;
+  if (item.quantity <= 0) cart = cart.filter((i) => i.name !== name);
+
+  cartCount = cart.reduce((t, i) => t + i.quantity, 0);
+  const badge = document.querySelector(".cart-item-count"); if (badge) badge.textContent = cartCount;
+
+  if (window.cartStorage?.debouncedSave) window.cartStorage.debouncedSave(cart);
+  updateCartDisplay();
+}
+function showPaymentSection() {
+  if (cart.length === 0) { showToast("Your cart is empty!"); return; }
+  document.getElementById("paymentSection").style.display = "block";
+  displayAvailableCoupons();
+}
+function displayAvailableCoupons() {
+  const list = document.getElementById("availableCoupons");
+  if (!list) return;
+  list.innerHTML = "";
+  Object.values(coupons).forEach((c) => {
+    const el = document.createElement("div");
+    el.className = "coupon-item";
+    el.innerHTML = `
+      <div class="coupon-info">
+        <div class="coupon-code">${c.code}</div>
+        <div class="coupon-desc">${c.description}</div>
+        ${c.minOrder > 0 ? `<div class="coupon-min">Min order: ₹${c.minOrder}</div>` : ""}
+      </div>
+      <button class="coupon-apply-btn" onclick="applyCouponFromList('${c.code}')">Apply</button>`;
+    list.appendChild(el);
   });
 }
+function applyCoupon() {
+  const input = document.querySelector(".coupon-input input");
+  const code = (input.value || "").trim().toUpperCase();
+  if (!code) { showCouponMessage("Please enter a coupon code", "error"); return; }
+  if (!coupons[code]) { showCouponMessage("Invalid coupon code", "error"); return; }
 
-// Initialize products and cart when page loads
-document.addEventListener("DOMContentLoaded", function () {
+  const c = coupons[code];
+  const total = cart.reduce((t, i) => t + i.price * i.quantity, 0);
+  if (total < c.minOrder) {
+    showCouponMessage(`Coupon not eligible for current cart value. Minimum order: ₹${c.minOrder}`, "error");
+    return;
+  }
+  appliedCoupon = c;
+  input.value = "";
+  updateCartDisplay();
+  updateCouponUI();
+  showCouponMessage(`Coupon ${code} applied successfully!`, "success");
+}
+function applyCouponFromList(code) {
+  const c = coupons[code];
+  const total = cart.reduce((t, i) => t + i.price * i.quantity, 0);
+  if (total < c.minOrder) {
+    showCouponMessage(`Coupon not eligible for current cart value. Minimum order: ₹${c.minOrder}`, "error");
+    return;
+  }
+  appliedCoupon = c;
+  updateCartDisplay();
+  updateCouponUI();
+  showCouponMessage(`Coupon ${code} applied successfully!`, "success");
+}
+function removeCoupon() {
+  appliedCoupon = null;
+  updateCartDisplay();
+  updateCouponUI();
+  showCouponMessage("Coupon removed", "success");
+}
+function updateCouponUI() {
+  const box = document.getElementById("appliedCoupon");
+  if (!box) return;
+  if (appliedCoupon) {
+    box.style.display = "block";
+    box.innerHTML = `
+      <div class="applied-coupon-info">
+        <span class="applied-coupon-code">${appliedCoupon.code}</span>
+        <span class="applied-coupon-desc">${appliedCoupon.description}</span>
+      </div>
+      <button class="remove-coupon-btn" onclick="removeCoupon()">Remove</button>`;
+  } else {
+    box.style.display = "none";
+  }
+}
+function showCouponMessage(msg, type) {
+  const el = document.getElementById("couponMessage");
+  if (!el) return;
+  el.textContent = msg;
+  el.className = `coupon-message ${type}`;
+  el.style.display = "block";
+  setTimeout(() => { el.style.display = "none"; }, 3000);
+}
+
+function selectPayment(el) {
+  document.querySelectorAll(".payment-option").forEach((o) => o.classList.remove("selected"));
+  el.classList.add("selected");
+}
+function placeOrder() {
+  const selected = document.querySelector(".payment-option.selected");
+  if (!selected) { showToast("Please select a payment method"); return; }
+
+  document.getElementById("paymentSection").style.display = "none";
+  document.getElementById("orderSuccess").style.display = "block";
+
+  setTimeout(() => {
+    cart = []; cartCount = 0; appliedCoupon = null;
+    const badge = document.querySelector(".cart-item-count"); if (badge) badge.textContent = cartCount;
+    if (window.cartStorage?.clearCart) window.cartStorage.clearCart();
+  }, 5000);
+}
+
+/* ==========================================
+   Wishlist
+   ========================================== */
+function openWishlist() {
+  document.getElementById("wishlistModal").style.display = "flex";
+  updateWishlistDisplay();
+}
+function closeWishlist() { document.getElementById("wishlistModal").style.display = "none"; }
+function toggleWishlist(productId, event) {
+  if (event) event.stopPropagation();
+  const idx = wishlist.findIndex((i) => i.id === productId);
+  const btn = event?.currentTarget;
+  const icon = btn?.querySelector("i");
+
+  if (idx > -1) {
+    wishlist.splice(idx, 1);
+    if (icon) { icon.classList.remove("fas"); icon.classList.add("far"); }
+    if (btn) btn.classList.remove("active");
+    showToast("Removed from wishlist");
+  } else {
+    const product = productsData.allProducts.find((p) => p.id === productId);
+    if (product) {
+      wishlist.push(product);
+      if (icon) { icon.classList.remove("far"); icon.classList.add("fas"); }
+      if (btn) btn.classList.add("active");
+      showToast("Added to wishlist");
+    }
+  }
+  saveWishlist();
+  updateWishlistDisplay();
+}
+function removeWishlistItem(id) {
+  wishlist = wishlist.filter((i) => i.id !== id);
+  saveWishlist();
+  updateWishlistDisplay();
+  showToast("Item removed from wishlist");
+}
+function moveAllToCart() {
+  if (wishlist.length === 0) { showToast("Wishlist is empty!"); return; }
+  wishlist.forEach((i) => addToCart(i.name, i.price, i.image, i.id));
+  wishlist = [];
+  saveWishlist();
+  updateWishlistDisplay();
+  closeWishlist();
+  openCart();
+  showToast("All items moved to cart!");
+}
+function updateWishlistDisplay() {
+  const count = document.querySelector(".wishlist-count");
+  const list = document.querySelector(".wishlist-items");
+  if (count) count.textContent = wishlist.length;
+  if (!list) return;
+
+  list.innerHTML = "";
+  if (wishlist.length === 0) {
+    list.innerHTML = '<p style="text-align: center; padding: 20px;">Your wishlist is empty</p>';
+  } else {
+    wishlist.forEach((item) => {
+      const detail = productsData?.allProducts.find((p) => p.id === item.id);
+      const desc = detail ? detail.description : "Product details unavailable.";
+      const el = document.createElement("div");
+      el.className = "wishlist-item";
+      el.innerHTML = `
+        <div class="wishlist-item-info">
+          <img src="${item.image}" alt="${item.name}" class="wishlist-item-image">
+          <div class="wishlist-item-details">
+            <h4>${item.name}</h4>
+            <p class="wishlist-item-desc">${desc}</p>
+            <div class="wishlist-item-price">₹${item.price}</div>
+          </div>
+        </div>
+        <div class="wishlist-item-actions">
+          <button class="btn-small" onclick="addToCart('${item.name}', ${item.price}, '${item.image}', ${item.id}); removeWishlistItem(${item.id})">
+            <i class="fas fa-shopping-cart"></i> Move to Cart
+          </button>
+          <button class="btn-remove" onclick="removeWishlistItem(${item.id})"><i class="fas fa-times"></i></button>
+        </div>`;
+      list.appendChild(el);
+    });
+  }
+
+  // re-render to reflect heart states
+  renderProducts();
+}
+
+/* ==========================================
+   Toasts
+   ========================================== */
+let toastTimeout;
+function showToast(message, type = "success", duration = 4000) {
+  const toast = document.getElementById("toast");
+  const msg = document.getElementById("toastMessage");
+  const icon = toast.querySelector("i");
+  const bar = document.getElementById("toastProgressBar");
+
+  clearTimeout(toastTimeout);
+  toast.classList.remove("show", "hide", "success", "error", "warning", "info");
+  bar.style.transform = "scaleX(1)";
+  bar.style.transition = "none";
+
+  msg.textContent = message;
+  toast.classList.add(type);
+  icon.className =
+    type === "error" ? "fas fa-exclamation-circle" :
+    type === "warning" ? "fas fa-exclamation-triangle" :
+    type === "info" ? "fas fa-info-circle" : "fas fa-check-circle";
+
+  setTimeout(() => {
+    toast.classList.add("show");
+    setTimeout(() => {
+      bar.style.transition = `transform ${duration}ms linear`;
+      bar.style.transform = "scaleX(0)";
+    }, 80);
+  }, 10);
+
+  toastTimeout = setTimeout(hideToast, duration);
+}
+function hideToast() {
+  const toast = document.getElementById("toast");
+  const bar = document.getElementById("toastProgressBar");
+  clearTimeout(toastTimeout);
+  bar.style.transition = "none"; bar.style.transform = "scaleX(0)";
+  toast.classList.add("hide"); toast.classList.remove("show");
+  setTimeout(() => { toast.classList.remove("hide"); bar.style.transform = "scaleX(1)"; }, 400);
+}
+const showSuccessToast = (m, d=4000)=>showToast(m,"success",d);
+const showErrorToast   = (m, d=5000)=>showToast(m,"error",d);
+const showWarningToast = (m, d=4500)=>showToast(m,"warning",d);
+const showInfoToast    = (m, d=4000)=>showToast(m,"info",d);
+
+/* ==========================================
+   User modal & theme
+   ========================================== */
+function openUserModal() { document.getElementById("userModal").style.display = "flex"; }
+function switchTab(tabName) {
+  document.querySelectorAll(".user-form").forEach((f) => f.classList.remove("active"));
+  document.querySelectorAll(".user-tab").forEach((t) => t.classList.remove("active"));
+  if (tabName === "login") {
+    document.getElementById("loginForm").classList.add("active");
+    document.querySelectorAll(".user-tab")[0].classList.add("active");
+  } else {
+    document.getElementById("signupForm").classList.add("active");
+    document.querySelectorAll(".user-tab")[1].classList.add("active");
+  }
+}
+
+function toggleTheme() {
+  const cur = document.documentElement.getAttribute("data-theme");
+  setTheme(cur === "dark" ? "light" : "dark");
+}
+function setTheme(theme) {
+  document.documentElement.setAttribute("data-theme", theme);
+  localStorage.setItem("theme", theme);
+  const btn = document.querySelector(".theme-toggle-nav");
+  if (btn) { btn.style.transform = "scale(0.9)"; setTimeout(() => (btn.style.transform = "scale(1)"), 150); }
+}
+function initializeTheme() {
+  const saved = localStorage.getItem("theme");
+  const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+  setTheme(saved || (prefersDark ? "dark" : "light"));
+}
+window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", (e) => {
+  if (!localStorage.getItem("theme")) setTheme(e.matches ? "dark" : "light");
+});
+
+/* ==========================================
+   Mobile nav (hamburger for #siteNav)
+   ========================================== */
+(function initHamburger(){
+  const btn = document.querySelector(".nav-toggle") || document.querySelector(".menu-toggle");
+  const nav = document.getElementById("siteNav");
+  if (!btn || !nav) return;
+
+  let backdrop = null;
+  const setOpen = (state) => {
+    document.body.classList.toggle("menu-open", state);
+    btn.setAttribute("aria-expanded", String(state));
+    if (state && !backdrop) {
+      backdrop = document.createElement("div");
+      backdrop.className = "nav-backdrop";
+      backdrop.addEventListener("click", () => setOpen(false));
+      document.body.appendChild(backdrop);
+    }
+    if (!state && backdrop) { backdrop.remove(); backdrop = null; }
+  };
+
+  btn.addEventListener("click", () => setOpen(!document.body.classList.contains("menu-open")));
+  document.addEventListener("keydown", (e) => { if (e.key === "Escape" && document.body.classList.contains("menu-open")) setOpen(false); });
+  window.addEventListener("resize", () => { if (innerWidth > 768 && document.body.classList.contains("menu-open")) setOpen(false); });
+
+  nav.querySelectorAll('a[data-category]').forEach((a)=>{
+    a.addEventListener('click', (e)=>{
+      e.preventDefault();
+      const cat = (a.getAttribute('data-category') || 'all').toLowerCase();
+      currentCategory = cat;
+      setCategoryInURL(cat);
+      highlightActiveCategory(cat);
+      highlightActiveNav(cat);
+      const sip = document.querySelector('.search-bar input');
+      if (sip) sip.value = '';
+      renderProducts();
+      setOpen(false);
+      scrollToProducts();
+    });
+  });
+})();
+
+/* ==========================================
+   Global listeners & init
+   ========================================== */
+window.onclick = function (event) {
+  const cartModal = document.getElementById("cartModal");
+  const userModal = document.getElementById("userModal");
+  const wishlistModal = document.getElementById("wishlistModal");
+  if (event.target === cartModal) closeCart();
+  if (event.target === userModal) userModal.style.display = "none";
+  if (event.target === wishlistModal) closeWishlist();
+};
+
+document.addEventListener("DOMContentLoaded", () => {
   loadProducts();
   initializeCart();
   initializeWishlist();
@@ -366,1046 +846,16 @@ document.addEventListener("DOMContentLoaded", function () {
   loadSavedPincode();
   initializeCategoryFiltering();
   initializeNavFiltering();
-});
 
-// --- Pincode Delivery Functions ---
-
-/**
- * Initialize pincode checker functionality
- */
-function initializePincodeChecker() {
-  const banner = document.getElementById('pincodeBanner');
-  const changePincodeBtn = document.getElementById('changePincodeBtn');
-  const pincodeInput = document.getElementById('pincodeInput');
-  const checkBtn = document.getElementById('checkDeliveryBtn');
-
-  // Banner click to open modal
-  if (banner) {
-    banner.addEventListener('click', openPincodeModal);
-  }
-
-  // Change pincode button
-  if (changePincodeBtn) {
-    changePincodeBtn.addEventListener('click', function(e) {
-      e.stopPropagation();
-      openPincodeModal();
-    });
-  }
-
-  if (!pincodeInput || !checkBtn) return;
-
-  // Add click event listener to check button
-  checkBtn.addEventListener('click', checkDelivery);
-
-  // Add input validation and formatting
-  pincodeInput.addEventListener('input', function(e) {
-    // Allow only numbers
-    let value = e.target.value.replace(/\D/g, '');
-    
-    // Limit to 6 digits
-    if (value.length > 6) {
-      value = value.substring(0, 6);
-    }
-    
-    e.target.value = value;
-    
-    // Enable/disable check button
-    checkBtn.disabled = value.length !== 6;
-    
-    // Clear previous status when input changes
-    if (value.length < 6) {
-      hideDeliveryStatus();
-    }
+  // forms
+  const login = document.getElementById("loginForm");
+  login?.addEventListener("submit", (e) => {
+    e.preventDefault(); showSuccessToast("Login successful!"); document.getElementById("userModal").style.display = "none";
+  });
+  const signup = document.getElementById("signupForm");
+  signup?.addEventListener("submit", (e) => {
+    e.preventDefault(); showSuccessToast("Account created successfully!"); document.getElementById("userModal").style.display = "none";
   });
 
-  // Add enter key support
-  pincodeInput.addEventListener('keypress', function(e) {
-    if (e.key === 'Enter' && pincodeInput.value.length === 6) {
-      checkDelivery();
-    }
-  });
-
-  // Add paste event handling
-  pincodeInput.addEventListener('paste', function(e) {
-    e.preventDefault();
-    const paste = (e.clipboardData || window.clipboardData).getData('text');
-    const numbers = paste.replace(/\D/g, '').substring(0, 6);
-    pincodeInput.value = numbers;
-    checkBtn.disabled = numbers.length !== 6;
-    
-    // Trigger input event to update button state
-    const inputEvent = new Event('input', { bubbles: true });
-    pincodeInput.dispatchEvent(inputEvent);
-  });
-}
-
-/**
- * Open pincode modal
- */
-function openPincodeModal() {
-  const modal = document.getElementById('pincodeModal');
-  const pincodeInput = document.getElementById('pincodeInput');
-  
-  if (modal) {
-    modal.classList.add('show');
-    document.body.style.overflow = 'hidden';
-    
-    // Focus on input after animation
-    setTimeout(() => {
-      if (pincodeInput) {
-        pincodeInput.focus();
-      }
-    }, 100);
-  }
-}
-
-/**
- * Close pincode modal
- */
-function closePincodeModal() {
-  const modal = document.getElementById('pincodeModal');
-  const pincodeInput = document.getElementById('pincodeInput');
-  
-  if (modal) {
-    modal.classList.remove('show');
-    document.body.style.overflow = '';
-    
-    // Clear input and status
-    if (pincodeInput) {
-      pincodeInput.value = '';
-    }
-    hideDeliveryStatus();
-  }
-}
-
-/**
- * Validate Indian pincode format
- * @param {string} pincode - 6 digit pincode
- * @returns {boolean} - true if valid format
- */
-function validatePincode(pincode) {
-  if (!pincode || typeof pincode !== 'string') {
-    return false;
-  }
-
-  // Remove any spaces or special characters
-  const cleanPincode = pincode.replace(/\D/g, '');
-  
-  // Check if it's exactly 6 digits
-  if (cleanPincode.length !== 6) {
-    return false;
-  }
-  
-  // Indian pincodes start from 1 and go up to 8 (first digit)
-  const firstDigit = parseInt(cleanPincode.charAt(0));
-  if (firstDigit < 1 || firstDigit > 8) {
-    return false;
-  }
-  
-  return true;
-}
-
-/**
- * Check delivery availability for given pincode
- */
-async function checkDelivery() {
-  const pincodeInput = document.getElementById('pincodeInput');
-  const checkBtn = document.getElementById('checkDeliveryBtn');
-
-  if (!pincodeInput) {
-    console.error('Pincode input element not found');
-    return;
-  }
-
-  const pincode = pincodeInput.value.trim();
-
-  if (!validatePincode(pincode)) {
-    showDeliveryStatus('error', 'Please enter a valid 6-digit Indian pincode');
-    return;
-  }
-
-  if (checkBtn) {
-    checkBtn.disabled = true;
-    checkBtn.innerHTML = '<span class="delivery-spinner"></span>Checking...';
-  }
-  showDeliveryStatus('checking', 'Checking delivery availability...');
-
-  try {
-    const deliveryInfo = await checkPincodeDelivery(pincode);
-
-    if (deliveryInfo.available) {
-      showDeliveryStatus(
-        'available', 
-        `🎉 Great! We deliver to ${deliveryInfo.city}, ${deliveryInfo.state}.\nExpected delivery: ${deliveryInfo.deliveryTime}`
-      );
-      setTimeout(() => {
-        savePincode(pincode, deliveryInfo);
-        closePincodeModal();
-      }, 2000);
-    } else {
-      showDeliveryStatus(
-        'not-available', 
-        `😔 Sorry, we don't deliver to this location.\n${deliveryInfo.reason || ''}`
-      );
-    }
-  } catch (error) {
-    console.error('Error checking delivery:', error);
-    showDeliveryStatus('error', 'Something went wrong. Please try again.');
-  } finally {
-    if (checkBtn) {
-      checkBtn.disabled = false;
-      checkBtn.innerHTML = '<i class="fas fa-search"></i>Check';
-    }
-  }
-}
-
-/**
- * Check if delivery is available for a specific pincode using Postal Pincode API
- * @param {string} pincode - 6 digit pincode
- * @returns {Promise<object>} - delivery information
- */
-async function checkPincodeDelivery(pincode) {
-  try {
-    const res = await fetch(`https://api.postalpincode.in/pincode/${pincode}`);
-    const data = await res.json();
-
-    if (!data || data[0].Status !== "Success" || !data[0].PostOffice) {
-      return {
-        city: null,
-        state: null,
-        available: false,
-        reason: "Invalid or unsupported pincode"
-      };
-    }
-
-    // Take the top result (first PostOffice)
-    const office = data[0].PostOffice[0];
-
-    return {
-      city: office.District || office.Name,
-      state: office.State,
-      available: true, // all pincodes are serviceable
-      deliveryTime: "45-60 minutes"
-    };
-
-  } catch (err) {
-    console.error("Error fetching pincode:", err);
-    return {
-      city: null,
-      state: null,
-      available: false,
-      reason: "Service temporarily unavailable"
-    };
-  }
-}
-
-/**
- * Show delivery status message
- * @param {string} type - Status type (available, not-available, checking, error)
- * @param {string} message - Status message
- */
-function showDeliveryStatus(type, message) {
-  const statusDiv = document.getElementById('deliveryStatus');
-  if (!statusDiv) return;
-  
-  statusDiv.className = `delivery-status ${type}`;
-  
-  if (type === 'checking') {
-    statusDiv.innerHTML = `<span class="delivery-spinner"></span>${message}`;
-  } else {
-    statusDiv.textContent = message;
-  }
-  
-  statusDiv.style.display = 'block';
-}
-
-/**
- * Hide delivery status
- */
-function hideDeliveryStatus() {
-  const statusDiv = document.getElementById('deliveryStatus');
-  if (statusDiv) {
-    statusDiv.style.display = 'none';
-  }
-}
-
-/**
- * Save selected pincode to sessionStorage
- * @param {string} pincode - Selected pincode
- * @param {object} deliveryInfo - Delivery information
- */
-function savePincode(pincode, deliveryInfo) {
-  try {
-    const pincodeData = {
-      pincode: pincode,
-      city: deliveryInfo.city,
-      state: deliveryInfo.state,
-      available: deliveryInfo.available,
-      deliveryTime: deliveryInfo.deliveryTime,
-      savedAt: Date.now()
-    };
-    
-    sessionStorage.setItem('quickbasket_pincode', JSON.stringify(pincodeData));
-    updateDeliveryBanner(pincodeData);
-    
-    // Show success toast
-    showSuccessToast(`Delivery location set to ${deliveryInfo.city}, ${deliveryInfo.state}`);
-  } catch (error) {
-    console.error('Error saving pincode:', error);
-  }
-}
-
-/**
- * Load saved pincode from sessionStorage
- */
-function loadSavedPincode() {
-  try {
-    const savedData = sessionStorage.getItem('quickbasket_pincode');
-    if (savedData) {
-      const pincodeData = JSON.parse(savedData);
-      
-      // Check if data is not too old (24 hours)
-      const isRecent = Date.now() - pincodeData.savedAt < 24 * 60 * 60 * 1000;
-      
-      if (isRecent && pincodeData.available) {
-        updateDeliveryBanner(pincodeData);
-      } else {
-        // Clear old data
-        sessionStorage.removeItem('quickbasket_pincode');
-      }
-    }
-  } catch (error) {
-    console.error('Error loading saved pincode:', error);
-  }
-}
-
-/**
- * Update delivery banner with saved location
- * @param {object} pincodeData - Saved pincode data
- */
-function updateDeliveryBanner(pincodeData) {
-  const deliveryText = document.getElementById('deliveryLocationText');
-  const deliveryInfo = document.querySelector('.delivery-info');
-  const changePincodeBtn = document.getElementById('changePincodeBtn');
-  
-  if (!deliveryText || !pincodeData.available) return;
-  
-  deliveryText.textContent = `Delivering to ${pincodeData.city}, ${pincodeData.state} (${pincodeData.pincode})`;
-  
-  if (deliveryInfo) {
-    deliveryInfo.classList.add('has-location');
-  }
-  
-  // Update button to show clear option on right-click or long press
-  if (changePincodeBtn) {
-    changePincodeBtn.addEventListener('contextmenu', function(e) {
-      e.preventDefault();
-      e.stopPropagation();
-      if (confirm('Clear delivery location?')) {
-        clearSavedPincode();
-      }
-    });
-  }
-}
-
-/**
- * Clear saved pincode and reset banner
- */
-function clearSavedPincode() {
-  try {
-    sessionStorage.removeItem('quickbasket_pincode');
-    
-    // Reset banner text
-    const deliveryText = document.getElementById('deliveryLocationText');
-    const deliveryInfo = document.querySelector('.delivery-info');
-    
-    if (deliveryText) {
-      deliveryText.textContent = 'Click to set delivery location';
-    }
-    
-    if (deliveryInfo) {
-      deliveryInfo.classList.remove('has-location');
-    }
-    
-    showSuccessToast('Delivery location cleared');
-  } catch (error) {
-    console.error('Error clearing pincode:', error);
-  }
-}
-
-// --- Cart Functions ---
-
-function openCart() {
-  document.getElementById("cartModal").style.display = "flex";
-  document.getElementById("paymentSection").style.display = "none";
-  document.getElementById("orderSuccess").style.display = "none";
-  updateCartDisplay();
-}
-
-function closeCart() {
-  document.getElementById("cartModal").style.display = "none";
-  document.getElementById("userModal").style.display = "none";
-}
-
-function addToCart(name, price, image, id = null) {
-  // Check if product already in cart
-  const existingProduct = cart.find((item) => item.name === name);
-
-  if (existingProduct) {
-    existingProduct.quantity += 1;
-  } else {
-    cart.push({
-      id: id,
-      name: name,
-      price: price,
-      image: image,
-      quantity: 1,
-    });
-  }
-
-  // Update cart count
-  const newCartCount = cart.reduce((total, item) => total + item.quantity, 0);
-  cartCount = newCartCount;
-  const cartCountElement = document.querySelector(".cart-item-count");
-  if (cartCountElement) {
-    cartCountElement.textContent = cartCount;
-  }
-
-  // Save to localStorage with debouncing
-  if (window.cartStorage && window.cartStorage.debouncedSave) {
-    window.cartStorage.debouncedSave(cart);
-  }
-
-  // Show toast notification
-  showSuccessToast(`${name} added to cart!`);
-}
-
-function updateCartDisplay() {
-  const cartItems = document.querySelector(".cart-items");
-  const cartTotal = document.getElementById("cartTotal");
-  const qrAmount = document.getElementById("qrAmount");
-
-  cartItems.innerHTML = "";
-  let total = 0;
-
-  if (cart.length === 0) {
-    cartItems.innerHTML =
-      '<p style="text-align: center; padding: 20px;">Your cart is empty</p>';
-  } else {
-    cart.forEach((item) => {
-      const itemTotal = item.price * item.quantity;
-      total += itemTotal;
-
-      const cartItem = document.createElement("div");
-      cartItem.className = "cart-item";
-      cartItem.innerHTML = `
-                <div class="cart-item-info">
-                    <img src="${item.image}" alt="${item.name}" class="cart-item-image">
-                    <div class="cart-item-details">
-                        <h4>${item.name}</h4>
-                        <div class="cart-item-price">₹${item.price} x ${item.quantity}</div>
-                    </div>
-                </div>
-                <div class="cart-item-actions">
-                    <button class="quantity-btn" onclick="changeQuantity('${item.name}', -1)">-</button>
-                    <span>${item.quantity}</span>
-                    <button class="quantity-btn" onclick="changeQuantity('${item.name}', 1)">+</button>
-                </div>
-            `;
-
-      cartItems.appendChild(cartItem);
-    });
-  }
-
-  // Calculate discount and final total
-  let discount = 0;
-  let finalTotal = total;
-
-  if (appliedCoupon) {
-    if (appliedCoupon.type === "flat") {
-      discount = appliedCoupon.value;
-    } else if (appliedCoupon.type === "percentage") {
-      discount = Math.round((total * appliedCoupon.value) / 100);
-    }
-    finalTotal = Math.max(0, total - discount);
-  }
-
-  // Update total display
-  if (appliedCoupon && discount > 0) {
-    cartTotal.innerHTML = `
-            <div>
-                <div style="text-decoration: line-through; color: #999; font-size: 0.9rem;">₹${total}</div>
-                <div style="color: var(--success);">₹${finalTotal} <span style="font-size: 0.8rem;">(₹${discount} off)</span></div>
-            </div>
-        `;
-  } else {
-    cartTotal.textContent = `₹${finalTotal}`;
-  }
-
-  qrAmount.textContent = `₹${finalTotal}`;
-
-  document.querySelector(".qr-code img").src =
-    `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=QuickBasket-Payment-Total-₹${finalTotal}`;
-
-  // Update cart count on header
-  const newCartCount = cart.reduce((total, item) => total + item.quantity, 0);
-  cartCount = newCartCount;
-  const cartCountElement = document.querySelector(".cart-item-count");
-  if (cartCountElement) {
-    cartCountElement.textContent = cartCount;
-  }
-}
-
-function changeQuantity(name, change) {
-  const product = cart.find((item) => item.name === name);
-
-  if (product) {
-    product.quantity += change;
-
-    if (product.quantity <= 0) {
-      // Remove product from cart
-      cart = cart.filter((item) => item.name !== name);
-    }
-
-    // Update cart count
-    cartCount = cart.reduce((total, item) => total + item.quantity, 0);
-    const cartCountElement = document.querySelector(".cart-item-count");
-    if (cartCountElement) {
-      cartCountElement.textContent = cartCount;
-    }
-
-    // Save to localStorage with debouncing
-    if (window.cartStorage && window.cartStorage.debouncedSave) {
-      window.cartStorage.debouncedSave(cart);
-    }
-
-    // Update display
-    updateCartDisplay();
-  }
-}
-
-function showPaymentSection() {
-  if (cart.length === 0) {
-    showToast("Your cart is empty!");
-    return;
-  }
-
-  document.getElementById("paymentSection").style.display = "block";
-  displayAvailableCoupons();
-}
-
-function displayAvailableCoupons() {
-  const couponsList = document.getElementById("availableCoupons");
-  couponsList.innerHTML = "";
-
-  Object.values(coupons).forEach((coupon) => {
-    const couponItem = document.createElement("div");
-    couponItem.className = "coupon-item";
-    couponItem.innerHTML = `
-            <div class="coupon-info">
-                <div class="coupon-code">${coupon.code}</div>
-                <div class="coupon-desc">${coupon.description}</div>
-                ${coupon.minOrder > 0 ? `<div class="coupon-min">Min order: ₹${coupon.minOrder}</div>` : ""}
-            </div>
-            <button class="coupon-apply-btn" onclick="applyCouponFromList('${coupon.code}')">Apply</button>
-        `;
-    couponsList.appendChild(couponItem);
-  });
-}
-
-function applyCoupon() {
-  const couponInput = document.querySelector(".coupon-input input");
-  const couponCode = couponInput.value.trim().toUpperCase();
-
-  if (!couponCode) {
-    showCouponMessage("Please enter a coupon code", "error");
-    return;
-  }
-
-  if (!coupons[couponCode]) {
-    showCouponMessage("Invalid coupon code", "error");
-    return;
-  }
-
-  const coupon = coupons[couponCode];
-  const cartTotal = cart.reduce(
-    (total, item) => total + item.price * item.quantity,
-    0,
-  );
-
-  if (cartTotal < coupon.minOrder) {
-    showCouponMessage(
-      `Coupon not eligible for current cart value. Minimum order: ₹${coupon.minOrder}`,
-      "error",
-    );
-    return;
-  }
-
-  appliedCoupon = coupon;
-  couponInput.value = "";
-  updateCartDisplay();
-  updateCouponUI();
-  showCouponMessage(`Coupon ${couponCode} applied successfully!`, "success");
-}
-
-function applyCouponFromList(couponCode) {
-  const coupon = coupons[couponCode];
-  const cartTotal = cart.reduce(
-    (total, item) => total + item.price * item.quantity,
-    0,
-  );
-
-  if (cartTotal < coupon.minOrder) {
-    showCouponMessage(
-      `Coupon not eligible for current cart value. Minimum order: ₹${coupon.minOrder}`,
-      "error",
-    );
-    return;
-  }
-
-  appliedCoupon = coupon;
-  updateCartDisplay();
-  updateCouponUI();
-  showCouponMessage(`Coupon ${couponCode} applied successfully!`, "success");
-}
-
-function removeCoupon() {
-  appliedCoupon = null;
-  updateCartDisplay();
-  updateCouponUI();
-  showCouponMessage("Coupon removed", "success");
-}
-
-function updateCouponUI() {
-  const appliedCouponDiv = document.getElementById("appliedCoupon");
-
-  if (appliedCoupon) {
-    appliedCouponDiv.style.display = "block";
-    appliedCouponDiv.innerHTML = `
-            <div class="applied-coupon-info">
-                <span class="applied-coupon-code">${appliedCoupon.code}</span>
-                <span class="applied-coupon-desc">${appliedCoupon.description}</span>
-            </div>
-            <button class="remove-coupon-btn" onclick="removeCoupon()">Remove</button>
-        `;
-  } else {
-    appliedCouponDiv.style.display = "none";
-  }
-}
-
-function showCouponMessage(message, type) {
-  const messageDiv = document.getElementById("couponMessage");
-  if (!messageDiv) return; // Prevent errors if element doesn't exist
-  messageDiv.textContent = message;
-  messageDiv.className = `coupon-message ${type}`;
-  messageDiv.style.display = "block";
-
-  setTimeout(() => {
-    messageDiv.style.display = "none";
-  }, 3000);
-}
-
-let toastTimeout;
-let toastProgressInterval;
-
-function showToast(message, type = "success", duration = 4000) {
-  const toast = document.getElementById("toast");
-  const toastMessage = document.getElementById("toastMessage");
-  const toastIcon = toast.querySelector("i");
-  const progressBar = document.getElementById("toastProgressBar");
-
-  // Clear any existing timeout and progress interval
-  if (toastTimeout) {
-    clearTimeout(toastTimeout);
-  }
-  if (toastProgressInterval) {
-    clearInterval(toastProgressInterval);
-  }
-
-  // Remove existing classes and hide states
-  toast.classList.remove("show", "hide", "success", "error", "warning", "info");
-
-  // Reset progress bar
-  progressBar.style.transform = "scaleX(1)";
-  progressBar.style.transition = "none";
-
-  // Set message content
-  toastMessage.textContent = message;
-
-  // Set toast type and icon
-  toast.classList.add(type);
-
-  // Update icon based on type
-  switch (type) {
-    case "success":
-      toastIcon.className = "fas fa-check-circle";
-      break;
-    case "error":
-      toastIcon.className = "fas fa-exclamation-circle";
-      break;
-    case "warning":
-      toastIcon.className = "fas fa-exclamation-triangle";
-      break;
-    case "info":
-      toastIcon.className = "fas fa-info-circle";
-      break;
-    default:
-      toastIcon.className = "fas fa-check-circle";
-  }
-
-  // Show toast with animation
-  setTimeout(() => {
-    toast.classList.add("show");
-
-    // Start progress bar animation
-    setTimeout(() => {
-      progressBar.style.transition = `transform ${duration}ms linear`;
-      progressBar.style.transform = "scaleX(0)";
-    }, 100);
-  }, 10);
-
-  // Auto-hide toast after specified duration
-  toastTimeout = setTimeout(() => {
-    hideToast();
-  }, duration);
-}
-
-function hideToast() {
-  const toast = document.getElementById("toast");
-  const progressBar = document.getElementById("toastProgressBar");
-
-  // Clear timeout and progress interval if manually closing
-  if (toastTimeout) {
-    clearTimeout(toastTimeout);
-  }
-  if (toastProgressInterval) {
-    clearInterval(toastProgressInterval);
-  }
-
-  // Stop progress bar animation
-  progressBar.style.transition = "none";
-  progressBar.style.transform = "scaleX(0)";
-
-  // Add hide animation
-  toast.classList.add("hide");
-  toast.classList.remove("show");
-
-  // Remove hide class after animation completes
-  setTimeout(() => {
-    toast.classList.remove("hide");
-    // Reset progress bar for next toast
-    progressBar.style.transform = "scaleX(1)";
-  }, 400);
-}
-
-// Enhanced toast notifications for different scenarios
-function showSuccessToast(message, duration = 4000) {
-  showToast(message, "success", duration);
-}
-
-function showErrorToast(message, duration = 5000) {
-  showToast(message, "error", duration);
-}
-
-function showWarningToast(message, duration = 4500) {
-  showToast(message, "warning", duration);
-}
-
-function showInfoToast(message, duration = 4000) {
-  showToast(message, "info", duration);
-}
-
-function openUserModal() {
-  document.getElementById("userModal").style.display = "flex";
-}
-
-function switchTab(tabName) {
-  // Hide all forms
-  document.querySelectorAll(".user-form").forEach((form) => {
-    form.classList.remove("active");
-  });
-
-  // Remove active class from all tabs
-  document.querySelectorAll(".user-tab").forEach((tab) => {
-    tab.classList.remove("active");
-  });
-
-  // Show selected form and activate tab
-  if (tabName === "login") {
-    document.getElementById("loginForm").classList.add("active");
-    document.querySelectorAll(".user-tab")[0].classList.add("active");
-  } else {
-    document.getElementById("signupForm").classList.add("active");
-    document.querySelectorAll(".user-tab")[1].classList.add("active");
-  }
-}
-
-function selectPayment(element) {
-  // Remove selected class from all options
-  document.querySelectorAll(".payment-option").forEach((opt) => {
-    opt.classList.remove("selected");
-  });
-
-  // Add selected class to clicked option
-  element.classList.add("selected");
-}
-
-function placeOrder() {
-  const selectedPayment = document.querySelector(".payment-option.selected");
-  if (!selectedPayment) {
-    showToast("Please select a payment method");
-    return;
-  }
-
-  document.getElementById("paymentSection").style.display = "none";
-  document.getElementById("orderSuccess").style.display = "block";
-
-  setTimeout(() => {
-    // Reset cart and coupon after successful order
-    cart = [];
-    cartCount = 0;
-    appliedCoupon = null;
-    const cartCountElement = document.querySelector(".cart-item-count");
-    if (cartCountElement) {
-      cartCountElement.textContent = cartCount;
-    }
-
-    // Clear cart from localStorage
-    if (window.cartStorage && window.cartStorage.clearCart) {
-      window.cartStorage.clearCart();
-    }
-  }, 5000);
-}
-
-// --- Wishlist Functions (New) ---
-
-function openWishlist() {
-  document.getElementById("wishlistModal").style.display = "flex";
-  updateWishlistDisplay();
-}
-
-function closeWishlist() {
-  document.getElementById("wishlistModal").style.display = "none";
-}
-
-function toggleWishlist(productId, event) {
-  if (event) event.stopPropagation();
-
-  const productIndex = wishlist.findIndex((item) => item.id === productId);
-  const button = event.currentTarget;
-  const heartIcon = button.querySelector("i");
-
-  if (productIndex > -1) {
-    wishlist.splice(productIndex, 1);
-    heartIcon.classList.remove("fas");
-    heartIcon.classList.add("far");
-    button.classList.remove("active");
-    showToast("Removed from wishlist");
-  } else {
-    const productToAdd = productsData.allProducts.find(
-      (p) => p.id === productId,
-    );
-    if (productToAdd) {
-      wishlist.push(productToAdd);
-      heartIcon.classList.remove("far");
-      heartIcon.classList.add("fas");
-      button.classList.add("active");
-      showToast("Added to wishlist");
-    }
-  }
-
-  saveWishlist();
-  updateWishlistDisplay();
-}
-
-function removeWishlistItem(productId) {
-  wishlist = wishlist.filter((item) => item.id !== productId);
-  showToast("Item removed from wishlist");
-  saveWishlist();
-  updateWishlistDisplay();
-}
-
-function moveAllToCart() {
-  if (wishlist.length === 0) {
-    showToast("Wishlist is empty!");
-    return;
-  }
-
-  wishlist.forEach((item) => {
-    addToCart(item.name, item.price, item.image, item.id);
-  });
-
-  wishlist = [];
-  showToast("All items moved to cart!");
-  saveWishlist();
-  updateWishlistDisplay();
-  closeWishlist();
-  openCart();
-}
-
-function updateWishlistDisplay() {
-  const wishlistCountElement = document.querySelector(".wishlist-count");
-  const wishlistItemsContainer = document.querySelector(".wishlist-items");
-
-  if (wishlistCountElement) {
-    wishlistCountElement.textContent = wishlist.length;
-  }
-
-  if (!wishlistItemsContainer) return;
-
-  wishlistItemsContainer.innerHTML = "";
-
-  if (wishlist.length === 0) {
-    wishlistItemsContainer.innerHTML =
-      '<p style="text-align: center; padding: 20px;">Your wishlist is empty</p>';
-  } else {
-    wishlist.forEach((item) => {
-      const wishlistItem = document.createElement("div");
-      wishlistItem.className = "wishlist-item";
-
-      const productDetail = productsData.allProducts.find(
-        (p) => p.id === item.id,
-      );
-      const description = productDetail
-        ? productDetail.description
-        : "Product details unavailable.";
-
-      wishlistItem.innerHTML = `
-                <div class="wishlist-item-info">
-                    <img src="${item.image}" alt="${item.name}" class="wishlist-item-image">
-                    <div class="wishlist-item-details">
-                        <h4>${item.name}</h4>
-                        <p class="wishlist-item-desc">${description}</p>
-                        <div class="wishlist-item-price">₹${item.price}</div>
-                    </div>
-                </div>
-                <div class="wishlist-item-actions">
-                    <button class="btn-small" onclick="addToCart('${item.name}', ${item.price}, '${item.image}', ${item.id}); removeWishlistItem(${item.id})">
-                        <i class="fas fa-shopping-cart"></i> Move to Cart
-                    </button>
-                    <button class="btn-remove" onclick="removeWishlistItem(${item.id})">
-                        <i class="fas fa-times"></i>
-                    </button>
-                </div>
-            `;
-
-      wishlistItemsContainer.appendChild(wishlistItem);
-    });
-  }
-
-  renderProducts();
-}
-
-// --- Utility Functions ---
-
-function showToast(message) {
-  const toast = document.getElementById("toast");
-  const toastMessage = document.getElementById("toastMessage");
-
-  toastMessage.textContent = message;
-  toast.classList.add("show");
-
-  setTimeout(() => {
-    toast.classList.remove("show");
-  }, 3000);
-}
-
-function openUserModal() {
-  document.getElementById("userModal").style.display = "flex";
-}
-
-function switchTab(tabName) {
-  document.querySelectorAll(".user-form").forEach((form) => {
-    form.classList.remove("active");
-  });
-
-  document.querySelectorAll(".user-tab").forEach((tab) => {
-    tab.classList.remove("active");
-  });
-
-  if (tabName === "login") {
-    document.getElementById("loginForm").classList.add("active");
-    document.querySelectorAll(".user-tab")[0].classList.add("active");
-  } else {
-    document.getElementById("signupForm").classList.add("active");
-    document.querySelectorAll(".user-tab")[1].classList.add("active");
-  }
-}
-
-// Close modal when clicking outside
-window.onclick = function (event) {
-  const cartModal = document.getElementById("cartModal");
-  const userModal = document.getElementById("userModal");
-  const wishlistModal = document.getElementById("wishlistModal");
-
-  if (event.target === cartModal) {
-    closeCart();
-  }
-
-  if (event.target === userModal) {
-    userModal.style.display = "none";
-  }
-
-  if (event.target === wishlistModal) {
-    closeWishlist();
-  }
-};
-
-// Form submission handlers
-document.addEventListener("DOMContentLoaded", function () {
-  document.getElementById("loginForm").addEventListener("submit", function (e) {
-    e.preventDefault();
-    showSuccessToast("Login successful!");
-    document.getElementById("userModal").style.display = "none";
-  });
-
-  document
-    .getElementById("signupForm")
-    .addEventListener("submit", function (e) {
-      e.preventDefault();
-      showSuccessToast("Account created successfully!");
-      document.getElementById("userModal").style.display = "none";
-    });
-
-  // Initialize theme on page load
   initializeTheme();
 });
-
-// Dark Mode Toggle Functionality
-function toggleTheme() {
-  const currentTheme = document.documentElement.getAttribute("data-theme");
-  const newTheme = currentTheme === "dark" ? "light" : "dark";
-
-  setTheme(newTheme);
-}
-
-function setTheme(theme) {
-  document.documentElement.setAttribute("data-theme", theme);
-  localStorage.setItem("theme", theme);
-
-  // Add a subtle feedback animation to the navbar toggle
-  const toggleButton = document.querySelector(".theme-toggle-nav");
-  if (toggleButton) {
-    toggleButton.style.transform = "scale(0.9)";
-    setTimeout(() => {
-      toggleButton.style.transform = "scale(1)";
-    }, 150);
-  }
-}
-
-function initializeTheme() {
-  const savedTheme = localStorage.getItem("theme");
-  const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-
-  const theme = savedTheme || (prefersDark ? "dark" : "light");
-  setTheme(theme);
-}
-
-// Listen for system theme changes
-window
-  .matchMedia("(prefers-color-scheme: dark)")
-  .addEventListener("change", (e) => {
-    if (!localStorage.getItem("theme")) {
-      setTheme(e.matches ? "dark" : "light");
-    }
-  });
