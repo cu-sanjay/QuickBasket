@@ -32,7 +32,6 @@
             <input type="text" placeholder="Search for products..." />
             <button><i class="fas fa-search"></i></button>
           </div>
-              <!-- add wishlist -->
           <div class="header-actions">
             <div
               class="action-item theme-toggle-nav"
@@ -43,15 +42,15 @@
               <i class="fas fa-moon icon moon-icon"></i>
               <span>Theme</span>
             </div>
-            <div class="action-item" onclick="openUserModal()">
+            <div class="action-item" onclick="openUserModal()" id="accountBtn">
               <i class="fas fa-user"></i>
-              <span>Account</span>
+              <span id="accountText">Account</span>
             </div>
-                    <div class="action-item" style="position: relative;" onclick="openWishlist()">
-                        <i class="far fa-heart"></i>
-                        <span>Wishlist</span>
-                        <div class="cart-count wishlist-count">0</div>
-                    </div>
+            <div class="action-item" style="position: relative;" onclick="openWishlist()">
+              <i class="far fa-heart"></i>
+              <span>Wishlist</span>
+              <div class="cart-count wishlist-count">0</div>
+            </div>
             <div
               class="action-item"
               style="position: relative"
@@ -163,9 +162,7 @@
       <!-- Recently Viewed Products Section -->
       <section id="recently-viewed" class="recently-viewed">
         <h2 class="section-title">Recently Viewed</h2>
-        <div class="products" id="recentlyViewedProducts">
-          <!-- Recently viewed product cards will be inserted here via JavaScript -->
-        </div>
+        <div class="products" id="recentlyViewedProducts"></div>
       </section>
 
       <!-- Categories Section -->
@@ -211,15 +208,11 @@
 
       <!-- Products Section -->
       <h2 class="section-title" id="products">Popular Products</h2>
-      <div class="products" id="popularProducts">
-        <!-- Products will be loaded dynamically here -->
-      </div>
+      <div class="products" id="popularProducts"></div>
 
       <!-- Deals Section -->
       <h2 class="section-title">Today's Best Deals</h2>
-      <div class="products" id="dealsProducts">
-        <!-- Deals will be loaded dynamically here -->
-      </div>
+      <div class="products" id="dealsProducts"></div>
     </div>
 
     <!-- Footer -->
@@ -294,9 +287,7 @@
           <h2>Your Cart</h2>
           <span class="close" onclick="closeCart()">&times;</span>
         </div>
-        <div class="cart-items">
-          <!-- Cart items will be dynamically added here -->
-        </div>
+        <div class="cart-items"></div>
         <div class="cart-total">
           <span>Total:</span>
           <span id="cartTotal">₹0</span>
@@ -341,14 +332,11 @@
             </div>
             
             <div id="couponMessage" class="coupon-message"></div>
-            
             <div id="appliedCoupon" class="applied-coupon"></div>
             
             <div class="available-coupons">
               <h5>Available Coupons:</h5>
-              <div id="availableCoupons">
-                <!-- Available coupons will be displayed here -->
-              </div>
+              <div id="availableCoupons"></div>
             </div>
           </div>
           <button class="checkout-btn" onclick="placeOrder()">Complete Payment</button>
@@ -369,92 +357,129 @@
       </div>
     </div>
 
-    <!-- User Modal -->
+    <!-- User Modal with Firebase Google Sign-In -->
     <div class="user-modal" id="userModal">
       <div class="user-modal-content">
-        <div class="user-tabs">
-          <div class="user-tab active" onclick="switchTab('login')">Login</div>
-          <div class="user-tab" onclick="switchTab('signup')">Sign Up</div>
+        <!-- logged out view -->
+        <div id="loginView">
+          <div class="firebase-auth-header">
+            <img src="https://cdn-icons-png.flaticon.com/512/3081/3081559.png" alt="QuickBasket" class="auth-logo">
+            <h2>Sign in to QuickBasket</h2>
+            <p class="auth-subtitle">Continue to access your account</p>
+          </div>
+
+          <button class="google-signin-btn" id="googleSignInBtn">
+            <svg class="google-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="24px" height="24px">
+              <path fill="#FFC107" d="M43.611,20.083H42V20H24v8h11.303c-1.649,4.657-6.08,8-11.303,8c-6.627,0-12-5.373-12-12c0-6.627,5.373-12,12-12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C12.955,4,4,12.955,4,24c0,11.045,8.955,20,20,20c11.045,0,20-8.955,20-20C44,22.659,43.862,21.35,43.611,20.083z"/>
+              <path fill="#FF3D00" d="M6.306,14.691l6.571,4.819C14.655,15.108,18.961,12,24,12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C16.318,4,9.656,8.337,6.306,14.691z"/>
+              <path fill="#4CAF50" d="M24,44c5.166,0,9.86-1.977,13.409-5.192l-6.19-5.238C29.211,35.091,26.715,36,24,36c-5.202,0-9.619-3.317-11.283-7.946l-6.522,5.025C9.505,39.556,16.227,44,24,44z"/>
+              <path fill="#1976D2" d="M43.611,20.083H42V20H24v8h11.303c-0.792,2.237-2.231,4.166-4.087,5.571c0.001-0.001,0.002-0.001,0.003-0.002l6.19,5.238C36.971,39.205,44,34,44,24C44,22.659,43.862,21.35,43.611,20.083z"/>
+            </svg>
+            <span>Continue with Google</span>
+          </button>
+
+          <div class="auth-divider">
+            <span>or</span>
+          </div>
+
+          <div class="user-tabs">
+            <div class="user-tab active" onclick="switchTab('login')">Login</div>
+            <div class="user-tab" onclick="switchTab('signup')">Sign Up</div>
+          </div>
+
+          <form class="user-form active" id="loginForm">
+            <div class="form-group">
+              <label for="loginEmail">Email</label>
+              <input
+                type="email"
+                id="loginEmail"
+                placeholder="Enter your email"
+                required
+              />
+            </div>
+            <div class="form-group">
+              <label for="loginPassword">Password</label>
+              <input
+                type="password"
+                id="loginPassword"
+                placeholder="Enter your password"
+                required
+              />
+            </div>
+            <button type="submit" class="form-submit">Login</button>
+          </form>
+
+          <form class="user-form" id="signupForm">
+            <div class="form-group">
+              <label for="signupName">Full Name</label>
+              <input
+                type="text"
+                id="signupName"
+                placeholder="Enter your full name"
+                required
+              />
+            </div>
+            <div class="form-group">
+              <label for="signupEmail">Email</label>
+              <input
+                type="email"
+                id="signupEmail"
+                placeholder="Enter your email"
+                required
+              />
+            </div>
+            <div class="form-group">
+              <label for="signupPassword">Password</label>
+              <input
+                type="password"
+                id="signupPassword"
+                placeholder="Create a password"
+                required
+              />
+            </div>
+            <div class="form-group">
+              <label for="signupPhone">Phone Number</label>
+              <input
+                type="tel"
+                id="signupPhone"
+                placeholder="Enter your phone number"
+                required
+              />
+            </div>
+            <button type="submit" class="form-submit">Create Account</button>
+          </form>
         </div>
 
-        <form class="user-form active" id="loginForm">
-          <div class="form-group">
-            <label for="loginEmail">Email</label>
-            <input
-              type="email"
-              id="loginEmail"
-              placeholder="Enter your email"
-              required
-            />
+        <!-- logged in view -->
+        <div id="userProfileView" style="display: none;">
+          <div class="user-profile-header">
+            <img id="userAvatar" class="user-avatar" src="" alt="User Avatar">
+            <h3 id="userName">User Name</h3>
+            <p id="userEmail" class="user-email">user@example.com</p>
           </div>
-          <div class="form-group">
-            <label for="loginPassword">Password</label>
-            <input
-              type="password"
-              id="loginPassword"
-              placeholder="Enter your password"
-              required
-            />
+          <div class="user-profile-actions">
+            <button class="profile-action-btn signout-btn" id="signOutBtn">
+              <i class="fas fa-sign-out-alt"></i>
+              <span>Sign Out</span>
+            </button>
           </div>
-          <button type="submit" class="form-submit">Login</button>
-        </form>
-
-        <form class="user-form" id="signupForm">
-          <div class="form-group">
-            <label for="signupName">Full Name</label>
-            <input
-              type="text"
-              id="signupName"
-              placeholder="Enter your full name"
-              required
-            />
-          </div>
-          <div class="form-group">
-            <label for="signupEmail">Email</label>
-            <input
-              type="email"
-              id="signupEmail"
-              placeholder="Enter your email"
-              required
-            />
-          </div>
-          <div class="form-group">
-            <label for="signupPassword">Password</label>
-            <input
-              type="password"
-              id="signupPassword"
-              placeholder="Create a password"
-              required
-            />
-          </div>
-          <div class="form-group">
-            <label for="signupPhone">Phone Number</label>
-            <input
-              type="tel"
-              id="signupPhone"
-              placeholder="Enter your phone number"
-              required
-            />
-          </div>
-          <button type="submit" class="form-submit">Create Account</button>
-        </form>
+        </div>
       </div>
     </div>
 
-    <!-- add Wishlist Modal -->
+    <!-- wishlist modal -->
     <div class="modal" id="wishlistModal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2>Your Wishlist</h2>
-                <span class="close" onclick="closeWishlist()">&times;</span>
-            </div>
-            <div class="wishlist-items">
-                </div>
-            <div class="wishlist-actions">
-                <button class="btn btn-secondary" onclick="closeWishlist()">Continue Shopping</button>
-                <button class="btn" onclick="moveAllToCart()">Move All to Cart</button>
-            </div>
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2>Your Wishlist</h2>
+          <span class="close" onclick="closeWishlist()">&times;</span>
         </div>
+        <div class="wishlist-items"></div>
+        <div class="wishlist-actions">
+          <button class="btn btn-secondary" onclick="closeWishlist()">Continue Shopping</button>
+          <button class="btn" onclick="moveAllToCart()">Move All to Cart</button>
+        </div>
+      </div>
     </div>
 
     <!-- Toast Notification -->
@@ -470,6 +495,122 @@
       </button>
       <div class="toast-progress-bar" id="toastProgressBar"></div>
     </div>
+
+    <!-- Firebase SDK -->
+    <script type="module">
+      import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+      import { getAuth, GoogleAuthProvider, signInWithPopup,signOut,onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
+
+      const firebaseConfig = {
+        apiKey: "AIzaSyAsW6jSNrH_HQm01dHV5uQu8avzJRqmgvM",
+        authDomain: "quickbasket-77fa6.firebaseapp.com",
+        projectId: "quickbasket-77fa6",
+        storageBucket: "quickbasket-77fa6.firebasestorage.app",
+        messagingSenderId: "913872057061",
+        appId: "1:913872057061:web:41d8f33a5e7def7de85a0c"
+      };
+
+      
+      const app = initializeApp(firebaseConfig);
+      const auth = getAuth(app);
+      const provider = new GoogleAuthProvider();
+
+      window.firebaseAuth = auth;
+      window.googleProvider = provider;
+      window.signInWithPopup = signInWithPopup;
+      window.signOut = signOut;
+      window.onAuthStateChanged = onAuthStateChanged;
+
+      
+      onAuthStateChanged(auth, (user) => {
+        if (user) {
+          updateUIForSignedInUser(user);
+        } else {
+          updateUIForSignedOutUser();
+        }
+      });
+
+      function updateUIForSignedInUser(user) {
+        const loginView = document.getElementById('loginView');
+        const profileView = document.getElementById('userProfileView');
+        const accountText = document.getElementById('accountText');
+        const userAvatar = document.getElementById('userAvatar');
+        
+        if (loginView) loginView.style.display = 'none';
+        if (profileView) profileView.style.display = 'block';
+        
+        if (userAvatar) {
+          if (user.photoURL) {
+            userAvatar.src = user.photoURL;
+            userAvatar.onerror = function() {
+              this.src = 'https://ui-avatars.com/api/?name=' + encodeURIComponent(user.displayName || 'User') + '&background=0D8ABC&color=fff&size=100';
+            };
+          } else {
+            userAvatar.src = 'https://ui-avatars.com/api/?name=' + encodeURIComponent(user.displayName || user.email) + '&background=0D8ABC&color=fff&size=100';
+          }
+        }
+        
+        document.getElementById('userName').textContent = user.displayName || 'User';
+        document.getElementById('userEmail').textContent = user.email;
+        
+        if (accountText) {
+          accountText.textContent = user.displayName?.split(' ')[0] || 'Account';
+        }
+      }
+
+      function updateUIForSignedOutUser() {
+        const loginView = document.getElementById('loginView');
+        const profileView = document.getElementById('userProfileView');
+        const accountText = document.getElementById('accountText');
+        
+        if (loginView) loginView.style.display = 'block';
+        if (profileView) profileView.style.display = 'none';
+        
+        if (accountText) {
+          accountText.textContent = 'Account';
+        }
+      }
+
+      // Google Sign-In button click handler
+      document.getElementById('googleSignInBtn').addEventListener('click', async () => {
+        try {
+          const result = await signInWithPopup(auth, provider);
+          const user = result.user;
+          
+          // Show success message
+          if (window.showSuccessToast) {
+            window.showSuccessToast(`Welcome, ${user.displayName}!`);
+          }
+          
+          // Close modal after slight delay
+          setTimeout(() => {
+            document.getElementById('userModal').style.display = 'none';
+          }, 1000);
+        } catch (error) {
+          console.error('Error signing in with Google:', error);
+          if (window.showErrorToast) {
+            window.showErrorToast('Failed to sign in. Please try again.');
+          }
+        }
+      });
+
+      // Sign out button
+      document.getElementById('signOutBtn').addEventListener('click', async () => {
+        try {
+          await signOut(auth);
+          if (window.showSuccessToast) {
+            window.showSuccessToast('Signed out successfully');
+          }
+          document.getElementById('userModal').style.display = 'none';
+        } catch (error) {
+          console.error('Error signing out:', error);
+          if (window.showErrorToast) {
+            window.showErrorToast('Failed to sign out. Please try again.');
+          }
+        }
+      });
+    </script>
+
     <script src="src/utils/cartStorage.js"></script>
     <script src="script.js"></script>
   </body>
