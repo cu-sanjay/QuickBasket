@@ -584,7 +584,7 @@ function openPincodeModal() {
     }, 100);
   }
 }
-
+window.openPincodeModal = openPincodeModal;
 /**
  * Close pincode modal
  */
@@ -603,7 +603,7 @@ function closePincodeModal() {
     hideDeliveryStatus();
   }
 }
-
+window.closePincodeModal = closePincodeModal;
 /**
  * Validate Indian pincode format
  * @param {string} pincode - 6 digit pincode
@@ -870,11 +870,13 @@ function openCart() {
   document.getElementById("orderSuccess").style.display = "none";
   updateCartDisplay();
 }
+window.openCart = openCart;
 
 function closeCart() {
   document.getElementById("cartModal").style.display = "none";
   document.getElementById("userModal").style.display = "none";
 }
+window.closeCart = closeCart;
 
 function addToCart(name, price, image, id = null) {
   // Check if product already in cart
@@ -891,6 +893,7 @@ function addToCart(name, price, image, id = null) {
       quantity: 1,
     });
   }
+  window.addToCart = addToCart;
 
   // Update cart count
   const newCartCount = cart.reduce((total, item) => total + item.quantity, 0);
@@ -996,6 +999,7 @@ function changeQuantity(name, change) {
       // Remove product from cart
       cart = cart.filter((item) => item.name !== name);
     }
+window.changeQuantity = changeQuantity;
 
     // Update cart count
     cartCount = cart.reduce((total, item) => total + item.quantity, 0);
@@ -1015,14 +1019,15 @@ function changeQuantity(name, change) {
 }
 
 function showPaymentSection() {
-  if (cart.length === 0) {
-    showToast("Your cart is empty!");
-    return;
-  }
+    if (cart.length === 0) {
+        showErrorToast("Your cart is empty!"); 
+        return;
+    }
 
-  document.getElementById("paymentSection").style.display = "block";
-  displayAvailableCoupons();
+    document.getElementById("paymentSection").style.display = "block";
+    displayAvailableCoupons();
 }
+window.showPaymentSection = showPaymentSection;
 
 function displayAvailableCoupons() {
   const couponsList = document.getElementById("availableCoupons");
@@ -1083,6 +1088,7 @@ function applyCoupon() {
   updateCouponUI();
   showCouponMessage(`Coupon ${couponCode} applied successfully!`, "success");
 }
+window.applyCoupon = applyCoupon;
 
 function applyCouponFromList(couponCode) {
   const coupon = coupons[couponCode];
@@ -1104,6 +1110,7 @@ function applyCouponFromList(couponCode) {
   updateCouponUI();
   showCouponMessage(`Coupon ${couponCode} applied successfully!`, "success");
 }
+window.applyCouponFromList = applyCouponFromList;
 
 function removeCoupon() {
   appliedCoupon = null;
@@ -1127,7 +1134,7 @@ function updateCouponUI() {
   } else {
     appliedCouponDiv.style.display = "none";
   }
-}
+}window.removeCoupon = removeCoupon;
 
 function showCouponMessage(message, type) {
   const messageDiv = document.getElementById("couponMessage");
@@ -1233,6 +1240,7 @@ function hideToast() {
     progressBar.style.transform = "scaleX(1)";
   }, 400);
 }
+window.hideToast = hideToast;
 
 // Enhanced toast notifications for different scenarios
 function showSuccessToast(message, duration = 4000) {
@@ -1251,222 +1259,38 @@ function showInfoToast(message, duration = 4000) {
   showToast(message, "info", duration);
 }
 
-function openUserModal() {
-  document.getElementById("userModal").style.display = "flex";
-}
-
-function switchTab(tabName) {
-  // Hide all forms
-  document.querySelectorAll(".user-form").forEach((form) => {
-    form.classList.remove("active");
-  });
-
-  // Remove active class from all tabs
-  document.querySelectorAll(".user-tab").forEach((tab) => {
-    tab.classList.remove("active");
-  });
-
-  // Show selected form and activate tab
-  if (tabName === "login") {
-    document.getElementById("loginForm").classList.add("active");
-    document.querySelectorAll(".user-tab")[0].classList.add("active");
-  } else {
-    document.getElementById("signupForm").classList.add("active");
-    document.querySelectorAll(".user-tab")[1].classList.add("active");
-  }
-}
-
-function selectPayment(element) {
-  // Remove selected class from all options
-  document.querySelectorAll(".payment-option").forEach((opt) => {
-    opt.classList.remove("selected");
-  });
-
-  // Add selected class to clicked option
-  element.classList.add("selected");
-}
-
-function placeOrder() {
-  const selectedPayment = document.querySelector(".payment-option.selected");
-  if (!selectedPayment) {
-    showToast("Please select a payment method");
-    return;
-  }
-
-  document.getElementById("paymentSection").style.display = "none";
-  document.getElementById("orderSuccess").style.display = "block";
-
-  setTimeout(() => {
-    // Reset cart and coupon after successful order
-    cart = [];
-    cartCount = 0;
-    appliedCoupon = null;
-    const cartCountElement = document.querySelector(".cart-item-count");
-    if (cartCountElement) {
-      cartCountElement.textContent = cartCount;
+// Make functions globally available
+window.openUserModal = function() {
+    const userModal = document.getElementById('userModal');
+    if (userModal) {
+        userModal.style.display = 'flex';
+        switchTab('login'); // Reset to login tab when opening
     }
+};
 
-    // Clear cart from localStorage
-    if (window.cartStorage && window.cartStorage.clearCart) {
-      window.cartStorage.clearCart();
+window.openCart = function() {
+    const cartModal = document.getElementById('cartModal');
+    if (cartModal) {
+        cartModal.style.display = 'flex';
+        document.getElementById('paymentSection').style.display = 'none';
+        document.getElementById('orderSuccess').style.display = 'none';
+        updateCartDisplay();
     }
-  }, 5000);
-}
+};
 
-// --- Wishlist Functions (New) ---
-
-function openWishlist() {
-  document.getElementById("wishlistModal").style.display = "flex";
-  updateWishlistDisplay();
-}
-
-function closeWishlist() {
-  document.getElementById("wishlistModal").style.display = "none";
-}
-
-function toggleWishlist(productId, event) {
-  if (event) event.stopPropagation();
-
-  const productIndex = wishlist.findIndex((item) => item.id === productId);
-  const button = event.currentTarget;
-  const heartIcon = button.querySelector("i");
-
-  if (productIndex > -1) {
-    wishlist.splice(productIndex, 1);
-    heartIcon.classList.remove("fas");
-    heartIcon.classList.add("far");
-    button.classList.remove("active");
-    showToast("Removed from wishlist");
-  } else {
-    const productToAdd = productsData.allProducts.find(
-      (p) => p.id === productId
-    );
-    if (productToAdd) {
-      wishlist.push(productToAdd);
-      heartIcon.classList.remove("far");
-      heartIcon.classList.add("fas");
-      button.classList.add("active");
-      showToast("Added to wishlist");
+window.openWishlist = function() {
+    const wishlistModal = document.getElementById('wishlistModal');
+    if (wishlistModal) {
+        wishlistModal.style.display = 'flex';
+        updateWishlistDisplay();
     }
-  }
+};
 
-  saveWishlist();
-  updateWishlistDisplay();
-}
-
-function removeWishlistItem(productId) {
-  wishlist = wishlist.filter((item) => item.id !== productId);
-  showToast("Item removed from wishlist");
-  saveWishlist();
-  updateWishlistDisplay();
-}
-
-function moveAllToCart() {
-  if (wishlist.length === 0) {
-    showToast("Wishlist is empty!");
-    return;
-  }
-
-  wishlist.forEach((item) => {
-    addToCart(item.name, item.price, item.image, item.id);
-  });
-
-  wishlist = [];
-  showToast("All items moved to cart!");
-  saveWishlist();
-  updateWishlistDisplay();
-  closeWishlist();
-  openCart();
-}
-
-function updateWishlistDisplay() {
-  const wishlistCountElement = document.querySelector(".wishlist-count");
-  const wishlistItemsContainer = document.querySelector(".wishlist-items");
-
-  if (wishlistCountElement) {
-    wishlistCountElement.textContent = wishlist.length;
-  }
-
-  if (!wishlistItemsContainer) return;
-
-  wishlistItemsContainer.innerHTML = "";
-
-  if (wishlist.length === 0) {
-    wishlistItemsContainer.innerHTML =
-      '<p style="text-align: center; padding: 20px;">Your wishlist is empty</p>';
-  } else {
-    wishlist.forEach((item) => {
-      const wishlistItem = document.createElement("div");
-      wishlistItem.className = "wishlist-item";
-
-      const productDetail = productsData.allProducts.find(
-        (p) => p.id === item.id
-      );
-      const description = productDetail
-        ? productDetail.description
-        : "Product details unavailable.";
-
-      wishlistItem.innerHTML = `
-                <div class="wishlist-item-info">
-                    <img src="${item.image}" alt="${item.name}" class="wishlist-item-image">
-                    <div class="wishlist-item-details">
-                        <h4>${item.name}</h4>
-                        <p class="wishlist-item-desc">${description}</p>
-                        <div class="wishlist-item-price">₹${item.price}</div>
-                    </div>
-                </div>
-                <div class="wishlist-item-actions">
-                    <button class="btn-small" onclick="addToCart('${item.name}', ${item.price}, '${item.image}', ${item.id}); removeWishlistItem(${item.id})">
-                        <i class="fas fa-shopping-cart"></i> Move to Cart
-                    </button>
-                    <button class="btn-remove" onclick="removeWishlistItem(${item.id})">
-                        <i class="fas fa-times"></i>
-                    </button>
-                </div>
-            `;
-
-      wishlistItemsContainer.appendChild(wishlistItem);
-    });
-  }
-
-  renderProducts();
-}
-
-// --- Utility Functions ---
-
-function showToast(message) {
-  const toast = document.getElementById("toast");
-  const toastMessage = document.getElementById("toastMessage");
-
-  toastMessage.textContent = message;
-  toast.classList.add("show");
-
-  setTimeout(() => {
-    toast.classList.remove("show");
-  }, 3000);
-}
-
-function openUserModal() {
-  document.getElementById("userModal").style.display = "flex";
-}
-
-function switchTab(tabName) {
-  document.querySelectorAll(".user-form").forEach((form) => {
-    form.classList.remove("active");
-  });
-
-  document.querySelectorAll(".user-tab").forEach((tab) => {
-    tab.classList.remove("active");
-  });
-
-  if (tabName === "login") {
-    document.getElementById("loginForm").classList.add("active");
-    document.querySelectorAll(".user-tab")[0].classList.add("active");
-  } else {
-    document.getElementById("signupForm").classList.add("active");
-    document.querySelectorAll(".user-tab")[1].classList.add("active");
-  }
-}
+window.toggleTheme = function() {
+    const currentTheme = document.documentElement.getAttribute('data-theme');
+    const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+    setTheme(newTheme);
+};
 
 // Close modal when clicking outside
 window.onclick = function (event) {
@@ -1514,6 +1338,7 @@ function toggleTheme() {
 
   setTheme(newTheme);
 }
+window.toggleTheme = toggleTheme;
 
 function setTheme(theme) {
   document.documentElement.setAttribute("data-theme", theme);
@@ -1545,3 +1370,26 @@ window
       setTheme(e.matches ? "dark" : "light");
     }
   });
+
+function switchTab(tabName) {
+    // Get all tabs and forms
+    const loginTab = document.querySelector('.user-tab[onclick="switchTab(\'login\')"]');
+    const signupTab = document.querySelector('.user-tab[onclick="switchTab(\'signup\')"]');
+    const loginForm = document.getElementById('loginForm');
+    const signupForm = document.getElementById('signupForm');
+
+    if (tabName === 'login') {
+        loginTab?.classList.add('active');
+        signupTab?.classList.remove('active');
+        if (loginForm) loginForm.style.display = 'block';
+        if (signupForm) signupForm.style.display = 'none';
+    } else {
+        loginTab?.classList.remove('active');
+        signupTab?.classList.add('active');
+        if (loginForm) loginForm.style.display = 'none';
+        if (signupForm) signupForm.style.display = 'block';
+    }
+}
+
+// Make switchTab available globally
+window.switchTab = switchTab;
