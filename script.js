@@ -38,7 +38,7 @@ const coupons = {
 };
 
 let productsData = null;
-let currentCategory = 'all'; // active category filter from URL or clicks
+let currentCategory = "all"; // active category filter from URL or clicks
 
 // Initialize cart from localStorage on startup
 function initializeCart() {
@@ -61,7 +61,7 @@ function initializeCart() {
 // Initialize wishlist from localStorage on startup
 function initializeWishlist() {
   try {
-    const savedWishlist = localStorage.getItem('quickbasket_wishlist');
+    const savedWishlist = localStorage.getItem("quickbasket_wishlist");
     if (savedWishlist) {
       wishlist = JSON.parse(savedWishlist);
       wishlistCount = wishlist.length;
@@ -72,7 +72,7 @@ function initializeWishlist() {
       console.log(`Loaded ${wishlist.length} items from wishlist`);
     }
   } catch (error) {
-    console.error('Error loading wishlist from localStorage:', error);
+    console.error("Error loading wishlist from localStorage:", error);
     wishlist = [];
     wishlistCount = 0;
   }
@@ -81,9 +81,9 @@ function initializeWishlist() {
 // Save wishlist to localStorage
 function saveWishlist() {
   try {
-    localStorage.setItem('quickbasket_wishlist', JSON.stringify(wishlist));
+    localStorage.setItem("quickbasket_wishlist", JSON.stringify(wishlist));
   } catch (error) {
-    console.error('Error saving wishlist to localStorage:', error);
+    console.error("Error saving wishlist to localStorage:", error);
   }
 }
 
@@ -110,10 +110,11 @@ async function loadProducts() {
 function renderProducts() {
   if (!productsData) return;
 
-  const category = (currentCategory || 'all').toLowerCase();
+  const category = (currentCategory || "all").toLowerCase();
 
   // Filter helpers
-  const byCategory = (p) => category === 'all' || (p.category || '').toLowerCase() === category;
+  const byCategory = (p) =>
+    category === "all" || (p.category || "").toLowerCase() === category;
 
   const popular = (productsData.popularProducts || []).filter(byCategory);
   const deals = (productsData.deals || []).filter(byCategory);
@@ -123,11 +124,17 @@ function renderProducts() {
 
   // Update headings to reflect active category
   try {
-    const popularTitle = document.querySelector('h2.section-title#products');
-    const dealsTitle = Array.from(document.querySelectorAll('h2.section-title'))
-      .find(h => h.textContent.trim().startsWith("Today's Best Deals"));
+    const popularTitle = document.querySelector("h2.section-title#products");
+    const dealsTitle = Array.from(
+      document.querySelectorAll("h2.section-title")
+    ).find((h) => h.textContent.trim().startsWith("Today's Best Deals"));
 
-    const prettyCat = category === 'all' ? '' : ` – ${category.replace('-', ' ').replace(/\b\w/g, c => c.toUpperCase())}`;
+    const prettyCat =
+      category === "all"
+        ? ""
+        : ` – ${category
+            .replace("-", " ")
+            .replace(/\b\w/g, (c) => c.toUpperCase())}`;
     if (popularTitle) popularTitle.textContent = `Popular Products${prettyCat}`;
     if (dealsTitle) dealsTitle.textContent = `Today's Best Deals${prettyCat}`;
   } catch (_) {
@@ -152,22 +159,25 @@ function renderProductSection(containerId, products) {
 function getCategoryFromURL() {
   try {
     const params = new URLSearchParams(window.location.search);
-    const cat = (params.get('category') || 'all').toLowerCase();
+    const cat = (params.get("category") || "all").toLowerCase();
     return cat;
   } catch (_) {
-    return 'all';
+    return "all";
   }
 }
 
 function setCategoryInURL(cat) {
   const params = new URLSearchParams(window.location.search);
-  if (!cat || cat === 'all') {
-    params.delete('category');
+  if (!cat || cat === "all") {
+    params.delete("category");
   } else {
-    params.set('category', cat);
+    params.set("category", cat);
   }
-  const newUrl = `${window.location.pathname}?${params.toString()}`.replace(/\?$/, '');
-  window.history.pushState({ category: cat || 'all' }, '', newUrl);
+  const newUrl = `${window.location.pathname}?${params.toString()}`.replace(
+    /\?$/,
+    ""
+  );
+  window.history.pushState({ category: cat || "all" }, "", newUrl);
 }
 
 function applyCategoryFromURL() {
@@ -178,27 +188,27 @@ function applyCategoryFromURL() {
 }
 
 function highlightActiveCategory(cat) {
-  document.querySelectorAll('.category-item').forEach(el => {
-    const c = (el.getAttribute('data-category') || '').toLowerCase();
-    if ((cat === 'all' && c === 'all') || c === cat) {
-      el.classList.add('active');
+  document.querySelectorAll(".category-item").forEach((el) => {
+    const c = (el.getAttribute("data-category") || "").toLowerCase();
+    if ((cat === "all" && c === "all") || c === cat) {
+      el.classList.add("active");
     } else {
-      el.classList.remove('active');
+      el.classList.remove("active");
     }
   });
 }
 
 function initializeCategoryFiltering() {
-  document.querySelectorAll('.category-item').forEach(el => {
-    el.addEventListener('click', () => {
-      const cat = (el.getAttribute('data-category') || 'all').toLowerCase();
+  document.querySelectorAll(".category-item").forEach((el) => {
+    el.addEventListener("click", () => {
+      const cat = (el.getAttribute("data-category") || "all").toLowerCase();
       currentCategory = cat;
       setCategoryInURL(cat);
       highlightActiveCategory(cat);
       highlightActiveNav(cat);
       // Optional: clear search when category changes
-      const searchInput = document.querySelector('.search-bar input');
-      if (searchInput) searchInput.value = '';
+      const searchInput = document.querySelector(".search-bar input");
+      if (searchInput) searchInput.value = "";
       renderProducts();
       scrollToProducts();
     });
@@ -208,33 +218,33 @@ function initializeCategoryFiltering() {
   applyCategoryFromURL();
 
   // Handle back/forward navigation
-  window.addEventListener('popstate', () => {
+  window.addEventListener("popstate", () => {
     applyCategoryFromURL();
   });
 }
 
 function highlightActiveNav(cat) {
-  document.querySelectorAll('.nav-links a[data-category]').forEach(a => {
-    const c = (a.getAttribute('data-category') || '').toLowerCase();
-    if ((cat === 'all' && c === 'all') || c === cat) {
-      a.classList.add('active');
+  document.querySelectorAll(".nav-links a[data-category]").forEach((a) => {
+    const c = (a.getAttribute("data-category") || "").toLowerCase();
+    if ((cat === "all" && c === "all") || c === cat) {
+      a.classList.add("active");
     } else {
-      a.classList.remove('active');
+      a.classList.remove("active");
     }
   });
 }
 
 function initializeNavFiltering() {
-  document.querySelectorAll('.nav-links a[data-category]').forEach(a => {
-    a.addEventListener('click', (e) => {
+  document.querySelectorAll(".nav-links a[data-category]").forEach((a) => {
+    a.addEventListener("click", (e) => {
       e.preventDefault();
-      const cat = (a.getAttribute('data-category') || 'all').toLowerCase();
+      const cat = (a.getAttribute("data-category") || "all").toLowerCase();
       currentCategory = cat;
       setCategoryInURL(cat);
       highlightActiveCategory(cat);
       highlightActiveNav(cat);
-      const searchInput = document.querySelector('.search-bar input');
-      if (searchInput) searchInput.value = '';
+      const searchInput = document.querySelector(".search-bar input");
+      if (searchInput) searchInput.value = "";
       renderProducts();
       scrollToProducts();
     });
@@ -242,9 +252,9 @@ function initializeNavFiltering() {
 }
 
 function scrollToProducts() {
-  const anchor = document.getElementById('products');
-  if (anchor && typeof anchor.scrollIntoView === 'function') {
-    anchor.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  const anchor = document.getElementById("products");
+  if (anchor && typeof anchor.scrollIntoView === "function") {
+    anchor.scrollIntoView({ behavior: "smooth", block: "start" });
   }
 }
 
@@ -254,7 +264,7 @@ function renderRecentlyViewed() {
   if (!container) return;
 
   const recentlyViewed = JSON.parse(
-    localStorage.getItem("recentlyViewed") || "[]",
+    localStorage.getItem("recentlyViewed") || "[]"
   );
 
   if (recentlyViewed.length === 0) {
@@ -280,7 +290,7 @@ function createProductCard(product) {
   const heartIconClass = isInWishlist ? "fas fa-heart active" : "far fa-heart";
 
   productCard.innerHTML = `
-        <img src="${product.image}" alt="${product.name}" class="product-image">
+        <img src="${product.image}" alt="${product.name}" class="product-image skeleton" onload="this.classList.remove('skeleton')" onerror="this.classList.remove('skeleton')">
         <div class="product-info">
             <h3 class="product-title">${product.name}</h3>
             <div class="product-price">₹${product.price} <span>(₹${product.discount} off)</span></div>
@@ -317,16 +327,21 @@ function initializeSearch() {
       return;
     }
 
-    const category = (currentCategory || 'all').toLowerCase();
-    const inCategory = (p) => category === 'all' || (p.category || '').toLowerCase() === category;
+    const category = (currentCategory || "all").toLowerCase();
+    const inCategory = (p) =>
+      category === "all" || (p.category || "").toLowerCase() === category;
 
     const matches = (p) =>
       p.name.toLowerCase().includes(searchTerm) ||
       p.description.toLowerCase().includes(searchTerm) ||
-      (p.category || '').toLowerCase().includes(searchTerm);
+      (p.category || "").toLowerCase().includes(searchTerm);
 
-    const filteredPopular = (productsData.popularProducts || []).filter(p => inCategory(p) && matches(p));
-    const filteredDeals = (productsData.deals || []).filter(p => inCategory(p) && matches(p));
+    const filteredPopular = (productsData.popularProducts || []).filter(
+      (p) => inCategory(p) && matches(p)
+    );
+    const filteredDeals = (productsData.deals || []).filter(
+      (p) => inCategory(p) && matches(p)
+    );
 
     renderProductSection("popularProducts", filteredPopular);
     renderProductSection("dealsProducts", filteredDeals);
@@ -374,19 +389,19 @@ document.addEventListener("DOMContentLoaded", function () {
  * Initialize pincode checker functionality
  */
 function initializePincodeChecker() {
-  const banner = document.getElementById('pincodeBanner');
-  const changePincodeBtn = document.getElementById('changePincodeBtn');
-  const pincodeInput = document.getElementById('pincodeInput');
-  const checkBtn = document.getElementById('checkDeliveryBtn');
+  const banner = document.getElementById("pincodeBanner");
+  const changePincodeBtn = document.getElementById("changePincodeBtn");
+  const pincodeInput = document.getElementById("pincodeInput");
+  const checkBtn = document.getElementById("checkDeliveryBtn");
 
   // Banner click to open modal
   if (banner) {
-    banner.addEventListener('click', openPincodeModal);
+    banner.addEventListener("click", openPincodeModal);
   }
 
   // Change pincode button
   if (changePincodeBtn) {
-    changePincodeBtn.addEventListener('click', function(e) {
+    changePincodeBtn.addEventListener("click", function (e) {
       e.stopPropagation();
       openPincodeModal();
     });
@@ -395,23 +410,23 @@ function initializePincodeChecker() {
   if (!pincodeInput || !checkBtn) return;
 
   // Add click event listener to check button
-  checkBtn.addEventListener('click', checkDelivery);
+  checkBtn.addEventListener("click", checkDelivery);
 
   // Add input validation and formatting
-  pincodeInput.addEventListener('input', function(e) {
+  pincodeInput.addEventListener("input", function (e) {
     // Allow only numbers
-    let value = e.target.value.replace(/\D/g, '');
-    
+    let value = e.target.value.replace(/\D/g, "");
+
     // Limit to 6 digits
     if (value.length > 6) {
       value = value.substring(0, 6);
     }
-    
+
     e.target.value = value;
-    
+
     // Enable/disable check button
     checkBtn.disabled = value.length !== 6;
-    
+
     // Clear previous status when input changes
     if (value.length < 6) {
       hideDeliveryStatus();
@@ -419,22 +434,22 @@ function initializePincodeChecker() {
   });
 
   // Add enter key support
-  pincodeInput.addEventListener('keypress', function(e) {
-    if (e.key === 'Enter' && pincodeInput.value.length === 6) {
+  pincodeInput.addEventListener("keypress", function (e) {
+    if (e.key === "Enter" && pincodeInput.value.length === 6) {
       checkDelivery();
     }
   });
 
   // Add paste event handling
-  pincodeInput.addEventListener('paste', function(e) {
+  pincodeInput.addEventListener("paste", function (e) {
     e.preventDefault();
-    const paste = (e.clipboardData || window.clipboardData).getData('text');
-    const numbers = paste.replace(/\D/g, '').substring(0, 6);
+    const paste = (e.clipboardData || window.clipboardData).getData("text");
+    const numbers = paste.replace(/\D/g, "").substring(0, 6);
     pincodeInput.value = numbers;
     checkBtn.disabled = numbers.length !== 6;
-    
+
     // Trigger input event to update button state
-    const inputEvent = new Event('input', { bubbles: true });
+    const inputEvent = new Event("input", { bubbles: true });
     pincodeInput.dispatchEvent(inputEvent);
   });
 }
@@ -443,13 +458,13 @@ function initializePincodeChecker() {
  * Open pincode modal
  */
 function openPincodeModal() {
-  const modal = document.getElementById('pincodeModal');
-  const pincodeInput = document.getElementById('pincodeInput');
-  
+  const modal = document.getElementById("pincodeModal");
+  const pincodeInput = document.getElementById("pincodeInput");
+
   if (modal) {
-    modal.classList.add('show');
-    document.body.style.overflow = 'hidden';
-    
+    modal.classList.add("show");
+    document.body.style.overflow = "hidden";
+
     // Focus on input after animation
     setTimeout(() => {
       if (pincodeInput) {
@@ -463,16 +478,16 @@ function openPincodeModal() {
  * Close pincode modal
  */
 function closePincodeModal() {
-  const modal = document.getElementById('pincodeModal');
-  const pincodeInput = document.getElementById('pincodeInput');
-  
+  const modal = document.getElementById("pincodeModal");
+  const pincodeInput = document.getElementById("pincodeInput");
+
   if (modal) {
-    modal.classList.remove('show');
-    document.body.style.overflow = '';
-    
+    modal.classList.remove("show");
+    document.body.style.overflow = "";
+
     // Clear input and status
     if (pincodeInput) {
-      pincodeInput.value = '';
+      pincodeInput.value = "";
     }
     hideDeliveryStatus();
   }
@@ -484,24 +499,24 @@ function closePincodeModal() {
  * @returns {boolean} - true if valid format
  */
 function validatePincode(pincode) {
-  if (!pincode || typeof pincode !== 'string') {
+  if (!pincode || typeof pincode !== "string") {
     return false;
   }
 
   // Remove any spaces or special characters
-  const cleanPincode = pincode.replace(/\D/g, '');
-  
+  const cleanPincode = pincode.replace(/\D/g, "");
+
   // Check if it's exactly 6 digits
   if (cleanPincode.length !== 6) {
     return false;
   }
-  
+
   // Indian pincodes start from 1 and go up to 8 (first digit)
   const firstDigit = parseInt(cleanPincode.charAt(0));
   if (firstDigit < 1 || firstDigit > 8) {
     return false;
   }
-  
+
   return true;
 }
 
@@ -509,18 +524,18 @@ function validatePincode(pincode) {
  * Check delivery availability for given pincode
  */
 async function checkDelivery() {
-  const pincodeInput = document.getElementById('pincodeInput');
-  const checkBtn = document.getElementById('checkDeliveryBtn');
+  const pincodeInput = document.getElementById("pincodeInput");
+  const checkBtn = document.getElementById("checkDeliveryBtn");
 
   if (!pincodeInput) {
-    console.error('Pincode input element not found');
+    console.error("Pincode input element not found");
     return;
   }
 
   const pincode = pincodeInput.value.trim();
 
   if (!validatePincode(pincode)) {
-    showDeliveryStatus('error', 'Please enter a valid 6-digit Indian pincode');
+    showDeliveryStatus("error", "Please enter a valid 6-digit Indian pincode");
     return;
   }
 
@@ -528,14 +543,14 @@ async function checkDelivery() {
     checkBtn.disabled = true;
     checkBtn.innerHTML = '<span class="delivery-spinner"></span>Checking...';
   }
-  showDeliveryStatus('checking', 'Checking delivery availability...');
+  showDeliveryStatus("checking", "Checking delivery availability...");
 
   try {
     const deliveryInfo = await checkPincodeDelivery(pincode);
 
     if (deliveryInfo.available) {
       showDeliveryStatus(
-        'available', 
+        "available",
         `🎉 Great! We deliver to ${deliveryInfo.city}, ${deliveryInfo.state}.\nExpected delivery: ${deliveryInfo.deliveryTime}`
       );
       setTimeout(() => {
@@ -544,13 +559,15 @@ async function checkDelivery() {
       }, 2000);
     } else {
       showDeliveryStatus(
-        'not-available', 
-        `😔 Sorry, we don't deliver to this location.\n${deliveryInfo.reason || ''}`
+        "not-available",
+        `😔 Sorry, we don't deliver to this location.\n${
+          deliveryInfo.reason || ""
+        }`
       );
     }
   } catch (error) {
-    console.error('Error checking delivery:', error);
-    showDeliveryStatus('error', 'Something went wrong. Please try again.');
+    console.error("Error checking delivery:", error);
+    showDeliveryStatus("error", "Something went wrong. Please try again.");
   } finally {
     if (checkBtn) {
       checkBtn.disabled = false;
@@ -574,7 +591,7 @@ async function checkPincodeDelivery(pincode) {
         city: null,
         state: null,
         available: false,
-        reason: "Invalid or unsupported pincode"
+        reason: "Invalid or unsupported pincode",
       };
     }
 
@@ -585,16 +602,15 @@ async function checkPincodeDelivery(pincode) {
       city: office.District || office.Name,
       state: office.State,
       available: true, // all pincodes are serviceable
-      deliveryTime: "45-60 minutes"
+      deliveryTime: "45-60 minutes",
     };
-
   } catch (err) {
     console.error("Error fetching pincode:", err);
     return {
       city: null,
       state: null,
       available: false,
-      reason: "Service temporarily unavailable"
+      reason: "Service temporarily unavailable",
     };
   }
 }
@@ -605,27 +621,27 @@ async function checkPincodeDelivery(pincode) {
  * @param {string} message - Status message
  */
 function showDeliveryStatus(type, message) {
-  const statusDiv = document.getElementById('deliveryStatus');
+  const statusDiv = document.getElementById("deliveryStatus");
   if (!statusDiv) return;
-  
+
   statusDiv.className = `delivery-status ${type}`;
-  
-  if (type === 'checking') {
+
+  if (type === "checking") {
     statusDiv.innerHTML = `<span class="delivery-spinner"></span>${message}`;
   } else {
     statusDiv.textContent = message;
   }
-  
-  statusDiv.style.display = 'block';
+
+  statusDiv.style.display = "block";
 }
 
 /**
  * Hide delivery status
  */
 function hideDeliveryStatus() {
-  const statusDiv = document.getElementById('deliveryStatus');
+  const statusDiv = document.getElementById("deliveryStatus");
   if (statusDiv) {
-    statusDiv.style.display = 'none';
+    statusDiv.style.display = "none";
   }
 }
 
@@ -642,16 +658,18 @@ function savePincode(pincode, deliveryInfo) {
       state: deliveryInfo.state,
       available: deliveryInfo.available,
       deliveryTime: deliveryInfo.deliveryTime,
-      savedAt: Date.now()
+      savedAt: Date.now(),
     };
-    
-    sessionStorage.setItem('quickbasket_pincode', JSON.stringify(pincodeData));
+
+    sessionStorage.setItem("quickbasket_pincode", JSON.stringify(pincodeData));
     updateDeliveryBanner(pincodeData);
-    
+
     // Show success toast
-    showSuccessToast(`Delivery location set to ${deliveryInfo.city}, ${deliveryInfo.state}`);
+    showSuccessToast(
+      `Delivery location set to ${deliveryInfo.city}, ${deliveryInfo.state}`
+    );
   } catch (error) {
-    console.error('Error saving pincode:', error);
+    console.error("Error saving pincode:", error);
   }
 }
 
@@ -660,22 +678,22 @@ function savePincode(pincode, deliveryInfo) {
  */
 function loadSavedPincode() {
   try {
-    const savedData = sessionStorage.getItem('quickbasket_pincode');
+    const savedData = sessionStorage.getItem("quickbasket_pincode");
     if (savedData) {
       const pincodeData = JSON.parse(savedData);
-      
+
       // Check if data is not too old (24 hours)
       const isRecent = Date.now() - pincodeData.savedAt < 24 * 60 * 60 * 1000;
-      
+
       if (isRecent && pincodeData.available) {
         updateDeliveryBanner(pincodeData);
       } else {
         // Clear old data
-        sessionStorage.removeItem('quickbasket_pincode');
+        sessionStorage.removeItem("quickbasket_pincode");
       }
     }
   } catch (error) {
-    console.error('Error loading saved pincode:', error);
+    console.error("Error loading saved pincode:", error);
   }
 }
 
@@ -684,24 +702,24 @@ function loadSavedPincode() {
  * @param {object} pincodeData - Saved pincode data
  */
 function updateDeliveryBanner(pincodeData) {
-  const deliveryText = document.getElementById('deliveryLocationText');
-  const deliveryInfo = document.querySelector('.delivery-info');
-  const changePincodeBtn = document.getElementById('changePincodeBtn');
-  
+  const deliveryText = document.getElementById("deliveryLocationText");
+  const deliveryInfo = document.querySelector(".delivery-info");
+  const changePincodeBtn = document.getElementById("changePincodeBtn");
+
   if (!deliveryText || !pincodeData.available) return;
-  
+
   deliveryText.textContent = `Delivering to ${pincodeData.city}, ${pincodeData.state} (${pincodeData.pincode})`;
-  
+
   if (deliveryInfo) {
-    deliveryInfo.classList.add('has-location');
+    deliveryInfo.classList.add("has-location");
   }
-  
+
   // Update button to show clear option on right-click or long press
   if (changePincodeBtn) {
-    changePincodeBtn.addEventListener('contextmenu', function(e) {
+    changePincodeBtn.addEventListener("contextmenu", function (e) {
       e.preventDefault();
       e.stopPropagation();
-      if (confirm('Clear delivery location?')) {
+      if (confirm("Clear delivery location?")) {
         clearSavedPincode();
       }
     });
@@ -713,23 +731,23 @@ function updateDeliveryBanner(pincodeData) {
  */
 function clearSavedPincode() {
   try {
-    sessionStorage.removeItem('quickbasket_pincode');
-    
+    sessionStorage.removeItem("quickbasket_pincode");
+
     // Reset banner text
-    const deliveryText = document.getElementById('deliveryLocationText');
-    const deliveryInfo = document.querySelector('.delivery-info');
-    
+    const deliveryText = document.getElementById("deliveryLocationText");
+    const deliveryInfo = document.querySelector(".delivery-info");
+
     if (deliveryText) {
-      deliveryText.textContent = 'Click to set delivery location';
+      deliveryText.textContent = "Click to set delivery location";
     }
-    
+
     if (deliveryInfo) {
-      deliveryInfo.classList.remove('has-location');
+      deliveryInfo.classList.remove("has-location");
     }
-    
-    showSuccessToast('Delivery location cleared');
+
+    showSuccessToast("Delivery location cleared");
   } catch (error) {
-    console.error('Error clearing pincode:', error);
+    console.error("Error clearing pincode:", error);
   }
 }
 
@@ -844,8 +862,9 @@ function updateCartDisplay() {
 
   qrAmount.textContent = `₹${finalTotal}`;
 
-  document.querySelector(".qr-code img").src =
-    `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=QuickBasket-Payment-Total-₹${finalTotal}`;
+  document.querySelector(
+    ".qr-code img"
+  ).src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=QuickBasket-Payment-Total-₹${finalTotal}`;
 
   // Update cart count on header
   const newCartCount = cart.reduce((total, item) => total + item.quantity, 0);
@@ -905,9 +924,15 @@ function displayAvailableCoupons() {
             <div class="coupon-info">
                 <div class="coupon-code">${coupon.code}</div>
                 <div class="coupon-desc">${coupon.description}</div>
-                ${coupon.minOrder > 0 ? `<div class="coupon-min">Min order: ₹${coupon.minOrder}</div>` : ""}
+                ${
+                  coupon.minOrder > 0
+                    ? `<div class="coupon-min">Min order: ₹${coupon.minOrder}</div>`
+                    : ""
+                }
             </div>
-            <button class="coupon-apply-btn" onclick="applyCouponFromList('${coupon.code}')">Apply</button>
+            <button class="coupon-apply-btn" onclick="applyCouponFromList('${
+              coupon.code
+            }')">Apply</button>
         `;
     couponsList.appendChild(couponItem);
   });
@@ -930,13 +955,13 @@ function applyCoupon() {
   const coupon = coupons[couponCode];
   const cartTotal = cart.reduce(
     (total, item) => total + item.price * item.quantity,
-    0,
+    0
   );
 
   if (cartTotal < coupon.minOrder) {
     showCouponMessage(
       `Coupon not eligible for current cart value. Minimum order: ₹${coupon.minOrder}`,
-      "error",
+      "error"
     );
     return;
   }
@@ -952,13 +977,13 @@ function applyCouponFromList(couponCode) {
   const coupon = coupons[couponCode];
   const cartTotal = cart.reduce(
     (total, item) => total + item.price * item.quantity,
-    0,
+    0
   );
 
   if (cartTotal < coupon.minOrder) {
     showCouponMessage(
       `Coupon not eligible for current cart value. Minimum order: ₹${coupon.minOrder}`,
-      "error",
+      "error"
     );
     return;
   }
@@ -1203,7 +1228,7 @@ function toggleWishlist(productId, event) {
     showToast("Removed from wishlist");
   } else {
     const productToAdd = productsData.allProducts.find(
-      (p) => p.id === productId,
+      (p) => p.id === productId
     );
     if (productToAdd) {
       wishlist.push(productToAdd);
@@ -1264,7 +1289,7 @@ function updateWishlistDisplay() {
       wishlistItem.className = "wishlist-item";
 
       const productDetail = productsData.allProducts.find(
-        (p) => p.id === item.id,
+        (p) => p.id === item.id
       );
       const description = productDetail
         ? productDetail.description

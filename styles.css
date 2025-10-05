@@ -458,8 +458,12 @@ nav {
 }
 
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 /* Dark theme for pincode components */
@@ -534,7 +538,6 @@ nav {
 .nav-links li a.active {
   color: var(--primary);
 }
-
 
 /* Hero Section */
 .hero {
@@ -665,6 +668,75 @@ nav {
   width: 100%;
   object-fit: cover;
   border-bottom: 1px solid #eee;
+  background-color: #f0f0f0;
+}
+
+/* Skeleton Loader */
+.skeleton {
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: loading 1.5s infinite;
+}
+
+.skeleton-image {
+  height: 180px;
+  width: 100%;
+  border-bottom: 1px solid #eee;
+}
+
+.skeleton-title {
+  height: 20px;
+  width: 70%;
+  margin-bottom: 10px;
+  border-radius: 4px;
+}
+
+.skeleton-price {
+  height: 24px;
+  width: 40%;
+  margin-bottom: 10px;
+  border-radius: 4px;
+}
+
+.skeleton-description {
+  height: 14px;
+  width: 100%;
+  margin-bottom: 6px;
+  border-radius: 4px;
+}
+
+.skeleton-description:last-of-type {
+  width: 80%;
+}
+
+.skeleton-button {
+  height: 36px;
+  width: 100%;
+  border-radius: 50px;
+  margin-top: 15px;
+}
+
+@keyframes loading {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+/* Dark theme skeleton */
+[data-theme="dark"] .skeleton {
+  background: linear-gradient(90deg, #2d2d2d 25%, #3d3d3d 50%, #2d2d2d 75%);
+  background-size: 200% 100%;
+}
+
+[data-theme="dark"] .skeleton-image {
+  border-bottom: 1px solid #3d3d3d;
+}
+
+[data-theme="dark"] .product-image {
+  background-color: #2d2d2d;
 }
 
 .product-info {
@@ -1858,8 +1930,8 @@ footer {
 }
 
 [data-theme="dark"] .hero {
- background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)),
-              url("https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1200&q=80");
+  background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)),
+    url("https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1200&q=80");
   background-size: cover;
   background-position: center;
   transition: var(--transition); /* smooth transition when toggling dark mode */
