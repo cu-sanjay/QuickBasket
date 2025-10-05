@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="stylesheet" href="../styles.css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>FAQ - QuickBasket</title>
+    <link
+      rel="icon"
+      href="https://cdn-icons-png.flaticon.com/512/3081/3081559.png"
+      type="image/png"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+    />
+  </head>
+  <body>
+    <header>
+      <div class="container">
+        <div class="header-content">
+          <div class="logo">
+            <i class="fas fa-shopping-basket"></i>
+            <a href="../index.html" style="color: white; text-decoration: none;">
+              <span>QuickBasket</span>
+            </a>
+          </div>
+          <div class="search-bar">
+            <input type="text" placeholder="Search for products..." />
+            <button><i class="fas fa-search"></i></button>
+          </div>
+          <div class="header-actions">
+            <div
+              class="action-item theme-toggle-nav"
+              onclick="toggleTheme()"
+              title="Toggle dark mode"
+            >
+              <i class="fas fa-sun icon sun-icon"></i>
+              <i class="fas fa-moon icon moon-icon"></i>
+              <span>Theme</span>
+            </div>
+            <div class="action-item" onclick="window.location.href='../index.html'">
+              <i class="fas fa-home"></i>
+              <span>Home</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+    <nav>
+      <div class="container">
+        <ul class="nav-links">
+          <li>
+            <a href="../index.html" title="Home"><i class="fas fa-home"></i> <span>Home</span></a>
+          </li>
+          <li>
+            <a href="../index.html#products" title="Products"><i class="fas fa-shopping-bag"></i> <span>Products</span></a>
+          </li>
+          <li>
+            <a href="contact-us.html" title="Contact"><i class="fas fa-envelope"></i> <span>Contact</span></a>
+          </li>
+          <li>
+            <a href="faq.html" class="active" title="FAQ"><i class="fas fa-question-circle"></i> <span>FAQ</span></a>
+          </li>
+        </ul>
+      </div>
+    </nav>
+    <div class="container">
+      <div class="static-page-content">
+        <h1 class="page-title">Frequently Asked Questions</h1>
+        <p class="page-subtitle">Find answers to common questions about QuickBasket</p>
+
+        <div class="faq-section">
+          <div class="faq-item">
+            <h3 class="faq-question">
+              <i class="fas fa-chevron-right"></i>
+              What is QuickBasket?
+            </h3>
+            <div class="faq-answer">
+              <p>QuickBasket is your go-to online grocery delivery service that brings fresh groceries, snacks, and household essentials right to your doorstep in just minutes. We partner with local stores to ensure you get the freshest products quickly and conveniently.</p>
+            </div>
+          </div>
+
+          <div class="faq-item">
+            <h3 class="faq-question">
+              <i class="fas fa-chevron-right"></i>
+              How fast is the delivery?
+            </h3>
+            <div class="faq-answer">
+              <p>We pride ourselves on lightning-fast delivery! Most orders are delivered within 45-60 minutes of placing your order. Delivery times may vary based on your location and order volume during peak hours.</p>
+            </div>
+          </div>
+
+          <div class="faq-item">
+            <h3 class="faq-question">
+              <i class="fas fa-chevron-right"></i>
+              What areas do you deliver to?
+            </h3>
+            <div class="faq-answer">
+              <p>We currently deliver to select areas across major cities in India. You can check if we deliver to your location by entering your pincode on our homepage. We're constantly expanding our service areas, so check back if we're not in your area yet!</p>
+            </div>
+          </div>
+
+          <div class="faq-item">
+            <h3 class="faq-question">
+              <i class="fas fa-chevron-right"></i>
+              Is there a minimum order value?
+            </h3>
+            <div class="faq-answer">
+              <p>No, there's no minimum order value! You can order as little or as much as you need. However, some delivery charges may apply for orders below ₹199.</p>
+            </div>
+          </div>
+
+          <div class="faq-item">
+            <h3 class="faq-question">
+              <i class="fas fa-chevron-right"></i>
+              What payment methods do you accept?
+            </h3>
+            <div class="faq-answer">
+              <p>We accept multiple payment methods including credit/debit cards, UPI, digital wallets, and cash on delivery. All online payments are processed securely through encrypted payment gateways.</p>
+            </div>
+          </div>
+
+          <div class="faq-item">
+            <h3 class="faq-question">
+              <i class="fas fa-chevron-right"></i>
+              Can I modify or cancel my order?
+            </h3>
+            <div class="faq-answer">
+              <p>Yes, you can modify or cancel your order within 5 minutes of placing it. After that, the order goes into preparation and cannot be modified. Please contact our customer support immediately if you need assistance.</p>
+            </div>
+          </div>
+
+          <div class="faq-item">
+            <h3 class="faq-question">
+              <i class="fas fa-chevron-right"></i>
+              How do I apply a coupon code?
+            </h3>
+            <div class="faq-answer">
+              <p>You can apply coupon codes during checkout. Simply enter the code in the "Apply Coupon" field and click apply. The discount will be reflected in your final amount. Check our app regularly for the latest offers and deals!</p>
+            </div>
+          </div>
+
+          <div class="faq-item">
+            <h3 class="faq-question">
+              <i class="fas fa-chevron-right"></i>
+              What if I receive a damaged or wrong product?
+            </h3>
+            <div class="faq-answer">
+              <p>We take quality very seriously. If you receive a damaged or incorrect product, please contact our customer support within 24 hours with photos of the item. We'll arrange for a replacement or refund immediately.</p>
+            </div>
+          </div>
+
+          <div class="faq-item">
+            <h3 class="faq-question">
+              <i class="fas fa-chevron-right"></i>
+              Do you offer same-day delivery?
+            </h3>
+            <div class="faq-answer">
+              <p>Yes! In fact, we offer delivery within the hour for most orders. Our goal is to get your groceries to you as quickly as possible, typically within 45-60 minutes.</p>
+            </div>
+          </div>
+
+          <div class="faq-item">
+            <h3 class="faq-question">
+              <i class="fas fa-chevron-right"></i>
+              How can I track my order?
+            </h3>
+            <div class="faq-answer">
+              <p>Once your order is confirmed, you'll receive real-time updates via SMS and email. You can also track your order status in the "My Orders" section of your account.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="help-section">
+          <h2>Still have questions?</h2>
+          <p>Can't find the answer you're looking for? Our customer support team is here to help!</p>
+          <a href="contact-us.html" class="btn">Contact Support</a>
+        </div>
+      </div>
+    </div> 
+    <footer>
+      <div class="container">
+        <div class="footer-content">
+          <div class="footer-column">
+            <h3>Quick Links</h3>
+            <ul>
+              <li><a href="../index.html">Home</a></li>
+              <li><a href="../index.html#products">Products</a></li>
+              <li><a href="../index.html#products">Categories</a></li>
+              <li><a href="../index.html#products">Offers</a></li>
+            </ul>
+          </div>
+          <div class="footer-column">
+            <h3>Customer Service</h3>
+            <ul>
+              <li><a href="contact-us.html">Contact Us</a></li>
+              <li><a href="faq.html">FAQ</a></li>
+              <li><a href="shipping-policy.html">Shipping Policy</a></li>
+              <li><a href="returns-refunds.html">Returns & Refunds</a></li>
+              <li><a href="privacy-policy.html">Privacy Policy</a></li>
+            </ul>
+          </div>
+          <div class="footer-column">
+            <h3>Contact Info</h3>
+            <ul>
+              <li>
+                <i class="fas fa-map-marker-alt"></i> QuickMart, Sector 8,
+                Pratap Nagar, Jaipur
+              </li>
+              <li><i class="fas fa-phone"></i> +91 9800800808</li>
+              <li><i class="fas fa-envelope"></i> hello@quickbasket.com</li>
+            </ul>
+          </div>
+          <div class="footer-column">
+            <h3>Newsletter</h3>
+            <p>
+              Subscribe to get special offers, free giveaways, and new product
+              alerts
+            </p>
+            <form>
+              <input
+                type="email"
+                placeholder="Your email address"
+                style="
+                  padding: 10px;
+                  width: 100%;
+                  margin-bottom: 10px;
+                  border-radius: 5px;
+                  border: none;
+                "
+              />
+              <button type="submit" class="btn" style="width: 100%">
+                Subscribe
+              </button>
+            </form>
+          </div>
+        </div>
+        <div class="footer-bottom">
+          <p>&copy; 2025 QuickBasket. All rights reserved.</p>
+        </div>
+      </div>
+    </footer>
+
+    <script>
+      function toggleTheme() {
+        const currentTheme = document.documentElement.getAttribute("data-theme");
+        const newTheme = currentTheme === "dark" ? "light" : "dark";
+        setTheme(newTheme);
+      }
+      function setTheme(theme) {
+        document.documentElement.setAttribute("data-theme", theme);
+        localStorage.setItem("theme", theme);
+      }
+      function initializeTheme() {
+        const savedTheme = localStorage.getItem("theme");
+        const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+        const theme = savedTheme || (prefersDark ? "dark" : "light");
+        setTheme(theme);
+      }
+      document.addEventListener("DOMContentLoaded", function () {
+        initializeTheme();
+        const faqItems = document.querySelectorAll(".faq-item");
+        faqItems.forEach((item) => {
+          const question = item.querySelector(".faq-question");
+          question.addEventListener("click", () => {
+            item.classList.toggle("active");
+          });
+        });
+      });
+    </script>
+  </body>
+</html>
