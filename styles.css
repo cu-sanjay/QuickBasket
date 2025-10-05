@@ -605,6 +605,43 @@ nav {
   border-radius: 10px;
 }
 
+.products-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+  gap: 15px;
+}
+
+.sort-controls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.sort-dropdown {
+  padding: 8px 12px;
+  border: 2px solid var(--light-gray);
+  border-radius: 8px;
+  background: white;
+  color: var(--dark);
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: var(--transition);
+  min-width: 180px;
+}
+
+.sort-dropdown:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(13, 138, 188, 0.1);
+}
+
+.sort-dropdown:hover {
+  border-color: var(--primary);
+}
+
 .categories {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
@@ -764,6 +801,33 @@ nav {
   color: var(--success);
   font-size: 0.9rem;
   margin-left: 5px;
+}
+
+.product-rating {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 8px 0;
+  font-size: 0.9rem;
+}
+
+.stars {
+  display: flex;
+  gap: 2px;
+}
+
+.stars i {
+  color: #ffb400;
+  font-size: 14px;
+}
+
+.stars i.far {
+  color: #ddd;
+}
+
+.rating-value {
+  color: var(--gray);
+  font-weight: 500;
 }
 
 .product-actions {
@@ -1058,6 +1122,17 @@ footer {
     grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
   }
 
+  .products-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .sort-dropdown {
+    min-width: 160px;
+    font-size: 0.85rem;
+  }
+
   /* Pincode responsive */
   .banner-content {
     padding: 0 10px;
@@ -1138,6 +1213,12 @@ footer {
 
   .products {
     grid-template-columns: 1fr;
+  }
+
+  .sort-dropdown {
+    min-width: 140px;
+    font-size: 0.8rem;
+    padding: 6px 10px;
   }
 
   /* Mobile pincode styles */
@@ -1952,6 +2033,25 @@ footer {
 [data-theme="dark"] .product-card:hover,
 [data-theme="dark"] .category-item:hover {
   box-shadow: 0 8px 16px rgba(0, 0, 0, 0.4);
+}
+
+[data-theme="dark"] .sort-dropdown {
+  background: #2d2d2d;
+  border-color: #3d3d3d;
+  color: #e8eaed;
+}
+
+[data-theme="dark"] .sort-dropdown:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(13, 138, 188, 0.2);
+}
+
+[data-theme="dark"] .sort-dropdown:hover {
+  border-color: var(--primary);
+}
+
+[data-theme="dark"] .rating-value {
+  color: #9aa0a6;
 }
 
 [data-theme="dark"] .cart-item {

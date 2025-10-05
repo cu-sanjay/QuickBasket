@@ -6,6 +6,7 @@
       "price": 249,
       "originalPrice": 279,
       "discount": 30,
+      "rating": 4.3,
       "description": "Freshly picked vegetables from local farms",
       "image": "https://images.unsplash.com/photo-1542838132-92c53300491e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=400&q=80",
       "category": "vegetables"
@@ -16,6 +17,7 @@
       "price": 399,
       "originalPrice": 449,
       "discount": 50,
+      "rating": 4.6,
       "description": "Seasonal organic fruits, rich in nutrients",
       "image": "https://images.unsplash.com/photo-1623645418090-df94e62d07d1?q=80&w=1171&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=400&q=80",
       "category": "fruits"
@@ -26,6 +28,7 @@
       "price": 179,
       "originalPrice": 199,
       "discount": 20,
+      "rating": 4.1,
       "description": "Fresh milk, cheese, butter and yogurt",
       "image": "https://images.unsplash.com/photo-1506617420156-8e4536971650?q=80&w=1423&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=400&q=80",
       "category": "dairy"
@@ -36,6 +39,7 @@
       "price": 129,
       "originalPrice": 144,
       "discount": 15,
+      "rating": 4.4,
       "description": "Freshly baked bread, cakes and pastries",
       "image": "https://images.unsplash.com/photo-1546904442-d07fd05f2f9a?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=400&q=80",
       "category": "bakery"
@@ -47,6 +51,7 @@
       "price": 299,
       "originalPrice": 359,
       "discount": 60,
+      "rating": 3.8,
       "description": "Popular soft drinks assortment, perfect for parties",
       "image": "https://images.unsplash.com/photo-1646009761326-dc939bb7c226?q=80&w=1171&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=400&q=80",
       "category": "beverages"
@@ -57,6 +62,7 @@
       "price": 199,
       "originalPrice": 239,
       "discount": 40,
+      "rating": 4.2,
       "description": "Best-selling combo of chips, nuts and cookies",
       "image": "https://images.unsplash.com/photo-1752711807643-79af3096f1b9?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=400&q=80",
       "category": "snacks"
@@ -67,6 +73,7 @@
       "price": 499,
       "originalPrice": 599,
       "discount": 100,
+      "rating": 4.0,
       "description": "Popular selection of all-purpose cleaners and supplies",
       "image": "https://images.unsplash.com/photo-1740325927180-6e57faaae5db?q=80&w=735&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=400&q=80",
       "category": "home-care"
@@ -79,6 +86,7 @@
       "price": 299,
       "originalPrice": 359,
       "discount": 60,
+      "rating": 3.9,
       "description": "Assorted soft drinks 6 pack",
       "image": "https://images.unsplash.com/photo-1646009761326-dc939bb7c226?q=80&w=1171&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=400&q=80",
       "category": "beverages"
@@ -89,6 +97,7 @@
       "price": 199,
       "originalPrice": 239,
       "discount": 40,
+      "rating": 4.1,
       "description": "Assorted chips, nuts and cookies",
       "image": "https://images.unsplash.com/photo-1752711807643-79af3096f1b9?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=400&q=80",
       "category": "snacks"
@@ -99,6 +108,7 @@
       "price": 349,
       "originalPrice": 399,
       "discount": 50,
+      "rating": 4.5,
       "description": "1L tub of premium ice cream",
       "image": "https://images.unsplash.com/photo-1709620050386-ed31904f8ff7?q=80&w=627&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=400&q=80",
       "category": "snacks"
@@ -109,6 +119,7 @@
       "price": 499,
       "originalPrice": 599,
       "discount": 100,
+      "rating": 4.0,
       "description": "All-purpose cleaners and supplies",
       "image": "https://images.unsplash.com/photo-1740325927180-6e57faaae5db?q=80&w=735&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=400&q=80",
       "category": "home-care"
@@ -119,6 +130,7 @@
       "price": 450,
       "originalPrice": 500,
       "discount": 50,
+      "rating": 4.7,
       "description": "A selection of fine cheeses for any occasion.",
       "image": "https://images.unsplash.com/photo-1589881210718-42da05899fe4?q=80&w=764&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
       "category": "dairy"
@@ -129,6 +141,7 @@
       "price": 89,
       "originalPrice": 99,
       "discount": 10,
+      "rating": 4.2,
       "description": "Healthy and delicious whole wheat bread, freshly baked.",
       "image": "https://images.unsplash.com/photo-1709577612752-17464d42512b?q=80&w=1491&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
       "category": "bakery"
@@ -139,6 +152,7 @@
       "price": 149,
       "originalPrice": 169,
       "discount": 20,
+      "rating": 4.4,
       "description": "1L carton of freshly squeezed orange juice.",
       "image": "https://images.unsplash.com/photo-1600271886742-f049cd451bba?q=80&w=687&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
       "category": "beverages"
@@ -149,6 +163,7 @@
       "price": 249,
       "originalPrice": 279,
       "discount": 30,
+      "rating": 4.3,
       "description": "A healthy mix of almonds, walnuts, and sunflower seeds.",
       "image": "https://images.unsplash.com/photo-1542990253-a781e04c0082?q=80&w=1094&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
       "category": "snacks"
@@ -159,6 +174,7 @@
       "price": 599,
       "originalPrice": 649,
       "discount": 50,
+      "rating": 4.8,
       "description": "Rich and aromatic gourmet coffee beans, 500g pack.",
       "image": "https://images.unsplash.com/photo-1447933601403-0c6688de566e?q=80&w=1061&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
       "category": "beverages"
@@ -169,6 +185,7 @@
       "price": 399,
       "originalPrice": 449,
       "discount": 50,
+      "rating": 4.1,
       "description": "High-efficiency laundry detergent, 2L bottle.",
       "image": "https://images.unsplash.com/photo-1624372635310-01d078c05dd9?q=80&w=764&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
       "category": "home-care"
@@ -179,6 +196,7 @@
       "price": 499,
       "originalPrice": 549,
       "discount": 50,
+      "rating": 4.6,
       "description": "A selection of exotic fruits like dragon fruit, kiwi, and passion fruit.",
       "image": "https://images.unsplash.com/photo-1646340925478-844ca7a38e9c?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
       "category": "fruits"
@@ -189,6 +207,7 @@
       "price": 149,
       "originalPrice": 169,
       "discount": 20,
+      "rating": 4.5,
       "description": "Pack of 12 freshly baked chocolate chip cookies.",
       "image": "https://images.unsplash.com/photo-1657418830273-40c19cfff4d7?q=80&w=687&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
       "category": "bakery"
@@ -199,6 +218,7 @@
       "price": 99,
       "originalPrice": 119,
       "discount": 20,
+      "rating": 4.2,
       "description": "Creamy and healthy Greek yogurt, 500g tub.",
       "image": "https://images.unsplash.com/photo-1571212515416-fef01fc43637?q=80&w=682&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
       "category": "dairy"
@@ -209,6 +229,7 @@
       "price": 79,
       "originalPrice": 89,
       "discount": 10,
+      "rating": 4.0,
       "description": "Fresh and tender organic baby spinach, 200g pack.",
       "image": "https://images.unsplash.com/photo-1576045057995-568f588f82fb?q=80&w=880&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
       "category": "vegetables"
