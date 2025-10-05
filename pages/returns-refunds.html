@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="stylesheet" href="../styles.css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Returns & Refunds - QuickBasket</title>
+    <link
+      rel="icon"
+      href="https://cdn-icons-png.flaticon.com/512/3081/3081559.png"
+      type="image/png"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+    />
+  </head>
+  <body>
+    <header>
+      <div class="container">
+        <div class="header-content">
+          <div class="logo">
+            <i class="fas fa-shopping-basket"></i>
+            <a href="../index.html" style="color: white; text-decoration: none;">
+              <span>QuickBasket</span>
+            </a>
+          </div>
+          <div class="search-bar">
+            <input type="text" placeholder="Search for products..." />
+            <button><i class="fas fa-search"></i></button>
+          </div>
+          <div class="header-actions">
+            <div
+              class="action-item theme-toggle-nav"
+              onclick="toggleTheme()"
+              title="Toggle dark mode"
+            >
+              <i class="fas fa-sun icon sun-icon"></i>
+              <i class="fas fa-moon icon moon-icon"></i>
+              <span>Theme</span>
+            </div>
+            <div class="action-item" onclick="window.location.href='../index.html'">
+              <i class="fas fa-home"></i>
+              <span>Home</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+    <nav>
+      <div class="container">
+        <ul class="nav-links">
+          <li>
+            <a href="../index.html" title="Home"><i class="fas fa-home"></i> <span>Home</span></a>
+          </li>
+          <li>
+            <a href="../index.html#products" title="Products"><i class="fas fa-shopping-bag"></i> <span>Products</span></a>
+          </li>
+          <li>
+            <a href="contact-us.html" title="Contact"><i class="fas fa-envelope"></i> <span>Contact</span></a>
+          </li>
+          <li>
+            <a href="faq.html" title="FAQ"><i class="fas fa-question-circle"></i> <span>FAQ</span></a>
+          </li>
+        </ul>
+      </div>
+    </nav>
+    <div class="container">
+      <div class="static-page-content">
+        <h1 class="page-title">Returns & Refunds Policy</h1>
+        <p class="page-subtitle">Your satisfaction is our priority</p>
+
+        <div class="policy-section">
+          <h2>1. Our Commitment</h2>
+          <p>At QuickBasket, we are committed to delivering fresh, high-quality products. If you're not completely satisfied with your order, we're here to help with returns and refunds.</p>
+        </div>
+
+        <div class="policy-section">
+          <h2>2. Return Eligibility</h2>
+          <p>You can request a return or refund if:</p>
+          <ul>
+            <li>Products are damaged, defective, or expired</li>
+            <li>Wrong items were delivered</li>
+            <li>Items are missing from your order</li>
+            <li>Products don't match the description</li>
+            <li>Quality issues with fresh produce, dairy, or other perishables</li>
+          </ul>
+          <p><strong>Important:</strong> Returns must be requested within 24 hours of delivery.</p>
+        </div>
+
+        <div class="policy-section">
+          <h2>3. Non-Returnable Items</h2>
+          <p>For hygiene and safety reasons, the following items cannot be returned once delivered:</p>
+          <ul>
+            <li>Products that have been opened or used</li>
+            <li>Items without original packaging</li>
+            <li>Perishable items that show no quality issues</li>
+            <li>Personal care and hygiene products (unless defective)</li>
+            <li>Items damaged due to misuse or negligence</li>
+          </ul>
+        </div>
+
+        <div class="policy-section">
+          <h2>4. How to Request a Return</h2>
+          <p>Follow these simple steps to request a return:</p>
+          <ol>
+            <li><strong>Contact Us:</strong> Call +91 9800800808 or email hello@quickbasket.com within 24 hours</li>
+            <li><strong>Provide Details:</strong> Share your order number and reason for return</li>
+            <li><strong>Submit Photos:</strong> Send clear photos of the damaged or incorrect items</li>
+            <li><strong>Verification:</strong> Our team will review your request within 2-4 hours</li>
+            <li><strong>Approval:</strong> Once approved, we'll arrange pickup or process your refund</li>
+          </ol>
+        </div>
+
+        <div class="policy-section">
+          <h2>5. Refund Process</h2>
+          <p>Once your return is approved, we'll process your refund:</p>
+          <div class="refund-timeline">
+            <div class="timeline-item">
+              <div class="timeline-icon">
+                <i class="fas fa-check-circle"></i>
+              </div>
+              <div class="timeline-content">
+                <h3>Approval</h3>
+                <p>Return request approved within 2-4 hours</p>
+              </div>
+            </div>
+            <div class="timeline-item">
+              <div class="timeline-icon">
+                <i class="fas fa-undo"></i>
+              </div>
+              <div class="timeline-content">
+                <h3>Refund Initiated</h3>
+                <p>Refund processed within 24 hours</p>
+              </div>
+            </div>
+            <div class="timeline-item">
+              <div class="timeline-icon">
+                <i class="fas fa-wallet"></i>
+              </div>
+              <div class="timeline-content">
+                <h3>Amount Credited</h3>
+                <p>Funds appear in your account within 5-7 business days</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="policy-section">
+          <h2>6. Refund Methods</h2>
+          <p>Refunds will be processed using the same payment method used for the original purchase:</p>
+          <ul>
+            <li><strong>Credit/Debit Card:</strong> 5-7 business days</li>
+            <li><strong>UPI/Digital Wallet:</strong> 3-5 business days</li>
+            <li><strong>Net Banking:</strong> 5-7 business days</li>
+            <li><strong>Cash on Delivery:</strong> Bank transfer within 7-10 business days</li>
+          </ul>
+          <p>For COD orders, we'll need your bank account details to process the refund.</p>
+        </div>
+
+        <div class="policy-section">
+          <h2>7. Replacement Options</h2>
+          <p>Instead of a refund, you can choose to:</p>
+          <ul>
+            <li><strong>Instant Replacement:</strong> Get the same product delivered again (subject to availability)</li>
+            <li><strong>Store Credit:</strong> Receive credit in your QuickBasket wallet for future orders</li>
+            <li><strong>Alternative Product:</strong> Choose a different product of equal or lesser value</li>
+          </ul>
+        </div>
+
+        <div class="policy-section">
+          <h2>8. Partial Refunds</h2>
+          <p>In some cases, we may offer partial refunds:</p>
+          <ul>
+            <li>When only some items in your order have issues</li>
+            <li>For minor quality concerns that don't warrant a full return</li>
+            <li>When products are partially damaged but still usable</li>
+          </ul>
+          <p>Our customer support team will work with you to find a fair solution.</p>
+        </div>
+
+        <div class="policy-section">
+          <h2>9. Order Cancellation</h2>
+          <p>You can cancel your order before it's dispatched:</p>
+          <ul>
+            <li><strong>Within 5 minutes:</strong> Full refund, no questions asked</li>
+            <li><strong>After 5 minutes:</strong> Contact customer support immediately</li>
+            <li><strong>After dispatch:</strong> Cancellation not possible, but you can refuse delivery</li>
+          </ul>
+          <p>Refunds for cancelled orders are processed within 24-48 hours.</p>
+        </div>
+
+        <div class="policy-section">
+          <h2>10. Quality Guarantee</h2>
+          <p>We stand behind the quality of our products:</p>
+          <ul>
+            <li>All fresh produce is hand-picked and quality-checked</li>
+            <li>Expiry dates are verified before dispatch</li>
+            <li>Products are stored and transported at optimal temperatures</li>
+            <li>Packaging is done carefully to prevent damage</li>
+          </ul>
+        </div>
+
+        <div class="policy-section">
+          <h2>11. Contact for Returns</h2>
+          <p>Need to initiate a return or have questions? Reach out to us:</p>
+          <div class="contact-info-box">
+            <div class="contact-info-item">
+              <i class="fas fa-phone"></i>
+              <div>
+                <strong>Phone</strong>
+                <p>+91 9800800808</p>
+              </div>
+            </div>
+            <div class="contact-info-item">
+              <i class="fas fa-envelope"></i>
+              <div>
+                <strong>Email</strong>
+                <p>hello@quickbasket.com</p>
+              </div>
+            </div>
+            <div class="contact-info-item">
+              <i class="fas fa-clock"></i>
+              <div>
+                <strong>Support Hours</strong>
+                <p>8:00 AM - 10:00 PM (7 days a week)</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="help-section">
+          <h2>Need Immediate Assistance?</h2>
+          <p>Our customer support team is ready to help you with any return or refund queries.</p>
+          <a href="contact-us.html" class="btn">Contact Support</a>
+        </div>
+      </div>
+    </div>
+    <footer>
+      <div class="container">
+        <div class="footer-content">
+          <div class="footer-column">
+            <h3>Quick Links</h3>
+            <ul>
+              <li><a href="../index.html">Home</a></li>
+              <li><a href="../index.html#products">Products</a></li>
+              <li><a href="../index.html#products">Categories</a></li>
+              <li><a href="../index.html#products">Offers</a></li>
+            </ul>
+          </div>
+          <div class="footer-column">
+            <h3>Customer Service</h3>
+            <ul>
+              <li><a href="contact-us.html">Contact Us</a></li>
+              <li><a href="faq.html">FAQ</a></li>
+              <li><a href="shipping-policy.html">Shipping Policy</a></li>
+              <li><a href="returns-refunds.html">Returns & Refunds</a></li>
+              <li><a href="privacy-policy.html">Privacy Policy</a></li>
+            </ul>
+          </div>
+          <div class="footer-column">
+            <h3>Contact Info</h3>
+            <ul>
+              <li>
+                <i class="fas fa-map-marker-alt"></i> QuickMart, Sector 8,
+                Pratap Nagar, Jaipur
+              </li>
+              <li><i class="fas fa-phone"></i> +91 9800800808</li>
+              <li><i class="fas fa-envelope"></i> hello@quickbasket.com</li>
+            </ul>
+          </div>
+          <div class="footer-column">
+            <h3>Newsletter</h3>
+            <p>
+              Subscribe to get special offers, free giveaways, and new product
+              alerts
+            </p>
+            <form>
+              <input
+                type="email"
+                placeholder="Your email address"
+                style="
+                  padding: 10px;
+                  width: 100%;
+                  margin-bottom: 10px;
+                  border-radius: 5px;
+                  border: none;
+                "
+              />
+              <button type="submit" class="btn" style="width: 100%">
+                Subscribe
+              </button>
+            </form>
+          </div>
+        </div>
+        <div class="footer-bottom">
+          <p>&copy; 2025 QuickBasket. All rights reserved.</p>
+        </div>
+      </div>
+    </footer>
+    <script>
+      function toggleTheme() {
+        const currentTheme = document.documentElement.getAttribute("data-theme");
+        const newTheme = currentTheme === "dark" ? "light" : "dark";
+        setTheme(newTheme);
+      }
+      function setTheme(theme) {
+        document.documentElement.setAttribute("data-theme", theme);
+        localStorage.setItem("theme", theme);
+      }
+      function initializeTheme() {
+        const savedTheme = localStorage.getItem("theme");
+        const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+        const theme = savedTheme || (prefersDark ? "dark" : "light");
+        setTheme(theme);
+      }
+      document.addEventListener("DOMContentLoaded", initializeTheme);
+    </script>
+  </body>
+</html>
