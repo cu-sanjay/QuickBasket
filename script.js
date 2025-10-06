@@ -1662,10 +1662,16 @@ document.addEventListener("DOMContentLoaded", function () {
     const name = document.getElementById('signupName').value;
     const email = document.getElementById('signupEmail').value;
     const password = document.getElementById('signupPassword').value;
+    const confirmPassword = document.getElementById('signupConfirmPassword').value;
     const phone = document.getElementById('signupPhone').value;
     
     if (!name || !email || !password || !phone) {
       showErrorToast('Please fill in all fields');
+      return;
+    }
+
+    if (password !== confirmPassword) {
+      showErrorToast('Passwords do not match');
       return;
     }
     
