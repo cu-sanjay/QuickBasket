@@ -433,7 +433,7 @@
               <input
                 type="password"
                 id="signupPassword"
-                placeholder="Create a password"
+                placeholder="Create a password (min 8 chars, uppercase, lowercase, number, special char)"
                 required
               />
             </div>
@@ -457,7 +457,38 @@
             <h3 id="userName">User Name</h3>
             <p id="userEmail" class="user-email">user@example.com</p>
           </div>
+          
+          <!-- Profile Edit Section -->
+          <div id="profileEditSection" style="display: none; margin: 20px 0;">
+            <h4 style="margin-bottom: 15px; color: var(--dark);">Edit Profile</h4>
+            <form id="editProfileForm">
+              <div class="form-group">
+                <label for="editDisplayName">Display Name</label>
+                <input type="text" id="editDisplayName" placeholder="Enter your name" required />
+              </div>
+              <div class="form-group">
+                <label>Profile Theme Color</label>
+                <div class="theme-color-picker">
+                  <button type="button" class="color-option" data-color="0D8ABC" style="background: #0D8ABC;"></button>
+                  <button type="button" class="color-option" data-color="ff6b6b" style="background: #ff6b6b;"></button>
+                  <button type="button" class="color-option" data-color="42b883" style="background: #42b883;"></button>
+                  <button type="button" class="color-option" data-color="9b59b6" style="background: #9b59b6;"></button>
+                  <button type="button" class="color-option" data-color="f39c12" style="background: #f39c12;"></button>
+                  <button type="button" class="color-option" data-color="e74c3c" style="background: #e74c3c;"></button>
+                </div>
+              </div>
+              <div class="profile-edit-actions">
+                <button type="submit" class="btn btn-primary">Save Changes</button>
+                <button type="button" class="btn btn-secondary" id="cancelEditBtn">Cancel</button>
+              </div>
+            </form>
+          </div>
+          
           <div class="user-profile-actions">
+            <button class="profile-action-btn edit-profile-btn" id="editProfileBtn">
+              <i class="fas fa-edit"></i>
+              <span>Edit Profile</span>
+            </button>
             <button class="profile-action-btn signout-btn" id="signOutBtn">
               <i class="fas fa-sign-out-alt"></i>
               <span>Sign Out</span>

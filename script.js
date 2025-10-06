@@ -1,5 +1,14 @@
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
-import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
+import { 
+  getAuth, 
+  GoogleAuthProvider, 
+  signInWithPopup, 
+  signOut, 
+  onAuthStateChanged,
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+  updateProfile
+} from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
 import { getAnalytics } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-analytics.js';
 
 const firebaseConfig = {
@@ -22,6 +31,9 @@ window.googleProvider = provider;
 window.signInWithPopup = signInWithPopup;
 window.signOut = signOut;
 window.onAuthStateChanged = onAuthStateChanged;
+window.createUserWithEmailAndPassword = createUserWithEmailAndPassword;
+window.signInWithEmailAndPassword = signInWithEmailAndPassword;
+window.updateProfile = updateProfile;
 
 onAuthStateChanged(auth, (user) => {
   if (user) {
@@ -97,17 +109,72 @@ document.getElementById('googleSignInBtn').addEventListener('click', async () =>
 document.getElementById('signOutBtn').addEventListener('click', async () => {
   try {
     await signOut(auth);
-    if (window.showSuccessToast) {
-      window.showSuccessToast('Signed out successfully');
-    }
+    showSuccessToast('Signed out successfully');
     document.getElementById('userModal').style.display = 'none';
   } catch (error) {
     console.error('Error signing out:', error);
-    if (window.showErrorToast) {
-      window.showErrorToast('Failed to sign out. Please try again.');
-    }
+    showErrorToast('Failed to sign out. Please try again.');
   }
 });
+
+function validatePassword(password) {
+  const minLength = 8;
+  const hasUpperCase = /[A-Z]/.test(password);
+  const hasLowerCase = /[a-z]/.test(password);
+  const hasNumber = /[0-9]/.test(password);
+  const hasSpecialChar = /[!@#$%^&*(),.?":{}|<>]/.test(password);
+
+  const errors = [];
+  
+  if (password.length < minLength) {
+    errors.push(`Password must be at least ${minLength} characters long`);
+  }
+  if (!hasUpperCase) {
+    errors.push('Password must contain at least one uppercase letter');
+  }
+  if (!hasLowerCase) {
+    errors.push('Password must contain at least one lowercase letter');
+  }
+  if (!hasNumber) {
+    errors.push('Password must contain at least one number');
+  }
+  if (!hasSpecialChar) {
+    errors.push('Password must contain at least one special character (!@#$%^&*(),.?":{}|<>)');
+  }
+
+  return {
+    isValid: errors.length === 0,
+    errors: errors
+  };
+}
+
+function displayPasswordStrength(password) {
+  const validation = validatePassword(password);
+  const passwordInput = document.getElementById('signupPassword');
+  
+  let existingHint = document.querySelector('.password-strength-hint');
+  if (!existingHint) {
+    existingHint = document.createElement('div');
+    existingHint.className = 'password-strength-hint';
+    passwordInput.parentNode.appendChild(existingHint);
+  }
+
+  if (!password) {
+    existingHint.innerHTML = '';
+    existingHint.style.display = 'none';
+    return;
+  }
+
+  existingHint.style.display = 'block';
+  
+  if (validation.isValid) {
+    existingHint.innerHTML = '<span style="color: var(--success);"><i class="fas fa-check-circle"></i> Strong password!</span>';
+  } else {
+    existingHint.innerHTML = '<ul style="margin: 5px 0; padding-left: 20px; font-size: 0.85rem; color: var(--danger);">' + 
+      validation.errors.map(err => `<li>${err}</li>`).join('') + 
+      '</ul>';
+  }
+}
 
 // Cart and Wishlist functionality
 let cart = [];
@@ -1291,6 +1358,89 @@ window.toggleTheme = function() {
     const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
     setTheme(newTheme);
 };
+  }
+
+  saveWishlist();
+  updateWishlistDisplay();
+}
+
+function removeWishlistItem(productId) {
+  wishlist = wishlist.filter((item) => item.id !== productId);
+  showToast("Item removed from wishlist");
+  saveWishlist();
+  updateWishlistDisplay();
+}
+
+function moveAllToCart() {
+  if (wishlist.length === 0) {
+    showToast("Wishlist is empty!");
+    return;
+  }
+
+  wishlist.forEach((item) => {
+    addToCart(item.name, item.price, item.image, item.id);
+  });
+
+  wishlist = [];
+  showToast("All items moved to cart!");
+  saveWishlist();
+  updateWishlistDisplay();
+  closeWishlist();
+  openCart();
+}
+
+function updateWishlistDisplay() {
+  const wishlistCountElement = document.querySelector(".wishlist-count");
+  const wishlistItemsContainer = document.querySelector(".wishlist-items");
+
+  if (wishlistCountElement) {
+    wishlistCountElement.textContent = wishlist.length;
+  }
+
+  if (!wishlistItemsContainer) return;
+
+  wishlistItemsContainer.innerHTML = "";
+
+  if (wishlist.length === 0) {
+    wishlistItemsContainer.innerHTML =
+      '<p style="text-align: center; padding: 20px;">Your wishlist is empty</p>';
+  } else {
+    wishlist.forEach((item) => {
+      const wishlistItem = document.createElement("div");
+      wishlistItem.className = "wishlist-item";
+
+      const productDetail = productsData.allProducts.find(
+        (p) => p.id === item.id
+      );
+      const description = productDetail
+        ? productDetail.description
+        : "Product details unavailable.";
+
+      wishlistItem.innerHTML = `
+                <div class="wishlist-item-info">
+                    <img src="${item.image}" alt="${item.name}" class="wishlist-item-image">
+                    <div class="wishlist-item-details">
+                        <h4>${item.name}</h4>
+                        <p class="wishlist-item-desc">${description}</p>
+                        <div class="wishlist-item-price">₹${item.price}</div>
+                    </div>
+                </div>
+                <div class="wishlist-item-actions">
+                    <button class="btn-small" onclick="addToCart('${item.name}', ${item.price}, '${item.image}', ${item.id}); removeWishlistItem(${item.id})">
+                        <i class="fas fa-shopping-cart"></i> Move to Cart
+                    </button>
+                    <button class="btn-remove" onclick="removeWishlistItem(${item.id})">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+            `;
+
+      wishlistItemsContainer.appendChild(wishlistItem);
+    });
+  }
+
+  renderProducts();
+}
 
 // Close modal when clicking outside
 window.onclick = function (event) {
@@ -1313,23 +1463,209 @@ window.onclick = function (event) {
 
 // Form submission handlers
 document.addEventListener("DOMContentLoaded", function () {
-  document.getElementById("loginForm").addEventListener("submit", function (e) {
+  const signupPasswordInput = document.getElementById('signupPassword');
+  if (signupPasswordInput) {
+    signupPasswordInput.addEventListener('input', function() {
+      displayPasswordStrength(this.value);
+    });
+  }
+
+  document.getElementById("loginForm").addEventListener("submit", async function (e) {
     e.preventDefault();
-    showSuccessToast("Login successful!");
-    document.getElementById("userModal").style.display = "none";
+    
+    const email = document.getElementById('loginEmail').value;
+    const password = document.getElementById('loginPassword').value;
+    
+    if (!email || !password) {
+      showErrorToast('Please fill in all fields');
+      return;
+    }
+    
+    try {
+      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      const user = userCredential.user;
+      
+      showSuccessToast(`Welcome back, ${user.displayName || user.email}!`);
+      setTimeout(() => {
+        document.getElementById('userModal').style.display = 'none';
+      }, 1000);
+    } catch (error) {
+      console.error('Error logging in:', error);
+      let errorMessage = 'Failed to log in. ';
+      
+      if (error.code === 'auth/user-not-found') {
+        errorMessage += 'No account found with this email.';
+      } else if (error.code === 'auth/wrong-password') {
+        errorMessage += 'Incorrect password.';
+      } else if (error.code === 'auth/invalid-email') {
+        errorMessage += 'Invalid email address.';
+      } else if (error.code === 'auth/too-many-requests') {
+        errorMessage += 'Too many failed attempts. Please try again later.';
+      } else {
+        errorMessage += 'Please try again.';
+      }
+      
+      showErrorToast(errorMessage);
+    }
   });
 
-  document
-    .getElementById("signupForm")
-    .addEventListener("submit", function (e) {
-      e.preventDefault();
-      showSuccessToast("Account created successfully!");
-      document.getElementById("userModal").style.display = "none";
+  document.getElementById("signupForm").addEventListener("submit", async function (e) {
+    e.preventDefault();
+    
+    const name = document.getElementById('signupName').value;
+    const email = document.getElementById('signupEmail').value;
+    const password = document.getElementById('signupPassword').value;
+    const phone = document.getElementById('signupPhone').value;
+    
+    if (!name || !email || !password || !phone) {
+      showErrorToast('Please fill in all fields');
+      return;
+    }
+    
+    const validation = validatePassword(password);
+    if (!validation.isValid) {
+      showErrorToast('Password does not meet requirements');
+      return;
+    }
+    
+    try {
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      const user = userCredential.user;
+      
+      await updateProfile(user, {
+        displayName: name,
+        photoURL: `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=0D8ABC&color=fff&size=100`
+      });
+      
+      localStorage.setItem('userPhone', phone);
+      
+      showSuccessToast(`Account created successfully! Welcome, ${name}!`);
+      setTimeout(() => {
+        document.getElementById('userModal').style.display = 'none';
+      }, 1000);
+    } catch (error) {
+      console.error('Error creating account:', error);
+      let errorMessage = 'Failed to create account. ';
+      
+      if (error.code === 'auth/email-already-in-use') {
+        errorMessage += 'This email is already registered.';
+      } else if (error.code === 'auth/invalid-email') {
+        errorMessage += 'Invalid email address.';
+      } else if (error.code === 'auth/weak-password') {
+        errorMessage += 'Password is too weak.';
+      } else {
+        errorMessage += 'Please try again.';
+      }
+      
+      showErrorToast(errorMessage);
+    }
+  });
+
+  // Profile editing functionality
+  let selectedThemeColor = '0D8ABC';
+  
+  const editProfileBtn = document.getElementById('editProfileBtn');
+  const cancelEditBtn = document.getElementById('cancelEditBtn');
+  const profileEditSection = document.getElementById('profileEditSection');
+  const editProfileForm = document.getElementById('editProfileForm');
+  
+  if (editProfileBtn) {
+    editProfileBtn.addEventListener('click', () => {
+      profileEditSection.style.display = 'block';
+      const currentUser = auth.currentUser;
+      if (currentUser) {
+        document.getElementById('editDisplayName').value = currentUser.displayName || '';
+        const savedColor = localStorage.getItem('profileThemeColor') || '0D8ABC';
+        selectedThemeColor = savedColor;
+        updateColorSelection(savedColor);
+      }
     });
+  }
+  
+  if (cancelEditBtn) {
+    cancelEditBtn.addEventListener('click', () => {
+      profileEditSection.style.display = 'none';
+    });
+  }
+  
+  document.querySelectorAll('.color-option').forEach(btn => {
+    btn.addEventListener('click', function() {
+      selectedThemeColor = this.dataset.color;
+      updateColorSelection(selectedThemeColor);
+    });
+  });
+  
+  if (editProfileForm) {
+    editProfileForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      
+      const newDisplayName = document.getElementById('editDisplayName').value;
+      const currentUser = auth.currentUser;
+      
+      if (!currentUser) {
+        showErrorToast('No user logged in');
+        return;
+      }
+      
+      try {
+        await updateProfile(currentUser, {
+          displayName: newDisplayName,
+          photoURL: `https://ui-avatars.com/api/?name=${encodeURIComponent(newDisplayName)}&background=${selectedThemeColor}&color=fff&size=100`
+        });
+        
+        localStorage.setItem('profileThemeColor', selectedThemeColor);
+        
+        updateUIForSignedInUser(currentUser);
+        
+        showSuccessToast('Profile updated successfully!');
+        profileEditSection.style.display = 'none';
+      } catch (error) {
+        console.error('Error updating profile:', error);
+        showErrorToast('Failed to update profile. Please try again.');
+      }
+    });
+  }
 
   // Initialize theme on page load
   initializeTheme();
+  
+  // Expose functions to window object for HTML onclick handlers
+  window.openCart = openCart;
+  window.closeCart = closeCart;
+  window.openWishlist = openWishlist;
+  window.closeWishlist = closeWishlist;
+  window.openUserModal = openUserModal;
+  window.switchTab = switchTab;
+  window.toggleTheme = toggleTheme;
+  window.addToCart = addToCart;
+  window.changeQuantity = changeQuantity;
+  window.showPaymentSection = showPaymentSection;
+  window.selectPayment = selectPayment;
+  window.placeOrder = placeOrder;
+  window.applyCoupon = applyCoupon;
+  window.applyCouponFromList = applyCouponFromList;
+  window.removeCoupon = removeCoupon;
+  window.toggleWishlist = toggleWishlist;
+  window.removeWishlistItem = removeWishlistItem;
+  window.moveAllToCart = moveAllToCart;
+  window.openPincodeModal = openPincodeModal;
+  window.closePincodeModal = closePincodeModal;
+  window.showSuccessToast = showSuccessToast;
+  window.showErrorToast = showErrorToast;
+  window.showWarningToast = showWarningToast;
+  window.showInfoToast = showInfoToast;
+  window.hideToast = hideToast;
 });
+
+function updateColorSelection(color) {
+  document.querySelectorAll('.color-option').forEach(btn => {
+    if (btn.dataset.color === color) {
+      btn.classList.add('selected');
+    } else {
+      btn.classList.remove('selected');
+    }
+  });
+}
 
 // Dark Mode Toggle Functionality
 function toggleTheme() {
