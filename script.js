@@ -25,7 +25,7 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const provider = new GoogleAuthProvider();
 const analytics = getAnalytics(app);
-
+let  currentUser = null;
 window.firebaseAuth = auth;
 window.googleProvider = provider;
 window.signInWithPopup = signInWithPopup;
@@ -36,10 +36,13 @@ window.signInWithEmailAndPassword = signInWithEmailAndPassword;
 window.updateProfile = updateProfile;
 
 onAuthStateChanged(auth, (user) => {
+  currentUser = user;
   if (user) {
     updateUIForSignedInUser(user);
+    renderRecentlyViewed();
   } else {
     updateUIForSignedOutUser();
+    renderRecentlyViewed();
   }
 });
 
@@ -436,21 +439,38 @@ function scrollToProducts() {
   }
 }
 
-// Render recently viewed products
-function renderRecentlyViewed() {
-  const container = document.getElementById("recentlyViewedProducts");
-  if (!container) return;
-
-  const recentlyViewed = JSON.parse(
-    localStorage.getItem("recentlyViewed") || "[]"
-  );
-
-  if (recentlyViewed.length === 0) {
-    container.innerHTML =
-      '<p style="text-align: center; padding: 20px; color: #999;">No recently viewed products</p>';
-    return;
+/**
+ * Adds a product to the recently viewed list for the current user.
+ * @param {object} product
+ */
+function addToRecentlyViewed(product) {
+  if (!currentUser) return; 
+  const key = `recentlyViewed_${currentUser.uid}`;
+  let recentlyViewed = JSON.parse(localStorage.getItem(key) || "[]");
+  recentlyViewed = recentlyViewed.filter((p) => p.id !== product.id);
+  recentlyViewed.unshift(product);
+  if (recentlyViewed.length > 4) {
+    recentlyViewed = recentlyViewed.slice(0, 4);
   }
 
+  localStorage.setItem(key, JSON.stringify(recentlyViewed));
+}
+// Render recently viewed products
+function renderRecentlyViewed() {
+  const section = document.getElementById("recently-viewed");
+  const container = document.getElementById("recentlyViewedProducts");
+  if (!section || !container) return;
+  if (!currentUser) {
+    section.style.display = "none";
+    return;
+  }
+  const key = `recentlyViewed_${currentUser.uid}`;
+  const recentlyViewed = JSON.parse(localStorage.getItem(key) || "[]");
+  if (recentlyViewed.length === 0) {
+    section.style.display = "none";
+    return;
+  }
+  section.style.display = "block";
   container.innerHTML = "";
   recentlyViewed.slice(0, 4).forEach((product) => {
     const productCard = createProductCard(product);
@@ -484,6 +504,11 @@ function createProductCard(product) {
         </div>
     `;
 
+  productCard.addEventListener("click", (e) => {
+     if (e.target.closest(".add-to-cart") || e.target.closest(".wishlist")) return;
+    addToRecentlyViewed(product);
+    renderRecentlyViewed(); 
+  });
   return productCard;
 }
 
