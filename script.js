@@ -287,18 +287,47 @@ async function loadProducts() {
   }
 }
 
+// Sort products based on selected criteria
+function sortProducts(products, sortType) {
+  if (!products || !Array.isArray(products)) return products;
+  
+  const sortedProducts = [...products]; // Create a copy to avoid mutating original
+  
+  switch (sortType) {
+    case 'rating-high':
+      return sortedProducts.sort((a, b) => (b.rating || 0) - (a.rating || 0));
+    case 'rating-low':
+      return sortedProducts.sort((a, b) => (a.rating || 0) - (b.rating || 0));
+    case 'price-high':
+      return sortedProducts.sort((a, b) => (b.price || 0) - (a.price || 0));
+    case 'price-low':
+      return sortedProducts.sort((a, b) => (a.price || 0) - (b.price || 0));
+    case 'name-asc':
+      return sortedProducts.sort((a, b) => (a.name || '').localeCompare(b.name || ''));
+    case 'name-desc':
+      return sortedProducts.sort((a, b) => (b.name || '').localeCompare(a.name || ''));
+    default:
+      return sortedProducts;
+  }
+}
+
 // Render products dynamically
 function renderProducts() {
   if (!productsData) return;
 
   const category = (currentCategory || "all").toLowerCase();
+  const sortType = document.getElementById('sortOption')?.value || 'default';
 
   // Filter helpers
   const byCategory = (p) =>
     category === "all" || (p.category || "").toLowerCase() === category;
 
-  const popular = (productsData.popularProducts || []).filter(byCategory);
-  const deals = (productsData.deals || []).filter(byCategory);
+  let popular = (productsData.popularProducts || []).filter(byCategory);
+  let deals = (productsData.deals || []).filter(byCategory);
+
+  // Apply sorting
+  popular = sortProducts(popular, sortType);
+  deals = sortProducts(deals, sortType);
 
   renderProductSection("popularProducts", popular);
   renderProductSection("dealsProducts", deals);
@@ -478,6 +507,27 @@ function renderRecentlyViewed() {
   });
 }
 
+// Generate star rating display
+function generateStars(rating) {
+  if (!rating || rating < 1 || rating > 5) return '';
+  
+  let stars = '';
+  const fullStars = Math.floor(rating);
+  const hasHalfStar = rating % 1 >= 0.5;
+  
+  for (let i = 1; i <= 5; i++) {
+    if (i <= fullStars) {
+      stars += '<i class="fas fa-star"></i>';
+    } else if (i === fullStars + 1 && hasHalfStar) {
+      stars += '<i class="fas fa-star-half-alt"></i>';
+    } else {
+      stars += '<i class="far fa-star"></i>';
+    }
+  }
+  
+  return stars;
+}
+
 // Create product card element
 function createProductCard(product) {
   const productCard = document.createElement("div");
@@ -492,6 +542,10 @@ function createProductCard(product) {
         <div class="product-info">
             <h3 class="product-title">${product.name}</h3>
             <div class="product-price">₹${product.price} <span>(₹${product.discount} off)</span></div>
+            <div class="product-rating">
+                <div class="stars">${generateStars(product.rating)}</div>
+                <span class="rating-value">${product.rating || 'N/A'}</span>
+            </div>
             <p>${product.description}</p>
             <div class="product-actions">
                 <button class="add-to-cart" onclick="addToCart('${product.name}', ${product.price}, '${product.image}', ${product.id})">
@@ -574,6 +628,16 @@ function initializeSearch() {
   });
 }
 
+// Initialize sorting functionality
+function initializeSorting() {
+  const sortDropdown = document.getElementById('sortOption');
+  if (sortDropdown) {
+    sortDropdown.addEventListener('change', function() {
+      renderProducts();
+    });
+  }
+}
+
 // Initialize products and cart when page loads
 document.addEventListener("DOMContentLoaded", function () {
   loadProducts();
@@ -584,6 +648,7 @@ document.addEventListener("DOMContentLoaded", function () {
   loadSavedPincode();
   initializeCategoryFiltering();
   initializeNavFiltering();
+  initializeSorting();
 });
 
 // --- Pincode Delivery Functions ---
