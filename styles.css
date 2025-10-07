@@ -581,15 +581,60 @@ nav {
 
 /* Hero Section */
 .hero {
-  background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)),
-    url("https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1200&q=80");
-  background-size: cover;
-  background-position: center;
   color: white;
-  padding: 60px 20px;
+  padding: 40px 20px;
   text-align: center;
   margin-bottom: 30px;
   border-radius: var(--radius);
+  position: relative;
+  overflow: hidden;
+  height: 500px;
+}
+
+/* Hero Carousel */
+.hero-carousel {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.hero-slide {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  transition: opacity 1s ease-in-out;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+.hero-slide.active {
+  opacity: 1;
+}
+
+/* First slide background */
+.hero-slide:nth-child(1) {
+  background-image: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)),
+    url("https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1200&q=80");
+}
+
+/* Second slide background */
+.hero-slide:nth-child(2) {
+  background-image: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)),
+    url("https://images.unsplash.com/photo-1556911220-e15b29be8c8f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1200&q=80");
+}
+
+.hero-content {
+  max-width: 600px;
+  padding: 20px;
+  z-index: 2;
+  text-align: center;
 }
 
 .hero h1 {
@@ -603,6 +648,30 @@ nav {
   max-width: 600px;
   margin-left: auto;
   margin-right: auto;
+}
+
+/* Carousel Indicators */
+.carousel-indicators {
+  position: absolute;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 10px;
+  z-index: 3;
+}
+
+.indicator {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background-color: rgba(255, 255, 255, 0.5);
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.indicator.active {
+  background-color: white;
 }
 
 .btn {
@@ -1155,6 +1224,10 @@ footer {
     flex-wrap: wrap;
     justify-content: center;
     gap: 15px;
+  }
+
+  .hero {
+    height: 300px;
   }
 
   .hero h1 {
@@ -2069,13 +2142,7 @@ footer {
   border-bottom: 1px solid #2d2d2d;
 }
 
-[data-theme="dark"] .hero {
-  background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)),
-    url("https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1200&q=80");
-  background-size: cover;
-  background-position: center;
-  transition: var(--transition); /* smooth transition when toggling dark mode */
-}
+
 
 [data-theme="dark"] .product-card,
 [data-theme="dark"] .category-item,

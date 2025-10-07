@@ -1869,6 +1869,45 @@ function toggleTheme() {
   setTheme(newTheme);
 }
 
+// Hero Carousel Functionality
+function initHeroCarousel() {
+  let currentSlide = 0;
+  const slides = document.querySelectorAll('.hero-slide');
+  const indicators = document.querySelectorAll('.indicator');
+
+  if (slides.length === 0) return;
+
+  function showSlide(index) {
+    // Remove active class from all slides and indicators
+    slides.forEach(slide => slide.classList.remove('active'));
+    indicators.forEach(indicator => indicator.classList.remove('active'));
+
+    // Add active class to current slide and indicator
+    slides[index].classList.add('active');
+    indicators[index].classList.add('active');
+
+    currentSlide = index;
+  }
+
+  function nextSlide() {
+    const nextIndex = (currentSlide + 1) % slides.length;
+    showSlide(nextIndex);
+  }
+
+  // Add click events to indicators
+  indicators.forEach((indicator, index) => {
+    indicator.addEventListener('click', () => {
+      showSlide(index);
+    });
+  });
+
+  // Auto slide every 2 seconds
+  setInterval(nextSlide, 2000);
+
+  // Initialize first slide
+  showSlide(0);
+}
+
 function setTheme(theme) {
   document.documentElement.setAttribute("data-theme", theme);
   localStorage.setItem("theme", theme);
@@ -1899,3 +1938,8 @@ window
       setTheme(e.matches ? "dark" : "light");
     }
   });
+
+// Initialize carousel when page loads
+document.addEventListener("DOMContentLoaded", function () {
+  initHeroCarousel();
+});
