@@ -631,19 +631,34 @@ nav {
 }
 
 .hero-content {
-  max-width: 600px;
-  padding: 20px;
+  max-width: min(90vw, 600px);
+  padding: clamp(12px, 3vw, 20px);
   z-index: 2;
   text-align: center;
 }
 
+/* Mobile hero content padding */
+@media (max-width: 768px) {
+  .hero-content {
+    padding: 30px 15px;
+    padding-bottom: 80px; /* space for indicators below CTA */
+  }
+}
+
+@media (max-width: 480px) {
+  .hero-content {
+    padding: 25px 12px;
+    padding-bottom: 70px; /* space for indicators below CTA */
+  }
+}
+
 .hero h1 {
-  font-size: 2.5rem;
+  font-size: clamp(1.4rem, 5vw + 0.5rem, 2.5rem);
   margin-bottom: 15px;
 }
 
 .hero p {
-  font-size: 1.2rem;
+  font-size: clamp(0.9rem, 2.5vw + 0.2rem, 1.2rem);
   margin-bottom: 25px;
   max-width: 600px;
   margin-left: auto;
@@ -659,6 +674,20 @@ nav {
   display: flex;
   gap: 10px;
   z-index: 3;
+}
+
+/* Keep indicators safely below CTAs on mobile */
+@media (max-width: 768px) {
+  .carousel-indicators {
+    bottom: 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  .carousel-indicators {
+    bottom: 10px;
+    gap: 8px;
+  }
 }
 
 .indicator {
@@ -685,6 +714,12 @@ nav {
   transition: var(--transition);
   border: none;
   cursor: pointer;
+}
+
+/* Fluid CTA size within hero for small screens */
+.hero .btn {
+  padding: clamp(8px, 2vw, 12px) clamp(16px, 4vw, 25px);
+  font-size: clamp(0.9rem, 2.5vw, 1rem);
 }
 
 .btn:hover {
@@ -1227,15 +1262,15 @@ footer {
   }
 
   .hero {
-    height: 300px;
+    height: 400px; /* Increased height to accommodate content and indicators */
   }
 
   .hero h1 {
-    font-size: 2rem;
+    font-size: clamp(1.1rem, 5vw + 0.2rem, 1.8rem);
   }
 
   .hero p {
-    font-size: 1rem;
+    font-size: clamp(0.8rem, 2.5vw + 0.1rem, 0.9rem);
   }
 
   .categories {
@@ -1313,6 +1348,10 @@ footer {
 }
 
 @media (max-width: 480px) {
+  .hero {
+    height: 350px; /* Slightly smaller height for very small screens */
+  }
+
   .header-actions {
     gap: 30px;
   }
@@ -1417,6 +1456,18 @@ footer {
   .footer-bottom {
     padding: 12px 5px 0;
     margin: 15px 10px 0;
+  }
+  /* Extra-small devices: refine hero typography */
+  .hero h1 {
+    font-size: clamp(1rem, 6vw + 0.1rem, 1.4rem);
+  }
+
+  .hero p {
+    font-size: clamp(0.75rem, 3vw + 0.05rem, 0.85rem);
+  }
+
+  .hero .btn {
+    padding: clamp(8px, 2.5vw, 10px) clamp(14px, 5vw, 20px);
   }
 }
 
@@ -2141,8 +2192,6 @@ footer {
   background-color: #1e1e1e;
   border-bottom: 1px solid #2d2d2d;
 }
-
-
 
 [data-theme="dark"] .product-card,
 [data-theme="dark"] .category-item,
