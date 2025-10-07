@@ -1,9 +1,9 @@
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
-import { 
-  getAuth, 
-  GoogleAuthProvider, 
-  signInWithPopup, 
-  signOut, 
+import {
+  getAuth,
+  GoogleAuthProvider,
+  signInWithPopup,
+  signOut,
   onAuthStateChanged,
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
@@ -25,7 +25,7 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const provider = new GoogleAuthProvider();
 const analytics = getAnalytics(app);
-let  currentUser = null;
+let currentUser = null;
 window.firebaseAuth = auth;
 window.googleProvider = provider;
 window.signInWithPopup = signInWithPopup;
@@ -51,24 +51,24 @@ function updateUIForSignedInUser(user) {
   const profileView = document.getElementById('userProfileView');
   const accountText = document.getElementById('accountText');
   const userAvatar = document.getElementById('userAvatar');
-  
+
   if (loginView) loginView.style.display = 'none';
   if (profileView) profileView.style.display = 'block';
-  
+
   if (userAvatar) {
     if (user.photoURL) {
       userAvatar.src = user.photoURL;
-      userAvatar.onerror = function() {
+      userAvatar.onerror = function () {
         this.src = 'https://ui-avatars.com/api/?name=' + encodeURIComponent(user.displayName || 'User') + '&background=0D8ABC&color=fff&size=100';
       };
     } else {
       userAvatar.src = 'https://ui-avatars.com/api/?name=' + encodeURIComponent(user.displayName || user.email) + '&background=0D8ABC&color=fff&size=100';
     }
   }
-  
+
   document.getElementById('userName').textContent = user.displayName || 'User';
   document.getElementById('userEmail').textContent = user.email;
-  
+
   if (accountText) {
     accountText.textContent = user.displayName?.split(' ')[0] || 'Account';
   }
@@ -78,10 +78,10 @@ function updateUIForSignedOutUser() {
   const loginView = document.getElementById('loginView');
   const profileView = document.getElementById('userProfileView');
   const accountText = document.getElementById('accountText');
-  
+
   if (loginView) loginView.style.display = 'block';
   if (profileView) profileView.style.display = 'none';
-  
+
   if (accountText) {
     accountText.textContent = 'Account';
   }
@@ -92,11 +92,11 @@ document.getElementById('googleSignInBtn').addEventListener('click', async () =>
   try {
     const result = await signInWithPopup(auth, provider);
     const user = result.user;
-    
+
     if (window.showSuccessToast) {
       window.showSuccessToast(`Welcome, ${user.displayName}!`);
     }
-    
+
     setTimeout(() => {
       document.getElementById('userModal').style.display = 'none';
     }, 1000);
@@ -128,7 +128,7 @@ function validatePassword(password) {
   const hasSpecialChar = /[!@#$%^&*(),.?":{}|<>]/.test(password);
 
   const errors = [];
-  
+
   if (password.length < minLength) {
     errors.push(`Password must be at least ${minLength} characters long`);
   }
@@ -154,7 +154,7 @@ function validatePassword(password) {
 function displayPasswordStrength(password) {
   const validation = validatePassword(password);
   const passwordInput = document.getElementById('signupPassword');
-  
+
   let existingHint = document.querySelector('.password-strength-hint');
   if (!existingHint) {
     existingHint = document.createElement('div');
@@ -169,12 +169,12 @@ function displayPasswordStrength(password) {
   }
 
   existingHint.style.display = 'block';
-  
+
   if (validation.isValid) {
     existingHint.innerHTML = '<span style="color: var(--success);"><i class="fas fa-check-circle"></i> Strong password!</span>';
   } else {
-    existingHint.innerHTML = '<ul style="margin: 5px 0; padding-left: 20px; font-size: 0.85rem; color: var(--danger);">' + 
-      validation.errors.map(err => `<li>${err}</li>`).join('') + 
+    existingHint.innerHTML = '<ul style="margin: 5px 0; padding-left: 20px; font-size: 0.85rem; color: var(--danger);">' +
+      validation.errors.map(err => `<li>${err}</li>`).join('') +
       '</ul>';
   }
 }
@@ -290,9 +290,9 @@ async function loadProducts() {
 // Sort products based on selected criteria
 function sortProducts(products, sortType) {
   if (!products || !Array.isArray(products)) return products;
-  
+
   const sortedProducts = [...products]; // Create a copy to avoid mutating original
-  
+
   switch (sortType) {
     case 'rating-high':
       return sortedProducts.sort((a, b) => (b.rating || 0) - (a.rating || 0));
@@ -343,8 +343,8 @@ function renderProducts() {
       category === "all"
         ? ""
         : ` – ${category
-            .replace("-", " ")
-            .replace(/\b\w/g, (c) => c.toUpperCase())}`;
+          .replace("-", " ")
+          .replace(/\b\w/g, (c) => c.toUpperCase())}`;
     if (popularTitle) popularTitle.textContent = `Popular Products${prettyCat}`;
     if (dealsTitle) dealsTitle.textContent = `Today's Best Deals${prettyCat}`;
   } catch (_) {
@@ -473,7 +473,7 @@ function scrollToProducts() {
  * @param {object} product
  */
 function addToRecentlyViewed(product) {
-  if (!currentUser) return; 
+  if (!currentUser) return;
   const key = `recentlyViewed_${currentUser.uid}`;
   let recentlyViewed = JSON.parse(localStorage.getItem(key) || "[]");
   recentlyViewed = recentlyViewed.filter((p) => p.id !== product.id);
@@ -510,11 +510,11 @@ function renderRecentlyViewed() {
 // Generate star rating display
 function generateStars(rating) {
   if (!rating || rating < 1 || rating > 5) return '';
-  
+
   let stars = '';
   const fullStars = Math.floor(rating);
   const hasHalfStar = rating % 1 >= 0.5;
-  
+
   for (let i = 1; i <= 5; i++) {
     if (i <= fullStars) {
       stars += '<i class="fas fa-star"></i>';
@@ -524,7 +524,7 @@ function generateStars(rating) {
       stars += '<i class="far fa-star"></i>';
     }
   }
-  
+
   return stars;
 }
 
@@ -559,9 +559,9 @@ function createProductCard(product) {
     `;
 
   productCard.addEventListener("click", (e) => {
-     if (e.target.closest(".add-to-cart") || e.target.closest(".wishlist")) return;
+    if (e.target.closest(".add-to-cart") || e.target.closest(".wishlist")) return;
     addToRecentlyViewed(product);
-    renderRecentlyViewed(); 
+    renderRecentlyViewed();
   });
   return productCard;
 }
@@ -632,7 +632,7 @@ function initializeSearch() {
 function initializeSorting() {
   const sortDropdown = document.getElementById('sortOption');
   if (sortDropdown) {
-    sortDropdown.addEventListener('change', function() {
+    sortDropdown.addEventListener('change', function () {
       renderProducts();
     });
   }
@@ -661,10 +661,19 @@ function initializePincodeChecker() {
   const changePincodeBtn = document.getElementById("changePincodeBtn");
   const pincodeInput = document.getElementById("pincodeInput");
   const checkBtn = document.getElementById("checkDeliveryBtn");
+  const headerDeliveryLocation = document.getElementById("headerDeliveryLocation");
 
-  // Banner click to open modal
+  // Banner click to open modal (if it exists)
   if (banner) {
     banner.addEventListener("click", openPincodeModal);
+  }
+
+  // Header delivery location click to open modal (if it exists)
+  if (headerDeliveryLocation) {
+    headerDeliveryLocation.addEventListener("click", function (e) {
+      e.stopPropagation();
+      openPincodeModal();
+    });
   }
 
   // Change pincode button
@@ -828,8 +837,7 @@ async function checkDelivery() {
     } else {
       showDeliveryStatus(
         "not-available",
-        `😔 Sorry, we don't deliver to this location.\n${
-          deliveryInfo.reason || ""
+        `😔 Sorry, we don't deliver to this location.\n${deliveryInfo.reason || ""
         }`
       );
     }
@@ -970,16 +978,35 @@ function loadSavedPincode() {
  * @param {object} pincodeData - Saved pincode data
  */
 function updateDeliveryBanner(pincodeData) {
+  // Update the old delivery location text (if it exists)
   const deliveryText = document.getElementById("deliveryLocationText");
   const deliveryInfo = document.querySelector(".delivery-info");
   const changePincodeBtn = document.getElementById("changePincodeBtn");
 
-  if (!deliveryText || !pincodeData.available) return;
+  // Update the new header delivery location text (if it exists)
+  const headerDeliveryText = document.getElementById("headerDeliveryText");
+  const headerDeliveryLocation = document.getElementById("headerDeliveryLocation");
 
-  deliveryText.textContent = `Delivering to ${pincodeData.city}, ${pincodeData.state} (${pincodeData.pincode})`;
+  if (!pincodeData.available) return;
 
+  // Update old delivery text if it exists
+  if (deliveryText) {
+    deliveryText.textContent = `Delivering to ${pincodeData.city}, ${pincodeData.state} (${pincodeData.pincode})`;
+  }
+
+  // Update new header delivery text if it exists
+  if (headerDeliveryText) {
+    headerDeliveryText.textContent = `${pincodeData.city}, ${pincodeData.state}`;
+  }
+
+  // Add class to indicate location is set for old delivery info
   if (deliveryInfo) {
     deliveryInfo.classList.add("has-location");
+  }
+
+  // Add class to indicate location is set for new header delivery
+  if (headerDeliveryLocation) {
+    headerDeliveryLocation.classList.add("has-location");
   }
 
   // Update button to show clear option on right-click or long press
@@ -1001,16 +1028,32 @@ function clearSavedPincode() {
   try {
     sessionStorage.removeItem("quickbasket_pincode");
 
-    // Reset banner text
+    // Reset old banner text
     const deliveryText = document.getElementById("deliveryLocationText");
     const deliveryInfo = document.querySelector(".delivery-info");
 
+    // Reset new header delivery text
+    const headerDeliveryText = document.getElementById("headerDeliveryText");
+    const headerDeliveryLocation = document.getElementById("headerDeliveryLocation");
+
+    // Reset old delivery text if it exists
     if (deliveryText) {
       deliveryText.textContent = "Click to set delivery location";
     }
 
+    // Reset new header delivery text if it exists
+    if (headerDeliveryText) {
+      headerDeliveryText.textContent = "Set location";
+    }
+
+    // Remove class indicating location is set for old delivery info
     if (deliveryInfo) {
       deliveryInfo.classList.remove("has-location");
+    }
+
+    // Remove class indicating location is set for new header delivery
+    if (headerDeliveryLocation) {
+      headerDeliveryLocation.classList.remove("has-location");
     }
 
     showSuccessToast("Delivery location cleared");
@@ -1192,15 +1235,13 @@ function displayAvailableCoupons() {
             <div class="coupon-info">
                 <div class="coupon-code">${coupon.code}</div>
                 <div class="coupon-desc">${coupon.description}</div>
-                ${
-                  coupon.minOrder > 0
-                    ? `<div class="coupon-min">Min order: ₹${coupon.minOrder}</div>`
-                    : ""
-                }
+                ${coupon.minOrder > 0
+        ? `<div class="coupon-min">Min order: ₹${coupon.minOrder}</div>`
+        : ""
+      }
             </div>
-            <button class="coupon-apply-btn" onclick="applyCouponFromList('${
-              coupon.code
-            }')">Apply</button>
+            <button class="coupon-apply-btn" onclick="applyCouponFromList('${coupon.code
+      }')">Apply</button>
         `;
     couponsList.appendChild(couponItem);
   });
@@ -1612,26 +1653,26 @@ window.onclick = function (event) {
 document.addEventListener("DOMContentLoaded", function () {
   const signupPasswordInput = document.getElementById('signupPassword');
   if (signupPasswordInput) {
-    signupPasswordInput.addEventListener('input', function() {
+    signupPasswordInput.addEventListener('input', function () {
       displayPasswordStrength(this.value);
     });
   }
 
   document.getElementById("loginForm").addEventListener("submit", async function (e) {
     e.preventDefault();
-    
+
     const email = document.getElementById('loginEmail').value;
     const password = document.getElementById('loginPassword').value;
-    
+
     if (!email || !password) {
       showErrorToast('Please fill in all fields');
       return;
     }
-    
+
     try {
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
-      
+
       showSuccessToast(`Welcome back, ${user.displayName || user.email}!`);
       setTimeout(() => {
         document.getElementById('userModal').style.display = 'none';
@@ -1639,7 +1680,7 @@ document.addEventListener("DOMContentLoaded", function () {
     } catch (error) {
       console.error('Error logging in:', error);
       let errorMessage = 'Failed to log in. ';
-      
+
       if (error.code === 'auth/user-not-found') {
         errorMessage += 'No account found with this email.';
       } else if (error.code === 'auth/wrong-password') {
@@ -1651,20 +1692,20 @@ document.addEventListener("DOMContentLoaded", function () {
       } else {
         errorMessage += 'Please try again.';
       }
-      
+
       showErrorToast(errorMessage);
     }
   });
 
   document.getElementById("signupForm").addEventListener("submit", async function (e) {
     e.preventDefault();
-    
+
     const name = document.getElementById('signupName').value;
     const email = document.getElementById('signupEmail').value;
     const password = document.getElementById('signupPassword').value;
     const confirmPassword = document.getElementById('signupConfirmPassword').value;
     const phone = document.getElementById('signupPhone').value;
-    
+
     if (!name || !email || !password || !phone) {
       showErrorToast('Please fill in all fields');
       return;
@@ -1674,24 +1715,24 @@ document.addEventListener("DOMContentLoaded", function () {
       showErrorToast('Passwords do not match');
       return;
     }
-    
+
     const validation = validatePassword(password);
     if (!validation.isValid) {
       showErrorToast('Password does not meet requirements');
       return;
     }
-    
+
     try {
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
-      
+
       await updateProfile(user, {
         displayName: name,
         photoURL: `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=0D8ABC&color=fff&size=100`
       });
-      
+
       localStorage.setItem('userPhone', phone);
-      
+
       showSuccessToast(`Account created successfully! Welcome, ${name}!`);
       setTimeout(() => {
         document.getElementById('userModal').style.display = 'none';
@@ -1699,7 +1740,7 @@ document.addEventListener("DOMContentLoaded", function () {
     } catch (error) {
       console.error('Error creating account:', error);
       let errorMessage = 'Failed to create account. ';
-      
+
       if (error.code === 'auth/email-already-in-use') {
         errorMessage += 'This email is already registered.';
       } else if (error.code === 'auth/invalid-email') {
@@ -1709,19 +1750,19 @@ document.addEventListener("DOMContentLoaded", function () {
       } else {
         errorMessage += 'Please try again.';
       }
-      
+
       showErrorToast(errorMessage);
     }
   });
 
   // Profile editing functionality
   let selectedThemeColor = '0D8ABC';
-  
+
   const editProfileBtn = document.getElementById('editProfileBtn');
   const cancelEditBtn = document.getElementById('cancelEditBtn');
   const profileEditSection = document.getElementById('profileEditSection');
   const editProfileForm = document.getElementById('editProfileForm');
-  
+
   if (editProfileBtn) {
     editProfileBtn.addEventListener('click', () => {
       profileEditSection.style.display = 'block';
@@ -1734,42 +1775,42 @@ document.addEventListener("DOMContentLoaded", function () {
       }
     });
   }
-  
+
   if (cancelEditBtn) {
     cancelEditBtn.addEventListener('click', () => {
       profileEditSection.style.display = 'none';
     });
   }
-  
+
   document.querySelectorAll('.color-option').forEach(btn => {
-    btn.addEventListener('click', function() {
+    btn.addEventListener('click', function () {
       selectedThemeColor = this.dataset.color;
       updateColorSelection(selectedThemeColor);
     });
   });
-  
+
   if (editProfileForm) {
     editProfileForm.addEventListener('submit', async (e) => {
       e.preventDefault();
-      
+
       const newDisplayName = document.getElementById('editDisplayName').value;
       const currentUser = auth.currentUser;
-      
+
       if (!currentUser) {
         showErrorToast('No user logged in');
         return;
       }
-      
+
       try {
         await updateProfile(currentUser, {
           displayName: newDisplayName,
           photoURL: `https://ui-avatars.com/api/?name=${encodeURIComponent(newDisplayName)}&background=${selectedThemeColor}&color=fff&size=100`
         });
-        
+
         localStorage.setItem('profileThemeColor', selectedThemeColor);
-        
+
         updateUIForSignedInUser(currentUser);
-        
+
         showSuccessToast('Profile updated successfully!');
         profileEditSection.style.display = 'none';
       } catch (error) {
@@ -1781,7 +1822,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
   // Initialize theme on page load
   initializeTheme();
-  
+
   // Expose functions to window object for HTML onclick handlers
   window.openCart = openCart;
   window.closeCart = closeCart;

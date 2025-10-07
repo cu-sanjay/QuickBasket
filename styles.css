@@ -84,6 +84,37 @@ header {
   align-items: center;
 }
 
+/* New Header Delivery Location Styles */
+.header-delivery-location {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(255, 255, 255, 0.2);
+  padding: 8px 15px;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: var(--transition);
+  font-size: 0.9rem;
+  margin: 0 15px;
+}
+
+.header-delivery-location:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.header-delivery-location i {
+  color: white;
+  font-size: 1rem;
+}
+
+.header-delivery-location.has-location {
+  color: #42b883;
+}
+
+.header-delivery-location.has-location i {
+  color: #42b883;
+}
+
 .logo {
   display: flex;
   align-items: center;
@@ -472,12 +503,21 @@ nav {
   border-bottom-color: #3d3d3d;
 }
 
-[data-theme="dark"] .pincode-banner:hover {
-  background: linear-gradient(135deg, #3d3d3d 0%, #2d2d2d 100%);
+/* Dark theme for header delivery location */
+[data-theme="dark"] .header-delivery-location {
+  background: rgba(255, 255, 255, 0.1);
 }
 
-[data-theme="dark"] .delivery-info {
-  color: #e8eaed;
+[data-theme="dark"] .header-delivery-location:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+[data-theme="dark"] .header-delivery-location.has-location {
+  color: #5dd4a4;
+}
+
+[data-theme="dark"] .header-delivery-location.has-location i {
+  color: #5dd4a4;
 }
 
 [data-theme="dark"] .pincode-modal-content {
@@ -1104,6 +1144,13 @@ footer {
     margin: 15px 0;
   }
 
+  /* Header delivery location responsive styles */
+  .header-delivery-location {
+    margin: 0;
+    padding: 6px 12px;
+    font-size: 0.8rem;
+  }
+
   .nav-links {
     flex-wrap: wrap;
     justify-content: center;
@@ -1199,6 +1246,16 @@ footer {
 
   .action-item span {
     display: none;
+  }
+
+  /* Header delivery location mobile styles */
+  .header-delivery-location {
+    padding: 5px 10px;
+    font-size: 0.75rem;
+  }
+
+  .header-delivery-location i {
+    font-size: 0.8rem;
   }
 
   .nav-links {
@@ -1637,7 +1694,6 @@ footer {
   padding: 30px;
   max-height: 90vh;
   overflow-y: auto;
-
 }
 
 .user-tabs {
@@ -2253,7 +2309,6 @@ footer {
   background: #5a6268;
 }
 
-
 .firebase-auth-header {
   text-align: center;
   margin-bottom: 25px;
@@ -2321,7 +2376,7 @@ footer {
 
 .auth-divider::before,
 .auth-divider::after {
-  content: '';
+  content: "";
   flex: 1;
   border-bottom: 1px solid #e0e0e0;
 }
@@ -2514,7 +2569,7 @@ footer {
 }
 
 .color-option.selected::after {
-  content: '✓';
+  content: "✓";
   position: absolute;
   top: 50%;
   left: 50%;

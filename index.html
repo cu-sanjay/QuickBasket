@@ -28,6 +28,13 @@
             <i class="fas fa-shopping-basket"></i>
             <span>QuickBasket</span>
           </div>
+
+          <!-- Delivery Location in Header -->
+          <div class="header-delivery-location" id="headerDeliveryLocation">
+            <i class="fas fa-map-marker-alt"></i>
+            <span id="headerDeliveryText">Set location</span>
+          </div>
+
           <div class="search-bar">
             <input type="text" placeholder="Search for products..." />
             <button><i class="fas fa-search"></i></button>
@@ -46,7 +53,11 @@
               <i class="fas fa-user"></i>
               <span id="accountText">Account</span>
             </div>
-            <div class="action-item" style="position: relative;" onclick="openWishlist()">
+            <div
+              class="action-item"
+              style="position: relative"
+              onclick="openWishlist()"
+            >
               <i class="far fa-heart"></i>
               <span>Wishlist</span>
               <div class="cart-count wishlist-count">0</div>
@@ -70,82 +81,62 @@
       <div class="container">
         <ul class="nav-links">
           <li>
-            <a href="?" data-category="all" title="All Products"><i class="fas fa-home"></i> <span>Home</span></a>
+            <a href="?" data-category="all" title="All Products"
+              ><i class="fas fa-home"></i> <span>Home</span></a
+            >
           </li>
           <li>
-            <a href="?category=all" data-category="all" title="All Food"><i class="fas fa-utensils"></i> <span>Food</span></a>
+            <a href="?category=all" data-category="all" title="All Food"
+              ><i class="fas fa-utensils"></i> <span>Food</span></a
+            >
           </li>
           <li>
-            <a href="?category=vegetables" data-category="vegetables" title="Vegetables"
-              ><i class="fas fa-pepper-hot"></i> <span>Vegetables</span></a>
+            <a
+              href="?category=vegetables"
+              data-category="vegetables"
+              title="Vegetables"
+              ><i class="fas fa-pepper-hot"></i> <span>Vegetables</span></a
+            >
           </li>
           <li>
-            <a href="?category=fruits" data-category="fruits" title="Fruits"><i class="fas fa-apple-alt"></i> <span>Fruits</span></a>
+            <a href="?category=fruits" data-category="fruits" title="Fruits"
+              ><i class="fas fa-apple-alt"></i> <span>Fruits</span></a
+            >
           </li>
           <li>
-            <a href="?category=dairy" data-category="dairy" title="Dairy"><i class="fas fa-cheese"></i> <span>Dairy</span></a>
+            <a href="?category=dairy" data-category="dairy" title="Dairy"
+              ><i class="fas fa-cheese"></i> <span>Dairy</span></a
+            >
           </li>
           <li>
-            <a href="?category=bakery" data-category="bakery" title="Bakery"><i class="fas fa-bread-slice"></i> <span>Bakery</span></a>
+            <a href="?category=bakery" data-category="bakery" title="Bakery"
+              ><i class="fas fa-bread-slice"></i> <span>Bakery</span></a
+            >
           </li>
           <li>
-            <a href="?category=beverages" data-category="beverages" title="Beverages"
-              ><i class="fas fa-wine-bottle"></i> <span>Beverages</span></a>
+            <a
+              href="?category=beverages"
+              data-category="beverages"
+              title="Beverages"
+              ><i class="fas fa-wine-bottle"></i> <span>Beverages</span></a
+            >
           </li>
           <li>
-            <a href="?category=snacks" data-category="snacks" title="Snacks"><i class="fas fa-ice-cream"></i> <span>Snacks</span></a>
+            <a href="?category=snacks" data-category="snacks" title="Snacks"
+              ><i class="fas fa-ice-cream"></i> <span>Snacks</span></a
+            >
           </li>
           <li>
-            <a href="?category=home-care" data-category="home-care" title="Home Care"><i class="fas fa-soap"></i> <span>Home Care</span></a>
+            <a
+              href="?category=home-care"
+              data-category="home-care"
+              title="Home Care"
+              ><i class="fas fa-soap"></i> <span>Home Care</span></a
+            >
           </li>
         </ul>
       </div>
     </nav>
-
-    <!-- Compact Pincode Status Banner -->
-    <div class="pincode-banner" id="pincodeBanner">
-      <div class="container">
-        <div class="banner-content">
-          <div class="delivery-info">
-            <i class="fas fa-map-marker-alt"></i>
-            <span id="deliveryLocationText">Click to set delivery location</span>
-          </div>
-          <button class="change-pincode-btn" id="changePincodeBtn">
-            <i class="fas fa-edit"></i>
-          </button>
-        </div>
-      </div>
-    </div>
-
-    <!-- Pincode Modal -->
-    <div class="pincode-modal" id="pincodeModal">
-      <div class="modal-overlay" onclick="closePincodeModal()"></div>
-      <div class="pincode-modal-content">
-        <div class="modal-header">
-          <h3>Check Delivery Availability</h3>
-          <button class="close-modal" onclick="closePincodeModal()">
-            <i class="fas fa-times"></i>
-          </button>
-        </div>
-        <div class="modal-body">
-          <div class="pincode-input-group">
-            <i class="fas fa-map-marker-alt pincode-icon"></i>
-            <input 
-              type="text" 
-              id="pincodeInput" 
-              placeholder="Enter your 6-digit pincode" 
-              maxlength="6"
-              pattern="[0-9]{6}"
-            />
-            <button id="checkDeliveryBtn">
-              <i class="fas fa-search"></i>
-              Check
-            </button>
-          </div>
-          <div id="deliveryStatus" class="delivery-status"></div>
-        </div>
-      </div>
-    </div>
 
     <!-- Main Content -->
     <div class="container">
@@ -160,7 +151,11 @@
       </section>
 
       <!-- Recently Viewed Products Section -->
-      <section id="recently-viewed" class="recently-viewed" style="display: none;">
+      <section
+        id="recently-viewed"
+        class="recently-viewed"
+        style="display: none"
+      >
         <h2 class="section-title">Recently Viewed</h2>
         <div class="products" id="recentlyViewedProducts"></div>
       </section>
@@ -174,7 +169,11 @@
           </div>
           <h3>Food</h3>
         </div>
-        <div class="category-item" data-category="vegetables" title="Vegetables">
+        <div
+          class="category-item"
+          data-category="vegetables"
+          title="Vegetables"
+        >
           <div class="category-icon">
             <i class="fas fa-pepper-hot"></i>
           </div>
@@ -316,29 +315,38 @@
               <p>UPI</p>
             </div>
           </div>
-          
+
           <div class="qr-code">
             <h4>Scan to Pay</h4>
-            <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=QuickBasket-Payment-Total-₹1000" alt="QR Code">
+            <img
+              src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=QuickBasket-Payment-Total-₹1000"
+              alt="QR Code"
+            />
             <p>Total Amount: <strong id="qrAmount">₹0</strong></p>
           </div>
-          
+
           <div class="coupon-section">
             <h4>Apply Coupon</h4>
             <div class="coupon-input">
-              <input type="text" placeholder="Enter coupon code" maxlength="20">
+              <input
+                type="text"
+                placeholder="Enter coupon code"
+                maxlength="20"
+              />
               <button onclick="applyCoupon()">Apply</button>
             </div>
-            
+
             <div id="couponMessage" class="coupon-message"></div>
             <div id="appliedCoupon" class="applied-coupon"></div>
-            
+
             <div class="available-coupons">
               <h5>Available Coupons:</h5>
               <div id="availableCoupons"></div>
             </div>
           </div>
-          <button class="checkout-btn" onclick="placeOrder()">Complete Payment</button>
+          <button class="checkout-btn" onclick="placeOrder()">
+            Complete Payment
+          </button>
         </div>
 
         <!-- Order Success Section -->
@@ -362,17 +370,39 @@
         <!-- logged out view -->
         <div id="loginView">
           <div class="firebase-auth-header">
-            <img src="https://cdn-icons-png.flaticon.com/512/3081/3081559.png" alt="QuickBasket" class="auth-logo">
+            <img
+              src="https://cdn-icons-png.flaticon.com/512/3081/3081559.png"
+              alt="QuickBasket"
+              class="auth-logo"
+            />
             <h2>Sign in to QuickBasket</h2>
             <p class="auth-subtitle">Continue to access your account</p>
           </div>
 
           <button class="google-signin-btn" id="googleSignInBtn">
-            <svg class="google-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="24px" height="24px">
-              <path fill="#FFC107" d="M43.611,20.083H42V20H24v8h11.303c-1.649,4.657-6.08,8-11.303,8c-6.627,0-12-5.373-12-12c0-6.627,5.373-12,12-12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C12.955,4,4,12.955,4,24c0,11.045,8.955,20,20,20c11.045,0,20-8.955,20-20C44,22.659,43.862,21.35,43.611,20.083z"/>
-              <path fill="#FF3D00" d="M6.306,14.691l6.571,4.819C14.655,15.108,18.961,12,24,12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C16.318,4,9.656,8.337,6.306,14.691z"/>
-              <path fill="#4CAF50" d="M24,44c5.166,0,9.86-1.977,13.409-5.192l-6.19-5.238C29.211,35.091,26.715,36,24,36c-5.202,0-9.619-3.317-11.283-7.946l-6.522,5.025C9.505,39.556,16.227,44,24,44z"/>
-              <path fill="#1976D2" d="M43.611,20.083H42V20H24v8h11.303c-0.792,2.237-2.231,4.166-4.087,5.571c0.001-0.001,0.002-0.001,0.003-0.002l6.19,5.238C36.971,39.205,44,34,44,24C44,22.659,43.862,21.35,43.611,20.083z"/>
+            <svg
+              class="google-icon"
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 48 48"
+              width="24px"
+              height="24px"
+            >
+              <path
+                fill="#FFC107"
+                d="M43.611,20.083H42V20H24v8h11.303c-1.649,4.657-6.08,8-11.303,8c-6.627,0-12-5.373-12-12c0-6.627,5.373-12,12-12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C12.955,4,4,12.955,4,24c0,11.045,8.955,20,20,20c11.045,0,20-8.955,20-20C44,22.659,43.862,21.35,43.611,20.083z"
+              />
+              <path
+                fill="#FF3D00"
+                d="M6.306,14.691l6.571,4.819C14.655,15.108,18.961,12,24,12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C16.318,4,9.656,8.337,6.306,14.691z"
+              />
+              <path
+                fill="#4CAF50"
+                d="M24,44c5.166,0,9.86-1.977,13.409-5.192l-6.19-5.238C29.211,35.091,26.715,36,24,36c-5.202,0-9.619-3.317-11.283-7.946l-6.522,5.025C9.505,39.556,16.227,44,24,44z"
+              />
+              <path
+                fill="#1976D2"
+                d="M43.611,20.083H42V20H24v8h11.303c-0.792,2.237-2.231,4.166-4.087,5.571c0.001-0.001,0.002-0.001,0.003-0.002l6.19,5.238C36.971,39.205,44,34,44,24C44,22.659,43.862,21.35,43.611,20.083z"
+              />
             </svg>
             <span>Continue with Google</span>
           </button>
@@ -382,7 +412,9 @@
           </div>
 
           <div class="user-tabs">
-            <div class="user-tab active" onclick="switchTab('login')">Login</div>
+            <div class="user-tab active" onclick="switchTab('login')">
+              Login
+            </div>
             <div class="user-tab" onclick="switchTab('signup')">Sign Up</div>
           </div>
 
@@ -459,41 +491,89 @@
         </div>
 
         <!-- logged in view -->
-        <div id="userProfileView" style="display: none;">
+        <div id="userProfileView" style="display: none">
           <div class="user-profile-header">
-            <img id="userAvatar" class="user-avatar" src="" alt="User Avatar">
+            <img id="userAvatar" class="user-avatar" src="" alt="User Avatar" />
             <h3 id="userName">User Name</h3>
             <p id="userEmail" class="user-email">user@example.com</p>
           </div>
-          
+
           <!-- Profile Edit Section -->
-          <div id="profileEditSection" style="display: none; margin: 20px 0;">
-            <h4 style="margin-bottom: 15px; color: var(--dark);">Edit Profile</h4>
+          <div id="profileEditSection" style="display: none; margin: 20px 0">
+            <h4 style="margin-bottom: 15px; color: var(--dark)">
+              Edit Profile
+            </h4>
             <form id="editProfileForm">
               <div class="form-group">
                 <label for="editDisplayName">Display Name</label>
-                <input type="text" id="editDisplayName" placeholder="Enter your name" required />
+                <input
+                  type="text"
+                  id="editDisplayName"
+                  placeholder="Enter your name"
+                  required
+                />
               </div>
               <div class="form-group">
                 <label>Profile Theme Color</label>
                 <div class="theme-color-picker">
-                  <button type="button" class="color-option" data-color="0D8ABC" style="background: #0D8ABC;"></button>
-                  <button type="button" class="color-option" data-color="ff6b6b" style="background: #ff6b6b;"></button>
-                  <button type="button" class="color-option" data-color="42b883" style="background: #42b883;"></button>
-                  <button type="button" class="color-option" data-color="9b59b6" style="background: #9b59b6;"></button>
-                  <button type="button" class="color-option" data-color="f39c12" style="background: #f39c12;"></button>
-                  <button type="button" class="color-option" data-color="e74c3c" style="background: #e74c3c;"></button>
+                  <button
+                    type="button"
+                    class="color-option"
+                    data-color="0D8ABC"
+                    style="background: #0d8abc"
+                  ></button>
+                  <button
+                    type="button"
+                    class="color-option"
+                    data-color="ff6b6b"
+                    style="background: #ff6b6b"
+                  ></button>
+                  <button
+                    type="button"
+                    class="color-option"
+                    data-color="42b883"
+                    style="background: #42b883"
+                  ></button>
+                  <button
+                    type="button"
+                    class="color-option"
+                    data-color="9b59b6"
+                    style="background: #9b59b6"
+                  ></button>
+                  <button
+                    type="button"
+                    class="color-option"
+                    data-color="f39c12"
+                    style="background: #f39c12"
+                  ></button>
+                  <button
+                    type="button"
+                    class="color-option"
+                    data-color="e74c3c"
+                    style="background: #e74c3c"
+                  ></button>
                 </div>
               </div>
               <div class="profile-edit-actions">
-                <button type="submit" class="btn btn-primary">Save Changes</button>
-                <button type="button" class="btn btn-secondary" id="cancelEditBtn">Cancel</button>
+                <button type="submit" class="btn btn-primary">
+                  Save Changes
+                </button>
+                <button
+                  type="button"
+                  class="btn btn-secondary"
+                  id="cancelEditBtn"
+                >
+                  Cancel
+                </button>
               </div>
             </form>
           </div>
-          
+
           <div class="user-profile-actions">
-            <button class="profile-action-btn edit-profile-btn" id="editProfileBtn">
+            <button
+              class="profile-action-btn edit-profile-btn"
+              id="editProfileBtn"
+            >
               <i class="fas fa-edit"></i>
               <span>Edit Profile</span>
             </button>
@@ -515,8 +595,42 @@
         </div>
         <div class="wishlist-items"></div>
         <div class="wishlist-actions">
-          <button class="btn btn-secondary" onclick="closeWishlist()">Continue Shopping</button>
-          <button class="btn" onclick="moveAllToCart()">Move All to Cart</button>
+          <button class="btn btn-secondary" onclick="closeWishlist()">
+            Continue Shopping
+          </button>
+          <button class="btn" onclick="moveAllToCart()">
+            Move All to Cart
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Pincode Modal -->
+    <div class="pincode-modal" id="pincodeModal">
+      <div class="modal-overlay" onclick="closePincodeModal()"></div>
+      <div class="pincode-modal-content">
+        <div class="modal-header">
+          <h3>Check Delivery Availability</h3>
+          <button class="close-modal" onclick="closePincodeModal()">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="pincode-input-group">
+            <i class="fas fa-map-marker-alt pincode-icon"></i>
+            <input
+              type="text"
+              id="pincodeInput"
+              placeholder="Enter your 6-digit pincode"
+              maxlength="6"
+              pattern="[0-9]{6}"
+            />
+            <button id="checkDeliveryBtn">
+              <i class="fas fa-search"></i>
+              Check
+            </button>
+          </div>
+          <div id="deliveryStatus" class="delivery-status"></div>
         </div>
       </div>
     </div>
