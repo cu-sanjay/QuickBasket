@@ -295,6 +295,11 @@ nav {
 }
 
 .close-modal {
+  height: 35px;
+  width: 35px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   background: none;
   border: none;
   font-size: 1.2rem;
@@ -315,6 +320,7 @@ nav {
 }
 
 .pincode-input-group {
+  width: 100%;
   display: flex;
   align-items: center;
   background: #f8f9fa;
@@ -333,14 +339,15 @@ nav {
 .pincode-icon {
   color: var(--primary);
   font-size: 1.1rem;
-  padding: 0 15px;
+  padding: 0 8px;
 }
 
 #pincodeInput {
   flex: 1;
+  width: 100%;
   border: none;
   outline: none;
-  padding: 12px 5px;
+  padding: 1px 1px;
   font-size: 1rem;
   background: transparent;
   border-radius: 20px;
