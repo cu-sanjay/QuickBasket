@@ -1173,7 +1173,7 @@ function changeQuantity(name, change) {
 
 function showPaymentSection() {
   if (cart.length === 0) {
-    showToast("Your cart is empty!");
+    showErrorToast("Your cart is empty!");
     return;
   }
 
