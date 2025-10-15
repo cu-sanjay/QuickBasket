@@ -1172,6 +1172,24 @@ function changeQuantity(name, change) {
 }
 
 function showPaymentSection() {
+  // Require authentication before proceeding to checkout
+  if (!auth || !auth.currentUser) {
+    // Open login/signup modal and inform the user
+    try {
+      if (typeof openUserModal === 'function') {
+        openUserModal();
+      } else {
+        const modal = document.getElementById('userModal');
+        if (modal) modal.style.display = 'flex';
+      }
+    } catch (_) { /* non-fatal */ }
+
+    if (typeof showInfoToast === 'function') {
+      showInfoToast('Please sign in to continue to checkout.');
+    }
+    return;
+  }
+
   if (cart.length === 0) {
     showErrorToast("Your cart is empty!");
     return;
@@ -1444,6 +1462,23 @@ function selectPayment(element) {
 }
 
 function placeOrder() {
+  // Require authentication before placing the order (defense in depth)
+  if (!auth || !auth.currentUser) {
+    try {
+      if (typeof openUserModal === 'function') {
+        openUserModal();
+      } else {
+        const modal = document.getElementById('userModal');
+        if (modal) modal.style.display = 'flex';
+      }
+    } catch (_) { /* non-fatal */ }
+
+    if (typeof showInfoToast === 'function') {
+      showInfoToast('Please sign in to place your order.');
+    }
+    return;
+  }
+
   const selectedPayment = document.querySelector(".payment-option.selected");
   if (!selectedPayment) {
     showToast("Please select a payment method");
