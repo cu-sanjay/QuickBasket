@@ -63,23 +63,28 @@ Use this project as a base and extend it further for learning:
    ```bash
    git clone https://github.com/cu-sanjay/QuickBasket.git
    ````
+3.  **Set up your Firebase configuration:**
+    -   Navigate to the root of the project directory.
+    -   Find the file named `firebase-config.js.example`.
+    -   Rename it to `firebase-config.js`.
+    -   Open the file and replace the placeholder values with your own Firebase project configuration. You can get these details from your Firebase project console.
 
-3. Create a branch:
+4. Create a branch:
 
    ```bash
    git checkout -b feature-branch
    ```
-4. Make your changes and commit:
+5. Make your changes and commit:
 
    ```bash
    git commit -m "Added new feature/fix"
    ```
-5. Push to your fork:
+6. Push to your fork:
 
    ```bash
    git push origin feature-branch
    ```
-6. Submit a pull request 🎉
+7. Submit a pull request 🎉
 >[!IMPORTANT]
 > This project is beginner-friendly and open for Hacktoberfest contributions. Feel free to work on the listed issues or suggest new ones.
 

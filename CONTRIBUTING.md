@@ -19,7 +19,11 @@ Clone your forked repo to your local machine:
 git clone https://github.com/cu-sanjay/QuickBasket-Hacktoberfest.git
 ```
 
-### 3. Create a New Branch
+### 3. Set Up Your Local Environment
+
+Before you start making changes, make sure you set up your local Firebase configuration. See the instructions in the `README.md` file under the "Setting Up the Project Locally" section.
+
+### 4. Create a New Branch
 
 Always create a new branch before making changes:
 
@@ -27,14 +31,14 @@ Always create a new branch before making changes:
 git checkout -b feature-branch
 ```
 
-### 4. Make Your Changes
+### 5. Make Your Changes
 
 * Add new features
 * Fix bugs
 * Improve design (HTML, CSS)
 * Enhance JavaScript functionality
 
-### 5. Commit Your Changes
+### 6. Commit Your Changes
 
 Use a clear and descriptive commit message:
 
@@ -42,13 +46,13 @@ Use a clear and descriptive commit message:
 git commit -m "Added coupon validation feature"
 ```
 
-### 6. Push to Your Fork
+### 7. Push to Your Fork
 
 ```bash
 git push origin feature-branch
 ```
 
-### 7. Open a Pull Request (PR)
+### 8. Open a Pull Request (PR)
 
 * Go to the original repo on GitHub
 * Click **New Pull Request**

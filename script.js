@@ -11,15 +11,8 @@ import {
 } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
 import { getAnalytics } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-analytics.js';
 
-const firebaseConfig = {
-  apiKey: "AIzaSyDY3U9hO51ZY6f2RLcdQoxPuJTjQn1lZB8",
-  authDomain: "quickbasket-dev.firebaseapp.com",
-  projectId: "quickbasket-dev",
-  storageBucket: "quickbasket-dev.firebasestorage.app",
-  messagingSenderId: "529752486191",
-  appId: "1:529752486191:web:c1b1a04990f159edfff1da",
-  measurementId: "G-B1HHD54R2D"
-};
+import { firebaseConfig } from "./firebase-config.js";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
