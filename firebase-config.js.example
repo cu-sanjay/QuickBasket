@@ -1,0 +1,14 @@
+// firebase-config.js.example
+// 1. Rename this file to firebase-config.js
+// 2. Get your own Firebase project configuration from the Firebase console.
+// 3. Replace the placeholder values below with your actual Firebase config.
+
+export const firebaseConfig = {
+  apiKey: "YOUR_API_KEY",
+  authDomain: "YOUR_AUTH_DOMAIN",
+  projectId: "YOUR_PROJECT_ID",
+  storageBucket: "YOUR_STORAGE_BUCKET",
+  messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+  appId: "YOUR_APP_ID",
+  measurementId: "YOUR_MEASUREMENT_ID"
+};
