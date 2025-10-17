@@ -25,7 +25,7 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const provider = new GoogleAuthProvider();
 const analytics = getAnalytics(app);
-
+let  currentUser = null;
 window.firebaseAuth = auth;
 window.googleProvider = provider;
 window.signInWithPopup = signInWithPopup;
@@ -36,10 +36,13 @@ window.signInWithEmailAndPassword = signInWithEmailAndPassword;
 window.updateProfile = updateProfile;
 
 onAuthStateChanged(auth, (user) => {
+  currentUser = user;
   if (user) {
     updateUIForSignedInUser(user);
+    renderRecentlyViewed();
   } else {
     updateUIForSignedOutUser();
+    renderRecentlyViewed();
   }
 });
 
@@ -284,18 +287,47 @@ async function loadProducts() {
   }
 }
 
+// Sort products based on selected criteria
+function sortProducts(products, sortType) {
+  if (!products || !Array.isArray(products)) return products;
+  
+  const sortedProducts = [...products]; // Create a copy to avoid mutating original
+  
+  switch (sortType) {
+    case 'rating-high':
+      return sortedProducts.sort((a, b) => (b.rating || 0) - (a.rating || 0));
+    case 'rating-low':
+      return sortedProducts.sort((a, b) => (a.rating || 0) - (b.rating || 0));
+    case 'price-high':
+      return sortedProducts.sort((a, b) => (b.price || 0) - (a.price || 0));
+    case 'price-low':
+      return sortedProducts.sort((a, b) => (a.price || 0) - (b.price || 0));
+    case 'name-asc':
+      return sortedProducts.sort((a, b) => (a.name || '').localeCompare(b.name || ''));
+    case 'name-desc':
+      return sortedProducts.sort((a, b) => (b.name || '').localeCompare(a.name || ''));
+    default:
+      return sortedProducts;
+  }
+}
+
 // Render products dynamically
 function renderProducts() {
   if (!productsData) return;
 
   const category = (currentCategory || "all").toLowerCase();
+  const sortType = document.getElementById('sortOption')?.value || 'default';
 
   // Filter helpers
   const byCategory = (p) =>
     category === "all" || (p.category || "").toLowerCase() === category;
 
-  const popular = (productsData.popularProducts || []).filter(byCategory);
-  const deals = (productsData.deals || []).filter(byCategory);
+  let popular = (productsData.popularProducts || []).filter(byCategory);
+  let deals = (productsData.deals || []).filter(byCategory);
+
+  // Apply sorting
+  popular = sortProducts(popular, sortType);
+  deals = sortProducts(deals, sortType);
 
   renderProductSection("popularProducts", popular);
   renderProductSection("dealsProducts", deals);
@@ -436,26 +468,64 @@ function scrollToProducts() {
   }
 }
 
-// Render recently viewed products
-function renderRecentlyViewed() {
-  const container = document.getElementById("recentlyViewedProducts");
-  if (!container) return;
-
-  const recentlyViewed = JSON.parse(
-    localStorage.getItem("recentlyViewed") || "[]"
-  );
-
-  if (recentlyViewed.length === 0) {
-    container.innerHTML =
-      '<p style="text-align: center; padding: 20px; color: #999;">No recently viewed products</p>';
-    return;
+/**
+ * Adds a product to the recently viewed list for the current user.
+ * @param {object} product
+ */
+function addToRecentlyViewed(product) {
+  if (!currentUser) return; 
+  const key = `recentlyViewed_${currentUser.uid}`;
+  let recentlyViewed = JSON.parse(localStorage.getItem(key) || "[]");
+  recentlyViewed = recentlyViewed.filter((p) => p.id !== product.id);
+  recentlyViewed.unshift(product);
+  if (recentlyViewed.length > 4) {
+    recentlyViewed = recentlyViewed.slice(0, 4);
   }
 
+  localStorage.setItem(key, JSON.stringify(recentlyViewed));
+}
+// Render recently viewed products
+function renderRecentlyViewed() {
+  const section = document.getElementById("recently-viewed");
+  const container = document.getElementById("recentlyViewedProducts");
+  if (!section || !container) return;
+  if (!currentUser) {
+    section.style.display = "none";
+    return;
+  }
+  const key = `recentlyViewed_${currentUser.uid}`;
+  const recentlyViewed = JSON.parse(localStorage.getItem(key) || "[]");
+  if (recentlyViewed.length === 0) {
+    section.style.display = "none";
+    return;
+  }
+  section.style.display = "block";
   container.innerHTML = "";
   recentlyViewed.slice(0, 4).forEach((product) => {
     const productCard = createProductCard(product);
     container.appendChild(productCard);
   });
+}
+
+// Generate star rating display
+function generateStars(rating) {
+  if (!rating || rating < 1 || rating > 5) return '';
+  
+  let stars = '';
+  const fullStars = Math.floor(rating);
+  const hasHalfStar = rating % 1 >= 0.5;
+  
+  for (let i = 1; i <= 5; i++) {
+    if (i <= fullStars) {
+      stars += '<i class="fas fa-star"></i>';
+    } else if (i === fullStars + 1 && hasHalfStar) {
+      stars += '<i class="fas fa-star-half-alt"></i>';
+    } else {
+      stars += '<i class="far fa-star"></i>';
+    }
+  }
+  
+  return stars;
 }
 
 // Create product card element
@@ -472,6 +542,10 @@ function createProductCard(product) {
         <div class="product-info">
             <h3 class="product-title">${product.name}</h3>
             <div class="product-price">₹${product.price} <span>(₹${product.discount} off)</span></div>
+            <div class="product-rating">
+                <div class="stars">${generateStars(product.rating)}</div>
+                <span class="rating-value">${product.rating || 'N/A'}</span>
+            </div>
             <p>${product.description}</p>
             <div class="product-actions">
                 <button class="add-to-cart" onclick="addToCart('${product.name}', ${product.price}, '${product.image}', ${product.id})">
@@ -484,6 +558,11 @@ function createProductCard(product) {
         </div>
     `;
 
+  productCard.addEventListener("click", (e) => {
+     if (e.target.closest(".add-to-cart") || e.target.closest(".wishlist")) return;
+    addToRecentlyViewed(product);
+    renderRecentlyViewed(); 
+  });
   return productCard;
 }
 
@@ -549,6 +628,16 @@ function initializeSearch() {
   });
 }
 
+// Initialize sorting functionality
+function initializeSorting() {
+  const sortDropdown = document.getElementById('sortOption');
+  if (sortDropdown) {
+    sortDropdown.addEventListener('change', function() {
+      renderProducts();
+    });
+  }
+}
+
 // Initialize products and cart when page loads
 document.addEventListener("DOMContentLoaded", function () {
   loadProducts();
@@ -559,6 +648,7 @@ document.addEventListener("DOMContentLoaded", function () {
   loadSavedPincode();
   initializeCategoryFiltering();
   initializeNavFiltering();
+  initializeSorting();
 });
 
 // --- Pincode Delivery Functions ---
@@ -1086,10 +1176,28 @@ window.changeQuantity = changeQuantity;
 }
 
 function showPaymentSection() {
-    if (cart.length === 0) {
-        showErrorToast("Your cart is empty!"); 
-        return;
+  // Require authentication before proceeding to checkout
+  if (!auth || !auth.currentUser) {
+    // Open login/signup modal and inform the user
+    try {
+      if (typeof openUserModal === 'function') {
+        openUserModal();
+      } else {
+        const modal = document.getElementById('userModal');
+        if (modal) modal.style.display = 'flex';
+      }
+    } catch (_) { /* non-fatal */ }
+
+    if (typeof showInfoToast === 'function') {
+      showInfoToast('Please sign in to continue to checkout.');
     }
+    return;
+  }
+
+  if (cart.length === 0) {
+    showErrorToast("Your cart is empty!");
+    return;
+  }
 
     document.getElementById("paymentSection").style.display = "block";
     displayAvailableCoupons();
@@ -1326,12 +1434,76 @@ function showInfoToast(message, duration = 4000) {
   showToast(message, "info", duration);
 }
 
-// Make functions globally available
-window.openUserModal = function() {
-    const userModal = document.getElementById('userModal');
-    if (userModal) {
-        userModal.style.display = 'flex';
-        switchTab('login'); // Reset to login tab when opening
+function openUserModal() {
+  document.getElementById("userModal").style.display = "flex";
+}
+
+function switchTab(tabName) {
+  // Hide all forms
+  document.querySelectorAll(".user-form").forEach((form) => {
+    form.classList.remove("active");
+  });
+
+  // Remove active class from all tabs
+  document.querySelectorAll(".user-tab").forEach((tab) => {
+    tab.classList.remove("active");
+  });
+
+  // Show selected form and activate tab
+  if (tabName === "login") {
+    document.getElementById("loginForm").classList.add("active");
+    document.querySelectorAll(".user-tab")[0].classList.add("active");
+  } else {
+    document.getElementById("signupForm").classList.add("active");
+    document.querySelectorAll(".user-tab")[1].classList.add("active");
+  }
+}
+
+function selectPayment(element) {
+  // Remove selected class from all options
+  document.querySelectorAll(".payment-option").forEach((opt) => {
+    opt.classList.remove("selected");
+  });
+
+  // Add selected class to clicked option
+  element.classList.add("selected");
+}
+
+function placeOrder() {
+  // Require authentication before placing the order (defense in depth)
+  if (!auth || !auth.currentUser) {
+    try {
+      if (typeof openUserModal === 'function') {
+        openUserModal();
+      } else {
+        const modal = document.getElementById('userModal');
+        if (modal) modal.style.display = 'flex';
+      }
+    } catch (_) { /* non-fatal */ }
+
+    if (typeof showInfoToast === 'function') {
+      showInfoToast('Please sign in to place your order.');
+    }
+    return;
+  }
+
+  const selectedPayment = document.querySelector(".payment-option.selected");
+  if (!selectedPayment) {
+    showToast("Please select a payment method");
+    return;
+  }
+
+  document.getElementById("paymentSection").style.display = "none";
+  document.getElementById("orderSuccess").style.display = "block";
+
+  setTimeout(() => {
+    // Reset cart and coupon after successful order
+    cart = [];
+    cartCount = 0;
+    appliedCoupon = null;
+    const cartCountElement = document.querySelector(".cart-item-count");
+    if (cartCountElement) {
+      cartCountElement.textContent = cartCount;
     }
 };
 
@@ -1515,10 +1687,16 @@ document.addEventListener("DOMContentLoaded", function () {
     const name = document.getElementById('signupName').value;
     const email = document.getElementById('signupEmail').value;
     const password = document.getElementById('signupPassword').value;
+    const confirmPassword = document.getElementById('signupConfirmPassword').value;
     const phone = document.getElementById('signupPhone').value;
     
     if (!name || !email || !password || !phone) {
       showErrorToast('Please fill in all fields');
+      return;
+    }
+
+    if (password !== confirmPassword) {
+      showErrorToast('Passwords do not match');
       return;
     }
     

@@ -160,7 +160,7 @@
       </section>
 
       <!-- Recently Viewed Products Section -->
-      <section id="recently-viewed" class="recently-viewed">
+      <section id="recently-viewed" class="recently-viewed" style="display: none;">
         <h2 class="section-title">Recently Viewed</h2>
         <div class="products" id="recentlyViewedProducts"></div>
       </section>
@@ -214,7 +214,6 @@
       <h2 class="section-title">Today's Best Deals</h2>
       <div class="products" id="dealsProducts"></div>
     </div>
-
     <!-- Footer -->
     <footer>
       <div class="container">
@@ -434,6 +433,15 @@
                 type="password"
                 id="signupPassword"
                 placeholder="Create a password (min 8 chars, uppercase, lowercase, number, special char)"
+                required
+              />
+            </div>
+            <div class="form-group">
+              <label for="signupConfirmPassword">Confirm Password:</label>
+              <input
+                type="password"
+                id="signupConfirmPassword"
+                placeholder="Re-enter your password"
                 required
               />
             </div>
