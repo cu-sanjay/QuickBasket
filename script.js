@@ -10,6 +10,17 @@ import {
   updateProfile
 } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
 import { getAnalytics } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-analytics.js';
+import { 
+  getFirestore, 
+  collection, 
+  addDoc, 
+  query, 
+  where, 
+  orderBy, 
+  getDocs, 
+  doc, 
+  getDoc 
+} from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
 
 const firebaseConfig = {
   apiKey: "AIzaSyDY3U9hO51ZY6f2RLcdQoxPuJTjQn1lZB8",
@@ -25,6 +36,7 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const provider = new GoogleAuthProvider();
 const analytics = getAnalytics(app);
+const db = getFirestore(app);
 let  currentUser = null;
 window.firebaseAuth = auth;
 window.googleProvider = provider;
@@ -34,6 +46,83 @@ window.onAuthStateChanged = onAuthStateChanged;
 window.createUserWithEmailAndPassword = createUserWithEmailAndPassword;
 window.signInWithEmailAndPassword = signInWithEmailAndPassword;
 window.updateProfile = updateProfile;
+
+// Order Storage Functions
+async function saveOrderToFirebase(orderData) {
+  try {
+    if (!currentUser) {
+      throw new Error('User must be logged in to save orders');
+    }
+
+    const orderDoc = {
+      userId: currentUser.uid,
+      userEmail: currentUser.email,
+      userName: currentUser.displayName || 'Anonymous',
+      items: orderData.items,
+      totalAmount: orderData.totalAmount,
+      discount: orderData.discount || 0,
+      finalAmount: orderData.finalAmount,
+      paymentMethod: orderData.paymentMethod,
+      orderDate: new Date(),
+      status: 'completed',
+      orderId: generateOrderId()
+    };
+
+    const docRef = await addDoc(collection(db, 'orders'), orderDoc);
+    console.log('Order saved with ID:', docRef.id);
+    return docRef.id;
+  } catch (error) {
+    console.error('Error saving order to Firebase:', error);
+    throw error;
+  }
+}
+
+async function getUserOrders(userId, limit = 50) {
+  try {
+    const ordersRef = collection(db, 'orders');
+    const q = query(
+      ordersRef,
+      where('userId', '==', userId),
+      orderBy('orderDate', 'desc')
+    );
+    
+    const querySnapshot = await getDocs(q);
+    const orders = [];
+    
+    querySnapshot.forEach((doc) => {
+      orders.push({
+        id: doc.id,
+        ...doc.data(),
+        orderDate: doc.data().orderDate.toDate() // Convert Firestore timestamp to Date
+      });
+    });
+    
+    return orders.slice(0, limit);
+  } catch (error) {
+    console.error('Error fetching user orders:', error);
+    throw error;
+  }
+}
+
+function generateOrderId() {
+  const timestamp = Date.now();
+  const random = Math.random().toString(36).substr(2, 5);
+  return `QB${timestamp}${random}`.toUpperCase();
+}
+
+function formatOrderDate(date) {
+  return new Intl.DateTimeFormat('en-IN', {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit'
+  }).format(date);
+}
+
+function calculateOrderTotal(items) {
+  return items.reduce((total, item) => total + (item.price * item.quantity), 0);
+}
 
 onAuthStateChanged(auth, (user) => {
   currentUser = user;
@@ -1461,7 +1550,7 @@ function selectPayment(element) {
   element.classList.add("selected");
 }
 
-function placeOrder() {
+async function placeOrder() {
   // Require authentication before placing the order (defense in depth)
   if (!auth || !auth.currentUser) {
     try {
@@ -1485,24 +1574,77 @@ function placeOrder() {
     return;
   }
 
-  document.getElementById("paymentSection").style.display = "none";
-  document.getElementById("orderSuccess").style.display = "block";
+  if (cart.length === 0) {
+    showErrorToast("Your cart is empty!");
+    return;
+  }
 
-  setTimeout(() => {
+  try {
+    // Calculate totals
+    const totalAmount = calculateOrderTotal(cart);
+    let discount = 0;
+    let finalAmount = totalAmount;
+
+    if (appliedCoupon) {
+      if (appliedCoupon.type === "flat") {
+        discount = appliedCoupon.value;
+      } else if (appliedCoupon.type === "percentage") {
+        discount = Math.round((totalAmount * appliedCoupon.value) / 100);
+      }
+      finalAmount = Math.max(0, totalAmount - discount);
+    }
+
+    // Prepare order data
+    const orderData = {
+      items: cart.map(item => ({
+        id: item.id,
+        name: item.name,
+        price: item.price,
+        quantity: item.quantity,
+        image: item.image
+      })),
+      totalAmount: totalAmount,
+      discount: discount,
+      finalAmount: finalAmount,
+      paymentMethod: selectedPayment.querySelector('p').textContent,
+      coupon: appliedCoupon ? appliedCoupon.code : null
+    };
+
+    // Save order to Firebase
+    const orderId = await saveOrderToFirebase(orderData);
+    
+    // Show success message with order ID
+    const orderSuccessElement = document.getElementById("orderSuccess");
+    const successMessage = orderSuccessElement.querySelector(".success-message");
+    successMessage.innerHTML = `
+      Your order <strong>${orderId}</strong> has been placed successfully!<br>
+      Total Amount: <strong>₹${finalAmount}</strong><br>
+      Your order will be delivered within 30 minutes. Thank you for shopping with QuickBasket!
+    `;
+
+    document.getElementById("paymentSection").style.display = "none";
+    orderSuccessElement.style.display = "block";
+
     // Reset cart and coupon after successful order
-    cart = [];
-    cartCount = 0;
-    appliedCoupon = null;
-    const cartCountElement = document.querySelector(".cart-item-count");
-    if (cartCountElement) {
-      cartCountElement.textContent = cartCount;
-    }
+    setTimeout(() => {
+      cart = [];
+      cartCount = 0;
+      appliedCoupon = null;
+      const cartCountElement = document.querySelector(".cart-item-count");
+      if (cartCountElement) {
+        cartCountElement.textContent = cartCount;
+      }
 
-    // Clear cart from localStorage
-    if (window.cartStorage && window.cartStorage.clearCart) {
-      window.cartStorage.clearCart();
-    }
-  }, 5000);
+      // Clear cart from localStorage
+      if (window.cartStorage && window.cartStorage.clearCart) {
+        window.cartStorage.clearCart();
+      }
+    }, 5000);
+
+  } catch (error) {
+    console.error('Error placing order:', error);
+    showErrorToast('Failed to place order. Please try again.');
+  }
 }
 
 // --- Wishlist Functions (New) ---
@@ -1624,11 +1766,159 @@ function updateWishlistDisplay() {
   renderProducts();
 }
 
+// --- Order History Functions ---
+
+let userOrders = [];
+let filteredOrders = [];
+
+async function openOrderHistory() {
+  if (!currentUser) {
+    showErrorToast('Please sign in to view order history');
+    return;
+  }
+
+  document.getElementById("orderHistoryModal").style.display = "flex";
+  await loadUserOrders();
+}
+
+function closeOrderHistory() {
+  document.getElementById("orderHistoryModal").style.display = "none";
+}
+
+async function loadUserOrders() {
+  const loadingElement = document.getElementById("orderLoading");
+  const emptyElement = document.getElementById("orderEmpty");
+  const ordersListElement = document.getElementById("ordersList");
+
+  try {
+    loadingElement.style.display = "block";
+    emptyElement.style.display = "none";
+    ordersListElement.innerHTML = "";
+
+    userOrders = await getUserOrders(currentUser.uid);
+    filteredOrders = [...userOrders];
+
+    loadingElement.style.display = "none";
+
+    if (userOrders.length === 0) {
+      emptyElement.style.display = "block";
+    } else {
+      renderOrdersList();
+    }
+  } catch (error) {
+    console.error('Error loading orders:', error);
+    loadingElement.style.display = "none";
+    showErrorToast('Failed to load order history. Please try again.');
+  }
+}
+
+function renderOrdersList() {
+  const ordersListElement = document.getElementById("ordersList");
+  ordersListElement.innerHTML = "";
+
+  filteredOrders.forEach(order => {
+    const orderElement = createOrderElement(order);
+    ordersListElement.appendChild(orderElement);
+  });
+}
+
+function createOrderElement(order) {
+  const orderDiv = document.createElement("div");
+  orderDiv.className = "order-item";
+
+  const orderDate = formatOrderDate(order.orderDate);
+  const itemsCount = order.items.length;
+  const itemsText = itemsCount === 1 ? "item" : "items";
+
+  orderDiv.innerHTML = `
+    <div class="order-header">
+      <div class="order-info">
+        <h4>Order #${order.orderId}</h4>
+        <p class="order-date">${orderDate}</p>
+        <p class="order-items">${itemsCount} ${itemsText}</p>
+      </div>
+      <div class="order-amount">
+        <span class="order-total">₹${order.finalAmount}</span>
+        ${order.discount > 0 ? `<span class="order-discount">₹${order.discount} off</span>` : ''}
+      </div>
+    </div>
+    <div class="order-items-list">
+      ${order.items.map(item => `
+        <div class="order-item-detail">
+          <img src="${item.image}" alt="${item.name}" class="order-item-image">
+          <div class="order-item-info">
+            <h5>${item.name}</h5>
+            <p>Qty: ${item.quantity} × ₹${item.price}</p>
+          </div>
+          <span class="order-item-total">₹${item.price * item.quantity}</span>
+        </div>
+      `).join('')}
+    </div>
+    <div class="order-footer">
+      <div class="order-payment">
+        <i class="fas fa-credit-card"></i>
+        <span>Paid via ${order.paymentMethod}</span>
+      </div>
+      <div class="order-status">
+        <span class="status-badge completed">Completed</span>
+      </div>
+    </div>
+  `;
+
+  return orderDiv;
+}
+
+function filterOrdersByDate() {
+  const dateFilter = document.getElementById("dateFilter").value;
+  const now = new Date();
+  
+  filteredOrders = userOrders.filter(order => {
+    const orderDate = order.orderDate;
+    
+    switch (dateFilter) {
+      case 'today':
+        return orderDate.toDateString() === now.toDateString();
+      case 'week':
+        const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+        return orderDate >= weekAgo;
+      case 'month':
+        const monthAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+        return orderDate >= monthAgo;
+      case 'year':
+        const yearAgo = new Date(now.getTime() - 365 * 24 * 60 * 60 * 1000);
+        return orderDate >= yearAgo;
+      default:
+        return true;
+    }
+  });
+  
+  renderOrdersList();
+}
+
+function filterOrdersByCategory() {
+  const categoryFilter = document.getElementById("categoryFilter").value;
+  
+  if (categoryFilter === 'all') {
+    filteredOrders = [...userOrders];
+  } else {
+    filteredOrders = userOrders.filter(order => {
+      return order.items.some(item => {
+        // Find the product in our products data to get its category
+        const product = productsData?.allProducts?.find(p => p.id === item.id);
+        return product?.category === categoryFilter;
+      });
+    });
+  }
+  
+  renderOrdersList();
+}
+
 // Close modal when clicking outside
 window.onclick = function (event) {
   const cartModal = document.getElementById("cartModal");
   const userModal = document.getElementById("userModal");
   const wishlistModal = document.getElementById("wishlistModal");
+  const orderHistoryModal = document.getElementById("orderHistoryModal");
 
   if (event.target === cartModal) {
     closeCart();
@@ -1640,6 +1930,10 @@ window.onclick = function (event) {
 
   if (event.target === wishlistModal) {
     closeWishlist();
+  }
+
+  if (event.target === orderHistoryModal) {
+    closeOrderHistory();
   }
 };
 
@@ -1756,6 +2050,7 @@ document.addEventListener("DOMContentLoaded", function () {
   const cancelEditBtn = document.getElementById('cancelEditBtn');
   const profileEditSection = document.getElementById('profileEditSection');
   const editProfileForm = document.getElementById('editProfileForm');
+  const orderHistoryBtn = document.getElementById('orderHistoryBtn');
   
   if (editProfileBtn) {
     editProfileBtn.addEventListener('click', () => {
@@ -1773,6 +2068,12 @@ document.addEventListener("DOMContentLoaded", function () {
   if (cancelEditBtn) {
     cancelEditBtn.addEventListener('click', () => {
       profileEditSection.style.display = 'none';
+    });
+  }
+
+  if (orderHistoryBtn) {
+    orderHistoryBtn.addEventListener('click', () => {
+      openOrderHistory();
     });
   }
   
@@ -1843,6 +2144,10 @@ document.addEventListener("DOMContentLoaded", function () {
   window.showWarningToast = showWarningToast;
   window.showInfoToast = showInfoToast;
   window.hideToast = hideToast;
+  window.openOrderHistory = openOrderHistory;
+  window.closeOrderHistory = closeOrderHistory;
+  window.filterOrdersByDate = filterOrdersByDate;
+  window.filterOrdersByCategory = filterOrdersByCategory;
 });
 
 function updateColorSelection(color) {

@@ -497,6 +497,10 @@
               <i class="fas fa-edit"></i>
               <span>Edit Profile</span>
             </button>
+            <button class="profile-action-btn order-history-btn" id="orderHistoryBtn">
+              <i class="fas fa-shopping-bag"></i>
+              <span>Order History</span>
+            </button>
             <button class="profile-action-btn signout-btn" id="signOutBtn">
               <i class="fas fa-sign-out-alt"></i>
               <span>Sign Out</span>
@@ -517,6 +521,64 @@
         <div class="wishlist-actions">
           <button class="btn btn-secondary" onclick="closeWishlist()">Continue Shopping</button>
           <button class="btn" onclick="moveAllToCart()">Move All to Cart</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Order History Modal -->
+    <div class="modal" id="orderHistoryModal">
+      <div class="modal-content order-history-modal">
+        <div class="modal-header">
+          <h2>Order History</h2>
+          <span class="close" onclick="closeOrderHistory()">&times;</span>
+        </div>
+        
+        <!-- Order Filters -->
+        <div class="order-filters">
+          <div class="filter-group">
+            <label for="dateFilter">Filter by Date:</label>
+            <select id="dateFilter" onchange="filterOrdersByDate()">
+              <option value="all">All Orders</option>
+              <option value="today">Today</option>
+              <option value="week">This Week</option>
+              <option value="month">This Month</option>
+              <option value="year">This Year</option>
+            </select>
+          </div>
+          <div class="filter-group">
+            <label for="categoryFilter">Filter by Category:</label>
+            <select id="categoryFilter" onchange="filterOrdersByCategory()">
+              <option value="all">All Categories</option>
+              <option value="vegetables">Vegetables</option>
+              <option value="fruits">Fruits</option>
+              <option value="dairy">Dairy</option>
+              <option value="bakery">Bakery</option>
+              <option value="beverages">Beverages</option>
+              <option value="snacks">Snacks</option>
+              <option value="home-care">Home Care</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Loading State -->
+        <div class="order-loading" id="orderLoading" style="display: none;">
+          <div class="loading-spinner"></div>
+          <p>Loading your orders...</p>
+        </div>
+
+        <!-- Empty State -->
+        <div class="order-empty" id="orderEmpty" style="display: none;">
+          <i class="fas fa-shopping-bag"></i>
+          <h3>No Orders Found</h3>
+          <p>You haven't placed any orders yet.</p>
+          <button class="btn" onclick="closeOrderHistory(); openCart();">Start Shopping</button>
+        </div>
+
+        <!-- Orders List -->
+        <div class="orders-list" id="ordersList"></div>
+        
+        <div class="order-history-actions">
+          <button class="btn btn-secondary" onclick="closeOrderHistory()">Close</button>
         </div>
       </div>
     </div>
