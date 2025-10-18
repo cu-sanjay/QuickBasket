@@ -538,3 +538,137 @@
     <script type="module" src="script.js"></script>
   </body>
 </html>
+
+ner"></div>
+    <footer>
+      <div class="container">
+        <div class="footer-columns">
+          <div class="footer-column">
+            <h3>About Us</h3>
+            <p>
+              QuickBasket is your go-to destination for fast and convenient
+              grocery delivery.
+            </p>
+          </div>
+          <div class="footer-column">
+            <h3>Contact Us</h3>
+            <p>Email: support@quickbasket.com</p>
+            <p>Phone: +1-555-123-4567</p>
+          </div>
+          <div class="footer-column">
+            <h3>Follow Us</h3>
+            <div class="social-links">
+              <a href="#" title="Facebook"><i class="fab fa-facebook"></i></a>
+              <a href="#" title="Twitter"><i class="fab fa-twitter"></i></a>
+              <a href="#" title="Instagram"><i class="fab fa-instagram"></i></a>
+            </div>
+          </div>
+        </div>
+        <hr />
+        <p class="copyright">
+          &copy; 2024 QuickBasket. All rights reserved.
+        </p>
+      </div>
+    </footer>
+
+    <!-- Cart Modal -->
+    <div class="cart-modal" id="cartModal">
+      <div class="modal-overlay" onclick="closeCart()"></div>
+      <div class="cart-modal-content">
+        <div class="modal-header">
+          <h3>Shopping Cart</h3>
+          <button class="close-modal" onclick="closeCart()">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+        <div class="cart-items">
+          <!-- Cart items will be dynamically added here -->
+          <p id="empty-cart-message" style="display: none;">Your cart is empty.</p>
+        </div>
+        <div class="cart-summary">
+          <div class="cart-total">
+            <span>Total:</span>
+            <span id="cartTotal">$0.00</span>
+          </div>
+          <button class="checkout-btn" onclick="checkout()">Checkout</button>
+        </div>
+      </div>
+    </div>
+        <!-- Wishlist Modal -->
+    <div class="wishlist-modal" id="wishlistModal">
+      <div class="modal-overlay" onclick="closeWishlist()"></div>
+      <div class="wishlist-modal-content">
+        <div class="modal-header">
+          <h3>Wishlist</h3>
+          <button class="close-modal" onclick="closeWishlist()">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+        <div class="wishlist-items">
+          <!-- Wishlist items will be dynamically added here -->
+          <p id="empty-wishlist-message" style="display: none;">Your wishlist is empty.</p>
+        </div>
+      </div>
+    </div>
+
+
+    <!-- User Authentication Modal -->
+    <div class="user-modal" id="userModal">
+      <div class="modal-overlay" onclick="closeUserModal()"></div>
+      <div class="user-modal-content">
+        <div class="modal-header">
+          <h3 id="modalTitle">Login</h3>
+          <button class="close-modal" onclick="closeUserModal()">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="auth-form" id="loginForm">
+            <input type="email" id="loginEmail" placeholder="Email" required />
+            <input
+              type="password"
+              id="loginPassword"
+              placeholder="Password"
+              required
+            />
+            <button onclick="login()" id="loginBtn">Login</button>
+            <p class="switch-form">
+              Don't have an account?
+              <a href="#" onclick="showSignupForm()">Sign up</a>
+            </p>
+          </div>
+          <div class="auth-form" id="signupForm" style="display: none">
+            <input type="text" id="signupName" placeholder="Name" required />
+            <input type="email" id="signupEmail" placeholder="Email" required />
+            <input
+              type="password"
+              id="signupPassword"
+              placeholder="Password"
+              required
+            />
+            <button onclick="signup()" id="signupBtn">Sign Up</button>
+            <p class="switch-form">
+              Already have an account?
+              <a href="#" onclick="showLoginForm()">Login</a>
+            </p>
+          </div>
+          <div class="user-profile" id="userProfile" style="display: none">
+            <h4 id="userName"></h4>
+            <p id="userEmail"></p>
+            <button onclick="logout()" class="logout-btn">Logout</button>
+            <!-- Order History Section -->
+            <div class="order-history">
+                <h3>Order History</h3>
+                <div id="orderHistoryContainer">
+                    <!-- Order history items will be dynamically added here -->
+                    <p id="empty-order-history" style="display: none;">No order history available.</p>
+                </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="script.js"></script>
+  </body>
+</html>

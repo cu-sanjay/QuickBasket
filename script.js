@@ -1893,3 +1893,431 @@ window
       setTheme(e.matches ? "dark" : "light");
     }
   });
+
+
+showErrorToast('Failed to sign out. Please try again.');
+  }
+}); // End of signOutBtn event listener
+
+// Global variables for cart, wishlist, products, and coupons
+let wishlist = [];
+let wishlistCount = 0;
+let cart = [];
+let cartCount = 0;
+// productsData is expected to be populated from an external source (e.g., API call)
+// before product-related functions like getProductById are used.
+let productsData = []; 
+let coupons = { // Example coupons, extend as needed
+  "SAVE10": { type: "percentage", value: 10, minOrder: 100 },
+  "FLAT20": { type: "flat", value: 20, minOrder: 50 },
+};
+let appliedCoupon = null;
+let recentlyViewed = []; // Declared globally
+
+// --- Wishlist Initialization and Functionality ---
+
+// Function to load the wishlist from localStorage and initialize wishlist variables
+function initializeWishlist() {
+  try {
+    const savedWishlist = localStorage.getItem("quickbasket_wishlist");
+    if (savedWishlist) {
+      wishlist = JSON.parse(savedWishlist);
+      wishlistCount = wishlist.length;
+    } else {
+      wishlist = [];
+      wishlistCount = 0;
+    }
+  } catch (error) {
+    console.error("Error loading wishlist from localStorage:", error);
+    wishlist = []; // Reset on error
+    wishlistCount = 0;
+  }
+  updateWishlistCountDisplay(); // Ensure display is updated on load
+}
+
+// Function to save the wishlist to localStorage
+function saveWishlistToLocalStorage() {
+  try {
+    localStorage.setItem("quickbasket_wishlist", JSON.stringify(wishlist));
+  } catch (error) {
+    console.error("Error saving wishlist to localStorage:", error);
+  }
+}
+
+// Add to wishlist function
+function addToWishlist(productId) {
+  if (!wishlist.includes(productId)) {
+    wishlist.push(productId);
+    wishlistCount++;
+    updateWishlistCountDisplay();
+    saveWishlistToLocalStorage(); // Save the updated wishlist
+    console.log(`Product ${productId} added to wishlist. New wishlist:`, wishlist);
+  } else {
+    console.log(`Product ${productId} is already in the wishlist.`);
+  }
+}
+
+function removeFromWishlist(productId) {
+  const index = wishlist.indexOf(productId);
+  if (index > -1) {
+    wishlist.splice(index, 1);
+    wishlistCount--;
+    updateWishlistCountDisplay();
+    saveWishlistToLocalStorage(); // Save the updated wishlist
+    console.log(`Product ${productId} removed from wishlist. New wishlist:`, wishlist);
+  }
+}
+
+// Update wishlist count display
+function updateWishlistCountDisplay() {
+  const wishlistCountElement = document.querySelector(".wishlist-count");
+  if (wishlistCountElement) {
+    wishlistCountElement.textContent = wishlistCount;
+  }
+}
+
+// --- Product and Cart Functionality ---
+
+function getProductById(productId) {
+    if (!productsData || productsData.length === 0) {
+        console.warn("productsData is not yet loaded or is empty.");
+        return null;
+    }
+    const product = productsData.find(p => p.id === productId);
+    if (!product) {
+        console.warn(`Product with ID ${productId} not found.`);
+    }
+    return product || null;
+}
+
+// Function to load the cart from localStorage and initialize cart variables
+function initializeCart() {
+  // Assuming window.cartStorage is available for persistent cart management.
+  // Fallback to raw localStorage if not present.
+  if (window.cartStorage && typeof window.cartStorage.loadCart === 'function') {
+    cart = window.cartStorage.loadCart();
+  } else {
+    const savedCart = localStorage.getItem("quickbasket_cart");
+    if (savedCart) {
+        try {
+            cart = JSON.parse(savedCart);
+        } catch (e) {
+            console.error("Error parsing cart from localStorage:", e);
+            cart = [];
+        }
+    } else {
+        cart = [];
+    }
+  }
+  cartCount = cart.reduce((sum, item) => sum + item.quantity, 0);
+  updateCartCountDisplay(); // Ensure display is updated on load
+}
+
+// Function to add a product to the cart
+function addToCart(productId, quantity = 1) {
+  const product = getProductById(productId);
+
+    if (!product) {
+        console.error(`Product with ID ${productId} not found.`);
+        return;
+    }
+
+    const existingCartItemIndex = cart.findIndex(item => item.productId === productId);
+
+    if (existingCartItemIndex > -1) {
+        // Product already in cart, update the quantity
+        cart[existingCartItemIndex].quantity += quantity;
+        cartCount += quantity;
+        console.log(`Quantity of product ${productId} updated in cart. New cart:`, cart);
+    } else {
+        // Product not in cart, add it as a new item
+        const newCartItem = {
+            productId: productId,
+            quantity: quantity,
+        };
+        cart.push(newCartItem);
+        cartCount += quantity;
+        console.log(`Product ${productId} added to cart. New cart:`, cart);
+    }
+
+  updateCartCountDisplay();
+  if (window.cartStorage) {
+    window.cartStorage.saveCart(cart);
+  } else { // Fallback to raw localStorage
+      localStorage.setItem("quickbasket_cart", JSON.stringify(cart));
+  }
+}
+
+// Function to remove a product from the cart
+function removeFromCart(productId) {
+  const index = cart.findIndex(item => item.productId === productId);
+  if (index > -1) {
+    const removedQuantity = cart[index].quantity;
+    cart.splice(index, 1);
+    cartCount -= removedQuantity;
+    updateCartCountDisplay();
+    if (window.cartStorage) {
+      window.cartStorage.saveCart(cart);
+    } else { // Fallback to raw localStorage
+        localStorage.setItem("quickbasket_cart", JSON.stringify(cart));
+    }
+    console.log(`Product ${productId} removed from cart. New cart:`, cart);
+  }
+}
+
+// Function to update the quantity of a product in the cart
+function updateQuantity(productId, newQuantity) {
+    if (newQuantity <= 0) {
+        removeFromCart(productId);
+        return;
+    }
+
+    const itemIndex = cart.findIndex(item => item.productId === productId);
+
+    if (itemIndex > -1) {
+        const oldQuantity = cart[itemIndex].quantity;
+        cart[itemIndex].quantity = newQuantity;
+        cartCount += (newQuantity - oldQuantity);
+        updateCartCountDisplay();
+        if (window.cartStorage) {
+            window.cartStorage.saveCart(cart);
+        } else { // Fallback to raw localStorage
+            localStorage.setItem("quickbasket_cart", JSON.stringify(cart));
+        }
+        console.log(`Quantity of product ${productId} updated to ${newQuantity}. New cart:`, cart);
+    }
+}
+
+function updateCartCountDisplay() {
+  const cartCountElement = document.querySelector(".cart-item-count");
+  if (cartCountElement) {
+    cartCountElement.textContent = cartCount > 99 ? '99+' : cartCount;
+  }
+}
+
+// Function to calculate the total price of items in the cart
+function calculateCartTotal() {
+  let total = 0;
+  for (const item of cart) {
+    const product = getProductById(item.productId);
+    if (product) {
+      total += product.price * item.quantity;
+    }
+  }
+  return total;
+}
+
+function applyCoupon(couponCode) {
+  const coupon = coupons[couponCode];
+  if (!coupon) {
+    appliedCoupon = null;
+    return { success: false, message: "Invalid coupon code" };
+  }
+
+  const cartTotal = calculateCartTotal();
+  if (cartTotal < coupon.minOrder) {
+    appliedCoupon = null;
+    return { success: false, message: `Minimum order value is ₹${coupon.minOrder}` };
+  }
+
+  appliedCoupon = coupon;
+  return { success: true, message: "Coupon applied successfully" };
+}
+
+function calculateDiscountedTotal() {
+  let total = calculateCartTotal();
+
+  if (appliedCoupon) {
+    if (appliedCoupon.type === "flat") {
+      total = Math.max(0, total - appliedCoupon.value);
+    } else if (appliedCoupon.type === "percentage") {
+      total = total * (1 - appliedCoupon.value / 100);
+    }
+  }
+
+  return Math.max(0, total); // Ensure the total is not negative
+}
+
+function removeCoupon() {
+  appliedCoupon = null;
+}
+
+// --- Recently Viewed Functionality ---
+
+// 'recentlyViewed' is declared globally at the top now
+
+function addToRecentlyViewed(productId) {
+    if (!productsData || productsData.length === 0) {
+        console.warn("productsData is not yet loaded or is empty.");
+        return;
+    }
+
+    const product = productsData.find(p => p.id === productId);
+    if (!product) {
+        console.warn(`Product with ID ${productId} not found.`);
+        return;
+    }
+
+    // Check if the product is already in recently viewed
+    const index = recentlyViewed.findIndex(item => item.id === productId);
+
+    if (index > -1) {
+        // Product already in recently viewed, move it to the start
+        recentlyViewed.splice(index, 1);
+    }
+
+    // Add the product to the start of the recently viewed array
+    recentlyViewed.unshift(product);
+
+    // Limit the number of recently viewed products
+    recentlyViewed = recentlyViewed.slice(0, 5);
+
+    // Save the recently viewed products to localStorage
+    localStorage.setItem('recentlyViewed', JSON.stringify(recentlyViewed));
+}
+
+function loadRecentlyViewed() {
+    try {
+        const savedRecentlyViewed = localStorage.getItem('recentlyViewed');
+        if (savedRecentlyViewed) {
+            recentlyViewed = JSON.parse(savedRecentlyViewed);
+        }
+    } catch (error) {
+        console.error("Error loading recently viewed products from localStorage:", error);
+    }
+}
+
+function renderRecentlyViewed() {
+    loadRecentlyViewed(); // Load recently viewed products first
+
+    const recentlyViewedContainer = document.getElementById('recentlyViewedContainer');
+    if (!recentlyViewedContainer) {
+        return;
+    }
+
+    // Clear the container
+    recentlyViewedContainer.innerHTML = '';
+
+    if (recentlyViewed.length === 0) {
+        recentlyViewedContainer.innerHTML = '<p>No recently viewed items.</p>';
+        return;
+    }
+
+    // Create and append HTML elements for each recently viewed product
+    recentlyViewed.forEach(product => {
+        const productDiv = document.createElement('div');
+        productDiv.classList.add('recently-viewed-item');
+
+        const productImage = document.createElement('img');
+        productImage.src = product.image;
+        productImage.alt = product.name;
+        productImage.classList.add('recently-viewed-image');
+        productDiv.appendChild(productImage);
+
+        const productName = document.createElement('p');
+        productName.textContent = product.name;
+        productName.classList.add('recently-viewed-name');
+        productDiv.appendChild(productName);
+
+        productDiv.addEventListener('click', () => {
+            window.location.href = `product.html?id=${product.id}`; // Redirect to product details page
+        });
+
+        recentlyViewedContainer.appendChild(productDiv);
+    });
+}
+
+// Initial calls to load state
+initializeWishlist();
+initializeCart();
+
+
+// --- Order History Functionality ---
+
+// Ensure 'push' is imported for generating unique keys for new orders
+import { getDatabase, ref, set, get, child, push } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+
+const db = getDatabase(app);
+
+/**
+ * Saves order details to Firebase Realtime Database under the user's ID.
+ * @param {string} userId - The ID of the user placing the order.
+ * @param {object} orderDetails - An object containing the order details (products, quantities, date, total price, etc.).
+ * @returns {Promise<void>} - A promise that resolves when the order is successfully saved to Firebase.
+ */
+async function saveOrderToFirebase(userId, orderDetails) {
+  if (!userId) {
+    console.error("User ID is required to save the order.");
+    throw new Error("User ID is required"); 
+  }
+
+  if (!orderDetails || typeof orderDetails !== 'object') {
+    console.error("Invalid order details provided.");
+    throw new Error("Invalid order details");
+  }
+
+  try {
+    const orderRef = ref(db, `users/${userId}/orders`); // Reference to the user's orders node
+    const newOrderRef = push(orderRef); // Generate a unique key for the new order
+    await set(newOrderRef, orderDetails); // Use await for the asynchronous set operation
+    console.log("Order saved to Firebase successfully!");
+  } catch (error) {
+    console.error("Error saving order to Firebase:", error);
+    throw error; // Re-throw the error for the calling function to handle
+  }
+}
+
+/**
+ * Retrieves the order history for a given user from Firebase Realtime Database.
+ * @param {string} userId - The ID of the user whose order history is to be retrieved.
+ * @returns {Promise<Array<object>>} - A promise that resolves with an array of order objects. Returns an empty array if no orders are found.
+ */
+async function getOrderHistory(userId) {
+    if (!userId) {
+        console.error("User ID is required to retrieve order history.");
+        return []; 
+    }
+
+    try {
+        const dbRef = ref(getDatabase());
+        const snapshot = await get(child(dbRef, `users/${userId}/orders`));
+
+        if (snapshot.exists()) {
+            // Convert the Firebase data object into an array of order objects
+            const orders = Object.entries(snapshot.val()).map(([orderId, orderData]) => ({
+                orderId,
+                ...orderData
+            }));
+            return orders;
+        } else {
+            console.log("No orders found for this user.");
+            return [];
+        }
+    } catch (error) {
+        console.error("Error fetching order history from Firebase:", error);
+        return []; 
+    }
+}
+
+// Expose functions to the global window object for easier access from other scripts or HTML
+window.saveOrderToFirebase = saveOrderToFirebase;
+window.getOrderHistory = getOrderHistory;
+window.initializeCart = initializeCart;
+window.initializeWishlist = initializeWishlist;
+window.addToCart = addToCart;
+window.removeFromCart = removeFromCart;
+window.updateQuantity = updateQuantity;
+window.calculateCartTotal = calculateCartTotal;
+window.applyCoupon = applyCoupon;
+window.calculateDiscountedTotal = calculateDiscountedTotal;
+window.removeCoupon = removeCoupon;
+window.addToWishlist = addToWishlist;
+window.removeFromWishlist = removeFromWishlist;
+window.getProductById = getProductById;
+window.renderRecentlyViewed = renderRecentlyViewed;
+window.addToRecentlyViewed = addToRecentlyViewed;
+
+// Expose global state variables (if intended for global access)
+window.coupons = coupons;
+window.wishlist = wishlist;
+window.cart = cart;
