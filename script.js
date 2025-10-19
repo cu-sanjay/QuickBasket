@@ -830,7 +830,7 @@ function openPincodeModal() {
     }, 100);
   }
 }
-
+window.openPincodeModal = openPincodeModal;
 /**
  * Close pincode modal
  */
@@ -849,7 +849,7 @@ function closePincodeModal() {
     hideDeliveryStatus();
   }
 }
-
+window.closePincodeModal = closePincodeModal;
 /**
  * Validate Indian pincode format
  * @param {string} pincode - 6 digit pincode
@@ -1116,11 +1116,13 @@ function openCart() {
   document.getElementById("orderSuccess").style.display = "none";
   updateCartDisplay();
 }
+window.openCart = openCart;
 
 function closeCart() {
   document.getElementById("cartModal").style.display = "none";
   document.getElementById("userModal").style.display = "none";
 }
+window.closeCart = closeCart;
 
 function addToCart(name, price, image, id = null) {
   // Check if product already in cart
@@ -1137,6 +1139,7 @@ function addToCart(name, price, image, id = null) {
       quantity: 1,
     });
   }
+  window.addToCart = addToCart;
 
   // Update cart count
   const newCartCount = cart.reduce((total, item) => total + item.quantity, 0);
@@ -1242,6 +1245,7 @@ function changeQuantity(name, change) {
       // Remove product from cart
       cart = cart.filter((item) => item.name !== name);
     }
+window.changeQuantity = changeQuantity;
 
     // Update cart count
     cartCount = cart.reduce((total, item) => total + item.quantity, 0);
@@ -1284,9 +1288,10 @@ function showPaymentSection() {
     return;
   }
 
-  document.getElementById("paymentSection").style.display = "block";
-  displayAvailableCoupons();
+    document.getElementById("paymentSection").style.display = "block";
+    displayAvailableCoupons();
 }
+window.showPaymentSection = showPaymentSection;
 
 function displayAvailableCoupons() {
   const couponsList = document.getElementById("availableCoupons");
@@ -1347,6 +1352,7 @@ function applyCoupon() {
   updateCouponUI();
   showCouponMessage(`Coupon ${couponCode} applied successfully!`, "success");
 }
+window.applyCoupon = applyCoupon;
 
 function applyCouponFromList(couponCode) {
   const coupon = coupons[couponCode];
@@ -1368,6 +1374,7 @@ function applyCouponFromList(couponCode) {
   updateCouponUI();
   showCouponMessage(`Coupon ${couponCode} applied successfully!`, "success");
 }
+window.applyCouponFromList = applyCouponFromList;
 
 function removeCoupon() {
   appliedCoupon = null;
@@ -1391,7 +1398,7 @@ function updateCouponUI() {
   } else {
     appliedCouponDiv.style.display = "none";
   }
-}
+}window.removeCoupon = removeCoupon;
 
 function showCouponMessage(message, type) {
   const messageDiv = document.getElementById("couponMessage");
@@ -1497,6 +1504,7 @@ function hideToast() {
     progressBar.style.transform = "scaleX(1)";
   }, 400);
 }
+window.hideToast = hideToast;
 
 // Enhanced toast notifications for different scenarios
 function showSuccessToast(message, duration = 4000) {
@@ -1593,6 +1601,7 @@ async function placeOrder() {
       }
       finalAmount = Math.max(0, totalAmount - discount);
     }
+};
 
     // Prepare order data
     const orderData = {
@@ -1665,23 +1674,19 @@ function toggleWishlist(productId, event) {
   const button = event.currentTarget;
   const heartIcon = button.querySelector("i");
 
-  if (productIndex > -1) {
-    wishlist.splice(productIndex, 1);
-    heartIcon.classList.remove("fas");
-    heartIcon.classList.add("far");
-    button.classList.remove("active");
-    showToast("Removed from wishlist");
-  } else {
-    const productToAdd = productsData.allProducts.find(
-      (p) => p.id === productId
-    );
-    if (productToAdd) {
-      wishlist.push(productToAdd);
-      heartIcon.classList.remove("far");
-      heartIcon.classList.add("fas");
-      button.classList.add("active");
-      showToast("Added to wishlist");
+window.openWishlist = function() {
+    const wishlistModal = document.getElementById('wishlistModal');
+    if (wishlistModal) {
+        wishlistModal.style.display = 'flex';
+        updateWishlistDisplay();
     }
+};
+
+window.toggleTheme = function() {
+    const currentTheme = document.documentElement.getAttribute('data-theme');
+    const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+    setTheme(newTheme);
+};
   }
 
   saveWishlist();
@@ -2167,6 +2172,7 @@ function toggleTheme() {
 
   setTheme(newTheme);
 }
+window.toggleTheme = toggleTheme;
 
 function setTheme(theme) {
   document.documentElement.setAttribute("data-theme", theme);
@@ -2198,3 +2204,26 @@ window
       setTheme(e.matches ? "dark" : "light");
     }
   });
+
+function switchTab(tabName) {
+    // Get all tabs and forms
+    const loginTab = document.querySelector('.user-tab[onclick="switchTab(\'login\')"]');
+    const signupTab = document.querySelector('.user-tab[onclick="switchTab(\'signup\')"]');
+    const loginForm = document.getElementById('loginForm');
+    const signupForm = document.getElementById('signupForm');
+
+    if (tabName === 'login') {
+        loginTab?.classList.add('active');
+        signupTab?.classList.remove('active');
+        if (loginForm) loginForm.style.display = 'block';
+        if (signupForm) signupForm.style.display = 'none';
+    } else {
+        loginTab?.classList.remove('active');
+        signupTab?.classList.add('active');
+        if (loginForm) loginForm.style.display = 'none';
+        if (signupForm) signupForm.style.display = 'block';
+    }
+}
+
+// Make switchTab available globally
+window.switchTab = switchTab;
