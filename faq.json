@@ -1,0 +1,14 @@
+{
+    "faqs": [
+        {
+            "question": "Does pineapple belong on pizza?",
+            "answer": "No."
+            
+        },
+        {
+            "question": "This is a question!",
+            "answer": "And this is the answer!"
+               
+        }
+    ]
+}

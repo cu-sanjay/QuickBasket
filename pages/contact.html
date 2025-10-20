@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="stylesheet" href="../styles.css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>QuickBasket - Grocery Delivery in Minutes</title>
+    <link
+      rel="icon"
+      href="https://cdn-icons-png.flaticon.com/512/3081/3081559.png"
+      type="image/png"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+    />
+  </head>
+  <body>
+    <!-- Header -->
+    <header>
+      <div class="container">
+        <div class="header-content">
+          <div class="logo">
+            <i class="fas fa-shopping-basket"></i>
+            <span>QuickBasket</span>
+          </div>
+          <div class="search-bar">
+            <input type="text" placeholder="Search for products..." />
+            <button><i class="fas fa-search"></i></button>
+          </div>
+          <div class="header-actions">
+            <div
+              class="action-item theme-toggle-nav"
+              onclick="toggleTheme()"
+              title="Toggle dark mode"
+            >
+              <i class="fas fa-sun icon sun-icon"></i>
+              <i class="fas fa-moon icon moon-icon"></i>
+              <span>Theme</span>
+            </div>
+            <div class="action-item" onclick="openUserModal()" id="accountBtn">
+              <i class="fas fa-user"></i>
+              <span id="accountText">Account</span>
+            </div>
+            <div class="action-item" style="position: relative;" onclick="openWishlist()">
+              <i class="far fa-heart"></i>
+              <span>Wishlist</span>
+              <div class="cart-count wishlist-count">0</div>
+            </div>
+            <div
+              class="action-item"
+              style="position: relative"
+              onclick="openCart()"
+            >
+              <i class="fas fa-shopping-cart"></i>
+              <span>Cart</span>
+              <div class="cart-count cart-item-count">0</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Navigation -->
+    <nav>
+      <div class="container">
+        <ul class="nav-links">
+          <li>
+            <a href="index.html" title="All Products"><i class="fas fa-home"></i> <span>Home</span></a>
+          </li>
+          <li>
+            <a href="index.html?category=all" data-category="all" title="All Food"><i class="fas fa-utensils"></i> <span>Food</span></a>
+          </li>
+          <li>
+            <a href="index.html?category=vegetables" data-category="vegetables" title="Vegetables"
+              ><i class="fas fa-pepper-hot"></i> <span>Vegetables</span></a>
+          </li>
+          <li>
+            <a href="index.html?category=fruits" data-category="fruits" title="Fruits"><i class="fas fa-apple-alt"></i> <span>Fruits</span></a>
+          </li>
+          <li>
+            <a href="index.html?category=dairy" data-category="dairy" title="Dairy"><i class="fas fa-cheese"></i> <span>Dairy</span></a>
+          </li>
+          <li>
+            <a href="index.html?category=bakery" data-category="bakery" title="Bakery"><i class="fas fa-bread-slice"></i> <span>Bakery</span></a>
+          </li>
+          <li>
+            <a href="index.html?category=beverages" data-category="beverages" title="Beverages"
+              ><i class="fas fa-wine-bottle"></i> <span>Beverages</span></a>
+          </li>
+          <li>
+            <a href="index.html?category=snacks" data-category="snacks" title="Snacks"><i class="fas fa-ice-cream"></i> <span>Snacks</span></a>
+          </li>
+          <li>
+            <a href="index.html?category=home-care" data-category="home-care" title="Home Care"><i class="fas fa-soap"></i> <span>Home Care</span></a>
+          </li>
+        </ul>
+      </div>
+    </nav>
+
+    <!-- Compact Pincode Status Banner -->
+    <div class="pincode-banner" id="pincodeBanner">
+      <div class="container">
+        <div class="banner-content">
+          <div class="delivery-info">
+            <i class="fas fa-map-marker-alt"></i>
+            <span id="deliveryLocationText">Click to set delivery location</span>
+          </div>
+          <button class="change-pincode-btn" id="changePincodeBtn">
+            <i class="fas fa-edit"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Pincode Modal -->
+    <div class="pincode-modal" id="pincodeModal">
+      <div class="modal-overlay" onclick="closePincodeModal()"></div>
+      <div class="pincode-modal-content">
+        <div class="modal-header">
+          <h3>Check Delivery Availability</h3>
+          <button class="close-modal" onclick="closePincodeModal()">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="pincode-input-group">
+            <i class="fas fa-map-marker-alt pincode-icon"></i>
+            <input 
+              type="text" 
+              id="pincodeInput" 
+              placeholder="Enter your 6-digit pincode" 
+              maxlength="6"
+              pattern="[0-9]{6}"
+            />
+            <button id="checkDeliveryBtn">
+              <i class="fas fa-search"></i>
+              Check
+            </button>
+          </div>
+          <div id="deliveryStatus" class="delivery-status"></div>
+        </div>
+      </div>
+    </div>
+    <!-- Main Contact Content-->
+     <section class="contact-section">
+        <div class="contact-section-wrapper">
+            <div class="contact-box">
+                <h1>Contact Us</h1>
+                 <div class="contact-grid">
+                    <div class="contact-card">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <div class="contact-card-content">
+                        <h3>Visit Us</h3>
+                        <p>Address: QuickMart, Sector 8, Pratap Nagar, Jaipur</p>
+                        </div>
+                    </div>
+                    <div class="contact-card">
+                        <i class="fas fa-envelope"></i>
+                        <div class="contact-card-content">
+                        <h3>Email Us</h3>
+                        <p>hello@quickbasket.com</p>
+                        </div>
+                    </div>
+                    <div class="contact-card">
+                        <i class="fas fa-phone"></i>
+                        <div class="contact-card-content">
+                        <h3>Call Us</h3>
+                        <p>Number: +91 9800800808</p>
+                        </div>
+                    </div>
+                    
+                    
+                 </div>
+            </div>
+            <div class="contact-form">
+                <h2>Send Us a Message</h2>
+                <form id="contactForm">
+                    <div class="form-group">
+                        <label for="contactName">Name</label>
+                        <input type="text" id="contactName" name="name" required placeholder="Your Name">
+                        <label for="contactEmail">Email</label>
+                        <input type="email" id="contactEmail" name="email" required placeholder="Your Email">
+                        <label for="subject">Subject</label>
+                        <input type="text" id="contactSubject" name="subject" required placeholder="Subject">
+                        <label class="textarea_label" for="contactMessage">Message</label>
+                        <textarea id="contactMessage" name="message" rows="5" required placeholder=" Your Message"></textarea>
+                        <button type="submit" class="btn" style="width: 100%">
+                            Send Message
+                        </button>
+                  </div>
+                </form>
+            </div>
+        </div>
+     </section>
+    <!-- Footer -->
+    <footer>
+      <div class="container">
+        <div class="footer-content">
+          <div class="footer-column">
+            <h3>Quick Links</h3>
+            <ul>
+              <li><a href="index.html">Home</a></li>
+              <li><a href="#">Products</a></li>
+              <li><a href="#">Categories</a></li>
+              <li><a href="#">Offers</a></li>
+              <li><a href="#">My Account</a></li>
+            </ul>
+          </div>
+          <div class="footer-column">
+            <h3>Customer Service</h3>
+            <ul>
+              <li><a href="#">Contact Us</a></li>
+              <li><a href="faq.html">FAQ</a></li>
+              <li><a href="#">Shipping Policy</a></li>
+              <li><a href="#">Returns & Refunds</a></li>
+              <li><a href="#">Privacy Policy</a></li>
+            </ul>
+          </div>
+          <div class="footer-column">
+            <h3>Contact Info</h3>
+            <ul>
+              <li>
+                <i class="fas fa-map-marker-alt"></i> QuickMart, Sector 8,
+                Pratap Nagar, Jaipur
+              </li>
+              <li><i class="fas fa-phone"></i> +91 9800800808</li>
+              <li><i class="fas fa-envelope"></i> hello@quickbasket.com</li>
+            </ul>
+          </div>
+          <div class="footer-column">
+            <h3>Newsletter</h3>
+            <p>
+              Subscribe to get special offers, free giveaways, and new product
+              alerts
+            </p>
+            <form>
+              <input
+                type="email"
+                placeholder="Your email address"
+                style="
+                  padding: 10px;
+                  width: 100%;
+                  margin-bottom: 10px;
+                  border-radius: 5px;
+                  border: none;
+                "
+              />
+              <button type="submit" class="btn" style="width: 100%">
+                Subscribe
+              </button>
+            </form>
+          </div>
+        </div>
+        <div class="footer-bottom">
+          <p>&copy; 2025 QuickBasket. All rights reserved.</p>
+        </div>
+      </div>
+    </footer>
+
+    <!-- Cart Modal -->
+    <div class="modal" id="cartModal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2>Your Cart</h2>
+          <span class="close" onclick="closeCart()">&times;</span>
+        </div>
+        <div class="cart-items"></div>
+        <div class="cart-total">
+          <span>Total:</span>
+          <span id="cartTotal">₹0</span>
+        </div>
+        <button class="checkout-btn" onclick="showPaymentSection()">
+          Proceed to Checkout
+        </button>
+
+        <!-- Payment Section -->
+        <div class="payment-section" id="paymentSection">
+          <h3>Select Payment Method</h3>
+          <div class="payment-options">
+            <div class="payment-option" onclick="selectPayment(this)">
+              <i class="fas fa-credit-card"></i>
+              <p>Card</p>
+            </div>
+            <div class="payment-option" onclick="selectPayment(this)">
+              <i class="fas fa-wallet"></i>
+              <p>Wallet</p>
+            </div>
+            <div class="payment-option" onclick="selectPayment(this)">
+              <i class="fas fa-money-bill-wave"></i>
+              <p>Cash</p>
+            </div>
+            <div class="payment-option" onclick="selectPayment(this)">
+              <i class="fas fa-qrcode"></i>
+              <p>UPI</p>
+            </div>
+          </div>
+          
+          <div class="qr-code">
+            <h4>Scan to Pay</h4>
+            <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=QuickBasket-Payment-Total-₹1000" alt="QR Code">
+            <p>Total Amount: <strong id="qrAmount">₹0</strong></p>
+          </div>
+          
+          <div class="coupon-section">
+            <h4>Apply Coupon</h4>
+            <div class="coupon-input">
+              <input type="text" placeholder="Enter coupon code" maxlength="20">
+              <button onclick="applyCoupon()">Apply</button>
+            </div>
+            
+            <div id="couponMessage" class="coupon-message"></div>
+            <div id="appliedCoupon" class="applied-coupon"></div>
+            
+            <div class="available-coupons">
+              <h5>Available Coupons:</h5>
+              <div id="availableCoupons"></div>
+            </div>
+          </div>
+          <button class="checkout-btn" onclick="placeOrder()">Complete Payment</button>
+        </div>
+
+        <!-- Order Success Section -->
+        <div class="order-success" id="orderSuccess" style="display: none">
+          <div class="success-icon">
+            <i class="fas fa-check-circle"></i>
+          </div>
+          <h3 class="success-title">Order Placed Successfully!</h3>
+          <p class="success-message">
+            Your order will be delivered within 30 minutes. Thank you for
+            shopping with QuickBasket!
+          </p>
+          <button class="btn" onclick="closeCart()">Continue Shopping</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- User Modal with Firebase Google Sign-In -->
+    <div class="user-modal" id="userModal">
+      <div class="user-modal-content">
+        <!-- logged out view -->
+        <div id="loginView">
+          <div class="firebase-auth-header">
+            <img src="https://cdn-icons-png.flaticon.com/512/3081/3081559.png" alt="QuickBasket" class="auth-logo">
+            <h2>Sign in to QuickBasket</h2>
+            <p class="auth-subtitle">Continue to access your account</p>
+          </div>
+
+          <button class="google-signin-btn" id="googleSignInBtn">
+            <svg class="google-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="24px" height="24px">
+              <path fill="#FFC107" d="M43.611,20.083H42V20H24v8h11.303c-1.649,4.657-6.08,8-11.303,8c-6.627,0-12-5.373-12-12c0-6.627,5.373-12,12-12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C12.955,4,4,12.955,4,24c0,11.045,8.955,20,20,20c11.045,0,20-8.955,20-20C44,22.659,43.862,21.35,43.611,20.083z"/>
+              <path fill="#FF3D00" d="M6.306,14.691l6.571,4.819C14.655,15.108,18.961,12,24,12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C16.318,4,9.656,8.337,6.306,14.691z"/>
+              <path fill="#4CAF50" d="M24,44c5.166,0,9.86-1.977,13.409-5.192l-6.19-5.238C29.211,35.091,26.715,36,24,36c-5.202,0-9.619-3.317-11.283-7.946l-6.522,5.025C9.505,39.556,16.227,44,24,44z"/>
+              <path fill="#1976D2" d="M43.611,20.083H42V20H24v8h11.303c-0.792,2.237-2.231,4.166-4.087,5.571c0.001-0.001,0.002-0.001,0.003-0.002l6.19,5.238C36.971,39.205,44,34,44,24C44,22.659,43.862,21.35,43.611,20.083z"/>
+            </svg>
+            <span>Continue with Google</span>
+          </button>
+
+          <div class="auth-divider">
+            <span>or</span>
+          </div>
+
+          <div class="user-tabs">
+            <div class="user-tab active" onclick="switchTab('login')">Login</div>
+            <div class="user-tab" onclick="switchTab('signup')">Sign Up</div>
+          </div>
+
+          <form class="user-form active" id="loginForm">
+            <div class="form-group">
+              <label for="loginEmail">Email</label>
+              <input
+                type="email"
+                id="loginEmail"
+                placeholder="Enter your email"
+                required
+              />
+            </div>
+            <div class="form-group">
+              <label for="loginPassword">Password</label>
+              <input
+                type="password"
+                id="loginPassword"
+                placeholder="Enter your password"
+                required
+              />
+            </div>
+            <button type="submit" class="form-submit">Login</button>
+          </form>
+
+          <form class="user-form" id="signupForm">
+            <div class="form-group">
+              <label for="signupName">Full Name</label>
+              <input
+                type="text"
+                id="signupName"
+                placeholder="Enter your full name"
+                required
+              />
+            </div>
+            <div class="form-group">
+              <label for="signupEmail">Email</label>
+              <input
+                type="email"
+                id="signupEmail"
+                placeholder="Enter your email"
+                required
+              />
+            </div>
+            <div class="form-group">
+              <label for="signupPassword">Password</label>
+              <input
+                type="password"
+                id="signupPassword"
+                placeholder="Create a password (min 8 chars, uppercase, lowercase, number, special char)"
+                required
+              />
+            </div>
+            <div class="form-group">
+              <label for="signupConfirmPassword">Confirm Password:</label>
+              <input
+                type="password"
+                id="signupConfirmPassword"
+                placeholder="Re-enter your password"
+                required
+              />
+            </div>
+            <div class="form-group">
+              <label for="signupPhone">Phone Number</label>
+              <input
+                type="tel"
+                id="signupPhone"
+                placeholder="Enter your phone number"
+                required
+              />
+            </div>
+            <button type="submit" class="form-submit">Create Account</button>
+          </form>
+        </div>
+
+        <!-- logged in view -->
+        <div id="userProfileView" style="display: none;">
+          <div class="user-profile-header">
+            <img id="userAvatar" class="user-avatar" src="" alt="User Avatar">
+            <h3 id="userName">User Name</h3>
+            <p id="userEmail" class="user-email">user@example.com</p>
+          </div>
+          
+          <!-- Profile Edit Section -->
+          <div id="profileEditSection" style="display: none; margin: 20px 0;">
+            <h4 style="margin-bottom: 15px; color: var(--dark);">Edit Profile</h4>
+            <form id="editProfileForm">
+              <div class="form-group">
+                <label for="editDisplayName">Display Name</label>
+                <input type="text" id="editDisplayName" placeholder="Enter your name" required />
+              </div>
+              <div class="form-group">
+                <label>Profile Theme Color</label>
+                <div class="theme-color-picker">
+                  <button type="button" class="color-option" data-color="0D8ABC" style="background: #0D8ABC;"></button>
+                  <button type="button" class="color-option" data-color="ff6b6b" style="background: #ff6b6b;"></button>
+                  <button type="button" class="color-option" data-color="42b883" style="background: #42b883;"></button>
+                  <button type="button" class="color-option" data-color="9b59b6" style="background: #9b59b6;"></button>
+                  <button type="button" class="color-option" data-color="f39c12" style="background: #f39c12;"></button>
+                  <button type="button" class="color-option" data-color="e74c3c" style="background: #e74c3c;"></button>
+                </div>
+              </div>
+              <div class="profile-edit-actions">
+                <button type="submit" class="btn btn-primary">Save Changes</button>
+                <button type="button" class="btn btn-secondary" id="cancelEditBtn">Cancel</button>
+              </div>
+            </form>
+          </div>
+          
+          <div class="user-profile-actions">
+            <button class="profile-action-btn edit-profile-btn" id="editProfileBtn">
+              <i class="fas fa-edit"></i>
+              <span>Edit Profile</span>
+            </button>
+            <button class="profile-action-btn order-history-btn" id="orderHistoryBtn">
+              <i class="fas fa-shopping-bag"></i>
+              <span>Order History</span>
+            </button>
+            <button class="profile-action-btn signout-btn" id="signOutBtn">
+              <i class="fas fa-sign-out-alt"></i>
+              <span>Sign Out</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- wishlist modal -->
+    <div class="modal" id="wishlistModal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2>Your Wishlist</h2>
+          <span class="close" onclick="closeWishlist()">&times;</span>
+        </div>
+        <div class="wishlist-items"></div>
+        <div class="wishlist-actions">
+          <button class="btn btn-secondary" onclick="closeWishlist()">Continue Shopping</button>
+          <button class="btn" onclick="moveAllToCart()">Move All to Cart</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Order History Modal -->
+    <div class="modal" id="orderHistoryModal">
+      <div class="modal-content order-history-modal">
+        <div class="modal-header">
+          <h2>Order History</h2>
+          <span class="close" onclick="closeOrderHistory()">&times;</span>
+        </div>
+        
+        <!-- Order Filters -->
+        <div class="order-filters">
+          <div class="filter-group">
+            <label for="dateFilter">Filter by Date:</label>
+            <select id="dateFilter" onchange="filterOrdersByDate()">
+              <option value="all">All Orders</option>
+              <option value="today">Today</option>
+              <option value="week">This Week</option>
+              <option value="month">This Month</option>
+              <option value="year">This Year</option>
+            </select>
+          </div>
+          <div class="filter-group">
+            <label for="categoryFilter">Filter by Category:</label>
+            <select id="categoryFilter" onchange="filterOrdersByCategory()">
+              <option value="all">All Categories</option>
+              <option value="vegetables">Vegetables</option>
+              <option value="fruits">Fruits</option>
+              <option value="dairy">Dairy</option>
+              <option value="bakery">Bakery</option>
+              <option value="beverages">Beverages</option>
+              <option value="snacks">Snacks</option>
+              <option value="home-care">Home Care</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Loading State -->
+        <div class="order-loading" id="orderLoading" style="display: none;">
+          <div class="loading-spinner"></div>
+          <p>Loading your orders...</p>
+        </div>
+
+        <!-- Empty State -->
+        <div class="order-empty" id="orderEmpty" style="display: none;">
+          <i class="fas fa-shopping-bag"></i>
+          <h3>No Orders Found</h3>
+          <p>You haven't placed any orders yet.</p>
+          <button class="btn" onclick="closeOrderHistory(); openCart();">Start Shopping</button>
+        </div>
+
+        <!-- Orders List -->
+        <div class="orders-list" id="ordersList"></div>
+        
+        <div class="order-history-actions">
+          <button class="btn btn-secondary" onclick="closeOrderHistory()">Close</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div class="toast success" id="toast">
+      <i class="fas fa-check-circle"></i>
+      <span class="toast-message" id="toastMessage">Item added to cart!</span>
+      <button
+        class="toast-close"
+        onclick="hideToast()"
+        aria-label="Close notification"
+      >
+        <i class="fas fa-times"></i>
+      </button>
+      <div class="toast-progress-bar" id="toastProgressBar"></div>
+    </div>
+    <script src="../src/utils/cartStorage.js"></script>
+    <script type="module" src="../script.js"></script>
+</body>
+</html>

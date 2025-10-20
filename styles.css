@@ -2031,7 +2031,10 @@ footer {
 [data-theme="dark"] .product-card,
 [data-theme="dark"] .category-item,
 [data-theme="dark"] .modal-content,
-[data-theme="dark"] .user-modal-content {
+[data-theme="dark"] .user-modal-content,
+[data-theme="dark"] .contact-card,
+[data-theme="dark"] .faq-accordion,
+[data-theme="dark"] .faq-panel{
   background-color: #1e1e1e;
   color: #e8eaed;
   border-color: #2d2d2d;
@@ -2803,6 +2806,307 @@ footer {
   text-align: center;
 }
 
+.contact-section{
+  box-sizing: border-box;
+}
+
+.contact-section-wrapper{
+  margin-left: auto;
+  margin-right: auto;
+  overflow: hidden;
+  padding-bottom: 20px;
+  padding-left: 32px;
+  padding-right: 32px;
+  padding-top: 20px;
+}
+.contact-box{
+  border: 1px solid #e1e3e4;
+  border-radius: 12px;
+  padding: 16px;
+  margin-left: 10vw;
+  margin-right: 10vw;
+  background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)),
+    url("https://media.istockphoto.com/id/1145111911/photo/hand-on-smart-phone-in-supermarket-produce-aisle.jpg?s=612x612&w=0&k=20&c=EMiQbD5F7_MYC8Har2rbybu8z6YKYlNk7oHRgIeQVts=");
+  background-size: cover;
+  
+}
+.contact-box h1 {
+    color: white;
+    font-size: 2.5rem;
+    padding: 0, 40px;
+    margin-bottom: 15px;
+    text-align: center;
+    
+}
+.contact-grid{
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    
+
+}
+
+.contact-card{
+    margin-bottom: 10px;
+    margin-left: 10px;
+    margin-right: 10px;
+    align-items: center;
+    display: -webkit-box;
+    padding: 10px;
+    width: 200px;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+    transition: 0.3s;
+    background: white;
+    border: 2px solid white;
+    border-radius: 12px;
+    
+}
+.contact-card i{
+  color: #4a9eff;
+    font-size: xx-large;
+    display: flex;
+    flex-wrap: wrap;
+    align-content: center;
+}
+.contact-card h3 {
+  padding-left: 15px;
+  
+}
+.contact-card-content{
+  display: flex;
+  flex-wrap: wrap;
+  display: flex;
+  flex-wrap: wrap;
+  align-content: center;
+}
+.contact-card p {
+  overflow-wrap:anywhere;
+  margin: 10;
+  padding: 1rem;
+  padding-right: 2rem;
+  padding-top: 0;
+  padding-bottom:0;
+  line-height: -1.4;
+  font-size: 0.95rem;
+  
+}
+.contact-form{
+  
+  display: flex;
+  max-width: 300px;
+  
+  flex-direction: column;
+  gap: 15px;
+  margin-top: 15px;
+  margin-left: auto;
+  margin-right: auto;
+}
+.contact-form h2{
+  text-align: center;
+  
+}
+.contact-form input{
+  margin-bottom: 15px;
+}
+.contact-form textarea{
+  margin-bottom: 15px;
+}
+
+
+.form-group textarea{
+  resize:none;
+  min-width: 100%;
+  border-radius: 12px;
+}
+
+.faq-header{
+  display: block;
+  margin: auto;
+  margin-top: 25px;
+  margin-bottom: 25px;
+  width: 60%;
+  border: 1px solid #e1e3e4;
+  border-radius: 12px;
+  background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)),
+    url("https://cdn.apartmenttherapy.info/image/upload/f_auto,q_auto:eco,c_fill,g_auto,w_1500,ar_3:2/stock%2Fshutterstock_373602469");
+  background-size: cover;
+  background-position: center;
+ }
+.faq-header h3{
+  color: white;
+  font-size: 2.5rem;
+  padding: 0, 40px;
+  padding-left:1%;
+  margin-top: 10px;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.faq-section{
+  margin-left: auto;
+  margin-right: auto;
+  padding-bottom: 20px;
+  padding-left: 32px;
+  padding-right: 32px;
+  max-width: 800px;
+}
+.faq-accordion{
+  background: white;
+  border-radius: var(--radius);
+  overflow: hidden;
+  box-shadow: var(--shadow);
+  cursor: pointer;
+  padding: 18px;
+  width: 100%;
+  text-align: left;
+  border: none;
+  outline: none;
+  margin-top: 10px;
+  font-size: large;
+}
+.faq-accordion.active{
+  padding-bottom: 5px;
+  border-top-left-radius: var(--radius); 
+  border-top-right-radius: var(--radius); 
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+  box-shadow: none;
+}
+.faq-accordion.active.i{
+  color: var(--primary);
+}
+.faq-panel{
+  padding: 0 18px;
+  display: none;
+  overflow: hidden;
+  
+  background: white;
+  border-bottom-left-radius: var(--radius); 
+  border-bottom-right-radius: var(--radius); 
+  box-shadow: var(--shadow);
+  cursor: pointer;
+  
+  transition: 0.4s;
+  box-shadow: var(--shadow);
+  padding-bottom: 10px;
+}
+.fav-icon-container{
+  display: inline;
+}
+.faq-icon{
+  padding-left: calc(87% - 18px);
+}
+
+.shipping-policy {
+  padding: 20px;
+  max-width: 800px;
+  margin: auto;
+  font-family: 'Poppins', sans-serif;
+  line-height: 1.6;
+}
+
+.shipping-policy h1 {
+  font-size: 2rem;
+  margin-bottom: 10px;
+}
+
+.shipping-policy h2 {
+  font-size: 1.5rem;
+  margin-top: 20px;
+  margin-bottom: 10px;
+}
+
+.shipping-policy h3 {
+  font-size: 1.25rem;
+  margin-top: 15px;
+  margin-bottom: 5px;
+}
+
+.shipping-policy p {
+  margin-bottom: 10px;
+}
+
+.shipping-policy ul {
+  margin: 10px 0;
+  padding-left: 20px;
+}
+
+.shipping-policy li {
+  margin-bottom: 5px;
+}
+.policy-content-section {
+  padding: 20px;
+  max-width: 800px;
+  margin: 20px auto; /* Added margin-top/bottom for separation */
+  font-family: 'Poppins', sans-serif;
+  line-height: 1.6;
+  background-color: white; /* Added background for clarity, similar to shipping-policy context */
+  border-radius: var(--radius); /* Added border-radius for consistency */
+  box-shadow: var(--shadow); /* Added shadow for consistency */
+}
+
+.policy-content-section h1 {
+  font-size: 2rem;
+  margin-bottom: 10px;
+}
+
+.policy-content-section h2 {
+  font-size: 1.5rem;
+  margin-top: 20px;
+  margin-bottom: 10px;
+}
+
+.policy-content-section h3 {
+  font-size: 1.25rem;
+  margin-top: 15px;
+  margin-bottom: 5px;
+}
+
+.policy-content-section p {
+  margin-bottom: 10px;
+}
+
+.policy-content-section ul,
+.policy-content-section ol { /* Added ol for ordered lists */
+  margin: 10px 0;
+  padding-left: 20px;
+}
+
+.policy-content-section li {
+  margin-bottom: 5px;
+}
+
+
+
+
+
+
+
+
+/* On mouse-over, add a deeper shadow */
+.card:hover {
+  box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2);
+}
+
+/* Dark theme for the new policy sections */
+[data-theme="dark"] .policy-content-section {
+  background-color: #1e1e1e;
+  color: #e8eaed;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+[data-theme="dark"] .policy-content-section h1,
+[data-theme="dark"] .policy-content-section h2,
+[data-theme="dark"] .policy-content-section h3 {
+  color: #e8eaed;
+}
+
+[data-theme="dark"] .policy-content-section p,
+[data-theme="dark"] .policy-content-section li {
+  color: #bbb; /* Slightly lighter text for readability in dark mode */
+}
+
+
 /* Dark theme for order history */
 [data-theme="dark"] .order-filters {
   background: #2d2d2d;
@@ -2856,6 +3160,8 @@ footer {
 [data-theme="dark"] .order-empty h3 {
   color: #e8eaed;
 }
+
+
 
 /* Responsive design for order history */
 @media (max-width: 768px) {

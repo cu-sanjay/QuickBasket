@@ -356,11 +356,41 @@ function saveWishlist() {
     console.error("Error saving wishlist to localStorage:", error);
   }
 }
+let faqsData = null;
+async function loadFaqs(){ // Fetches and loads FAQs from FAQ json.
+  try{
+    const faqResponse = await fetch("../faq.json");
+    faqsData = await faqResponse.json()
+    renderFaqs(faqsData)
+  }
+   
+  catch (error) {
+    console.error("Error loading FAQs:", error);
+    showErrorToast("Failed to load FAQs. Try refreshing the page.");
+  }
+}
+async function renderFaqs(faqs){
+  if(!faqsData) return;
+  const faqContainer = document.getElementById("faq-section");
+  if (!faqContainer) return;
+  faqContainer.innerHTML = "";
+  console.log(faqs.faqs[0].answer)
+  let i = 0
+  faqs.faqs.forEach((faqd) => {
+    const fullFaq = createFaq(faqd);
+    i += 1;
+    fullFaq.forEach((faqElements) => {
+      faqContainer.appendChild(faqElements);
+    })
+    
+})}
+
+
 
 // Load products from JSON
 async function loadProducts() {
   try {
-    const response = await fetch("./products.json");
+    const response = await fetch("../products.json");
     productsData = await response.json();
     // Combine all products for easy lookup by ID
     productsData.allProducts = [
@@ -617,6 +647,27 @@ function generateStars(rating) {
   return stars;
 }
 
+function createFaq(faq){
+  const faqAccordion = document.createElement("button")
+  faqAccordion.className = "faq-accordion";
+  faqAccordion.innerHTML = `
+  <b>${faq.question}<i class="fa-solid fa-chevron-down faq-icon"></i></b>`
+  const faqPanel = document.createElement("div")
+  faqPanel.className = "faq-panel";
+  faqPanel.innerHTML = `<p>${faq.answer}</p>`
+  faqAccordion.addEventListener("click", function() {
+      this.classList.toggle("active");
+
+      var faqPanel = this.nextElementSibling;
+      if (faqPanel.style.display === "block") {
+        faqPanel.style.display = "none";
+      } else {
+        faqPanel.style.display = "block";
+      }
+    });
+  return [faqAccordion, faqPanel]
+}
+
 // Create product card element
 function createProductCard(product) {
   const productCard = document.createElement("div");
@@ -727,9 +778,21 @@ function initializeSorting() {
   }
 }
 
+// Pages where products need to be loaded
+let product_loading_sites = ["index.html"]
+
 // Initialize products and cart when page loads
+// Checks if current page is on the product loading list
 document.addEventListener("DOMContentLoaded", function () {
-  loadProducts();
+  product_loading_sites.forEach(i => {
+    if(window.location.pathname.endsWith(i)) {
+      loadProducts();
+    }
+  });
+  if(window.location.pathname.endsWith("faq.html")){
+    //loadFaqs();
+  }
+
   initializeCart();
   initializeWishlist();
   initializeSearch();
@@ -2114,7 +2177,38 @@ document.addEventListener("DOMContentLoaded", function () {
       }
     });
   }
+// Contact page form submission
+if(window.location.pathname.endsWith('contact.html')){
+document.getElementById("contactForm").addEventListener("submit", async function (e) {
+  e.preventDefault();
+  showSuccessToast(`Contact Form successfully submitted! We will get back to you soon.`);
+  });
+  const contactName = document.getElementById('contactName').value;
+  const contactEmail = document.getElementById('contactEmail').value;
+  const subject = document.getElementById('contactSubject').value;
+  const contactMessage = document.getElementById('contactMessage').value;
 
+}
+if(window.location.pathname.endsWith('faq.html')){
+  var acc = document.getElementsByClassName("faq-accordion");
+  var i;
+
+  for (i = 0; i < acc.length; i++) {
+    acc[i].addEventListener("click", function() {
+      this.classList.toggle("active");
+
+      var faqPanel = this.nextElementSibling;
+      if (faqPanel.style.display === "block") {
+        faqPanel.style.display = "none";
+      } else {
+        faqPanel.style.display = "block";
+      }
+    });
+  }
+  
+  }
+
+  
   // Initialize theme on page load
   initializeTheme();
   
