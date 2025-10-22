@@ -583,6 +583,62 @@
       </div>
     </div>
 
+    <!-- Product Detail Overlay -->
+    <div class="modal" id="productDetailModal">
+      <div class="modal-content product-detail-modal">
+        <div class="modal-header">
+          <h2 id="productDetailTitle">Product Details</h2>
+          <span class="close" onclick="closeProductDetail()">&times;</span>
+        </div>
+        <div class="product-detail-content">
+          <div class="product-detail-image-container">
+            <img id="productDetailImage" src="" alt="" class="product-detail-image">
+            <div class="product-detail-badge" id="productDetailBadge"></div>
+          </div>
+          <div class="product-detail-info">
+            <h3 id="productDetailName" class="product-detail-name"></h3>
+            <div class="product-detail-price-container">
+              <span id="productDetailPrice" class="product-detail-price"></span>
+              <span id="productDetailDiscount" class="product-detail-discount"></span>
+            </div>
+            <div class="product-detail-rating">
+              <div id="productDetailStars" class="product-detail-stars"></div>
+              <span id="productDetailRatingValue" class="product-detail-rating-value"></span>
+              <span id="productDetailReviews" class="product-detail-reviews"></span>
+            </div>
+            <div class="product-detail-description">
+              <h4>Description</h4>
+              <p id="productDetailDescription"></p>
+            </div>
+            <div class="product-detail-actions">
+              <button class="product-detail-add-to-cart" id="productDetailAddToCart">
+                <i class="fas fa-shopping-cart"></i>
+                <span>Add to Cart</span>
+              </button>
+              <button class="product-detail-wishlist" id="productDetailWishlist">
+                <i class="far fa-heart"></i>
+                <span>Add to Wishlist</span>
+              </button>
+            </div>
+            <div class="product-detail-features">
+              <div class="feature-item">
+                <i class="fas fa-truck"></i>
+                <span>Free delivery in 30-45 minutes</span>
+              </div>
+              <div class="feature-item">
+                <i class="fas fa-shield-alt"></i>
+                <span>Fresh guarantee</span>
+              </div>
+              <div class="feature-item">
+                <i class="fas fa-undo"></i>
+                <span>Easy returns</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- Toast Notification -->
     <div class="toast success" id="toast">
       <i class="fas fa-check-circle"></i>
