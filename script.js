@@ -1760,25 +1760,23 @@ function initializeProductDetailModal() {
   // Wishlist button in product detail
   document.getElementById("productDetailWishlist").addEventListener("click", function() {
     if (currentProductDetail) {
-      toggleWishlist(currentProductDetail.id, { stopPropagation: () => {} });
+      // Create a mock event object for toggleWishlist function
+      const mockEvent = {
+        stopPropagation: () => {},
+        currentTarget: this
+      };
       
-      // Update button state immediately
-      const isInWishlist = wishlist.some((item) => item.id === currentProductDetail.id);
-      const heartIcon = this.querySelector("i");
+      // Toggle wishlist (this function handles all the UI updates)
+      toggleWishlist(currentProductDetail.id, mockEvent);
+      
+      // Update the text in the product detail modal
       const wishlistText = this.querySelector("span");
+      const isInWishlist = wishlist.some((item) => item.id === currentProductDetail.id);
       
       if (isInWishlist) {
-        this.classList.add("active");
-        heartIcon.classList.remove("far");
-        heartIcon.classList.add("fas");
         wishlistText.textContent = "Remove from Wishlist";
-        showSuccessToast("Added to wishlist!");
       } else {
-        this.classList.remove("active");
-        heartIcon.classList.remove("fas");
-        heartIcon.classList.add("far");
         wishlistText.textContent = "Add to Wishlist";
-        showSuccessToast("Removed from wishlist!");
       }
     }
   });
