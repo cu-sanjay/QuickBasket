@@ -649,8 +649,7 @@ function createProductCard(product) {
 
   productCard.addEventListener("click", (e) => {
      if (e.target.closest(".add-to-cart") || e.target.closest(".wishlist")) return;
-    addToRecentlyViewed(product);
-    renderRecentlyViewed(); 
+    openProductDetail(product);
   });
   return productCard;
 }
@@ -738,6 +737,7 @@ document.addEventListener("DOMContentLoaded", function () {
   initializeCategoryFiltering();
   initializeNavFiltering();
   initializeSorting();
+  initializeProductDetailModal();
 });
 
 // --- Pincode Delivery Functions ---
@@ -1647,6 +1647,158 @@ async function placeOrder() {
   }
 }
 
+// --- Product Detail Overlay Functions ---
+
+let currentProductDetail = null;
+
+function openProductDetail(product) {
+  currentProductDetail = product;
+  const modal = document.getElementById("productDetailModal");
+  
+  // Populate product data
+  populateProductDetail(product);
+  
+  // Show modal
+  modal.style.display = "flex";
+  document.body.style.overflow = "hidden";
+  
+  // Add to recently viewed
+  addToRecentlyViewed(product);
+  renderRecentlyViewed();
+}
+
+function closeProductDetail() {
+  const modal = document.getElementById("productDetailModal");
+  modal.style.display = "none";
+  document.body.style.overflow = "";
+  currentProductDetail = null;
+}
+
+function populateProductDetail(product) {
+  // Update title
+  document.getElementById("productDetailTitle").textContent = product.name;
+  
+  // Update image
+  const productImage = document.getElementById("productDetailImage");
+  productImage.src = product.image;
+  productImage.alt = product.name;
+  
+  // Update name
+  document.getElementById("productDetailName").textContent = product.name;
+  
+  // Update price
+  document.getElementById("productDetailPrice").textContent = `₹${product.price}`;
+  
+  // Update discount badge
+  const discountElement = document.getElementById("productDetailDiscount");
+  if (product.discount && product.discount > 0) {
+    discountElement.textContent = `₹${product.discount} off`;
+    discountElement.style.display = "inline-block";
+  } else {
+    discountElement.style.display = "none";
+  }
+  
+  // Update rating
+  const starsElement = document.getElementById("productDetailStars");
+  starsElement.innerHTML = generateStars(product.rating);
+  
+  document.getElementById("productDetailRatingValue").textContent = product.rating || 'N/A';
+  
+  // Generate random review count for demo
+  const reviewCount = Math.floor(Math.random() * 500) + 50;
+  document.getElementById("productDetailReviews").textContent = `(${reviewCount} reviews)`;
+  
+  // Update description
+  document.getElementById("productDetailDescription").textContent = product.description;
+  
+  // Update wishlist button state
+  const wishlistButton = document.getElementById("productDetailWishlist");
+  const isInWishlist = wishlist.some((item) => item.id === product.id);
+  const heartIcon = wishlistButton.querySelector("i");
+  const wishlistText = wishlistButton.querySelector("span");
+  
+  if (isInWishlist) {
+    wishlistButton.classList.add("active");
+    heartIcon.classList.remove("far");
+    heartIcon.classList.add("fas");
+    wishlistText.textContent = "Remove from Wishlist";
+  } else {
+    wishlistButton.classList.remove("active");
+    heartIcon.classList.remove("fas");
+    heartIcon.classList.add("far");
+    wishlistText.textContent = "Add to Wishlist";
+  }
+  
+  // Update badge based on category or special offers
+  const badgeElement = document.getElementById("productDetailBadge");
+  if (product.category === "deals" || product.discount > 50) {
+    badgeElement.textContent = "Best Deal";
+    badgeElement.style.display = "block";
+  } else if (product.rating >= 4.5) {
+    badgeElement.textContent = "Top Rated";
+    badgeElement.style.display = "block";
+  } else {
+    badgeElement.style.display = "none";
+  }
+}
+
+// Event listeners for product detail modal
+function initializeProductDetailModal() {
+  // Add to cart button in product detail
+  document.getElementById("productDetailAddToCart").addEventListener("click", function() {
+    if (currentProductDetail) {
+      addToCart(
+        currentProductDetail.name,
+        currentProductDetail.price,
+        currentProductDetail.image,
+        currentProductDetail.id
+      );
+      showSuccessToast(`${currentProductDetail.name} added to cart!`);
+    }
+  });
+  
+  // Wishlist button in product detail
+  document.getElementById("productDetailWishlist").addEventListener("click", function() {
+    if (currentProductDetail) {
+      // Create a mock event object for toggleWishlist function
+      const mockEvent = {
+        stopPropagation: () => {},
+        currentTarget: this
+      };
+      
+      // Toggle wishlist (this function handles all the UI updates)
+      toggleWishlist(currentProductDetail.id, mockEvent);
+      
+      // Update the text in the product detail modal
+      const wishlistText = this.querySelector("span");
+      const isInWishlist = wishlist.some((item) => item.id === currentProductDetail.id);
+      
+      if (isInWishlist) {
+        wishlistText.textContent = "Remove from Wishlist";
+      } else {
+        wishlistText.textContent = "Add to Wishlist";
+      }
+    }
+  });
+  
+  // Close modal when clicking outside
+  document.getElementById("productDetailModal").addEventListener("click", function(e) {
+    if (e.target === this) {
+      closeProductDetail();
+    }
+  });
+  
+  // Close modal with Escape key
+  document.addEventListener("keydown", function(e) {
+    if (e.key === "Escape") {
+      const modal = document.getElementById("productDetailModal");
+      if (modal.style.display === "flex") {
+        closeProductDetail();
+      }
+    }
+  });
+}
+
 // --- Wishlist Functions (New) ---
 
 function openWishlist() {
@@ -1919,6 +2071,7 @@ window.onclick = function (event) {
   const userModal = document.getElementById("userModal");
   const wishlistModal = document.getElementById("wishlistModal");
   const orderHistoryModal = document.getElementById("orderHistoryModal");
+  const productDetailModal = document.getElementById("productDetailModal");
 
   if (event.target === cartModal) {
     closeCart();
@@ -1934,6 +2087,10 @@ window.onclick = function (event) {
 
   if (event.target === orderHistoryModal) {
     closeOrderHistory();
+  }
+
+  if (event.target === productDetailModal) {
+    closeProductDetail();
   }
 };
 
@@ -2148,6 +2305,8 @@ document.addEventListener("DOMContentLoaded", function () {
   window.closeOrderHistory = closeOrderHistory;
   window.filterOrdersByDate = filterOrdersByDate;
   window.filterOrdersByCategory = filterOrdersByCategory;
+  window.openProductDetail = openProductDetail;
+  window.closeProductDetail = closeProductDetail;
 });
 
 function updateColorSelection(color) {
@@ -2198,3 +2357,5 @@ window
       setTheme(e.matches ? "dark" : "light");
     }
   });
+
+
