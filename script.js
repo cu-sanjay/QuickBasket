@@ -1,26 +1,26 @@
-import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
-import { 
-  getAuth, 
-  GoogleAuthProvider, 
-  signInWithPopup, 
-  signOut, 
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import {
+  getAuth,
+  GoogleAuthProvider,
+  signInWithPopup,
+  signOut,
   onAuthStateChanged,
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
-  updateProfile
-} from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
-import { getAnalytics } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-analytics.js';
-import { 
-  getFirestore, 
-  collection, 
-  addDoc, 
-  query, 
-  where, 
-  orderBy, 
-  getDocs, 
-  doc, 
-  getDoc 
-} from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
+  updateProfile,
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-analytics.js";
+import {
+  getFirestore,
+  collection,
+  addDoc,
+  query,
+  where,
+  orderBy,
+  getDocs,
+  doc,
+  getDoc,
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyDY3U9hO51ZY6f2RLcdQoxPuJTjQn1lZB8",
@@ -29,7 +29,7 @@ const firebaseConfig = {
   storageBucket: "quickbasket-dev.firebasestorage.app",
   messagingSenderId: "529752486191",
   appId: "1:529752486191:web:c1b1a04990f159edfff1da",
-  measurementId: "G-B1HHD54R2D"
+  measurementId: "G-B1HHD54R2D",
 };
 
 const app = initializeApp(firebaseConfig);
@@ -37,7 +37,7 @@ const auth = getAuth(app);
 const provider = new GoogleAuthProvider();
 const analytics = getAnalytics(app);
 const db = getFirestore(app);
-let  currentUser = null;
+let currentUser = null;
 window.firebaseAuth = auth;
 window.googleProvider = provider;
 window.signInWithPopup = signInWithPopup;
@@ -51,55 +51,55 @@ window.updateProfile = updateProfile;
 async function saveOrderToFirebase(orderData) {
   try {
     if (!currentUser) {
-      throw new Error('User must be logged in to save orders');
+      throw new Error("User must be logged in to save orders");
     }
 
     const orderDoc = {
       userId: currentUser.uid,
       userEmail: currentUser.email,
-      userName: currentUser.displayName || 'Anonymous',
+      userName: currentUser.displayName || "Anonymous",
       items: orderData.items,
       totalAmount: orderData.totalAmount,
       discount: orderData.discount || 0,
       finalAmount: orderData.finalAmount,
       paymentMethod: orderData.paymentMethod,
       orderDate: new Date(),
-      status: 'completed',
-      orderId: generateOrderId()
+      status: "completed",
+      orderId: generateOrderId(),
     };
 
-    const docRef = await addDoc(collection(db, 'orders'), orderDoc);
-    console.log('Order saved with ID:', docRef.id);
+    const docRef = await addDoc(collection(db, "orders"), orderDoc);
+    console.log("Order saved with ID:", docRef.id);
     return docRef.id;
   } catch (error) {
-    console.error('Error saving order to Firebase:', error);
+    console.error("Error saving order to Firebase:", error);
     throw error;
   }
 }
 
 async function getUserOrders(userId, limit = 50) {
   try {
-    const ordersRef = collection(db, 'orders');
+    const ordersRef = collection(db, "orders");
     const q = query(
       ordersRef,
-      where('userId', '==', userId),
-      orderBy('orderDate', 'desc')
+      where("userId", "==", userId),
+      orderBy("orderDate", "desc")
     );
-    
+
     const querySnapshot = await getDocs(q);
     const orders = [];
-    
+
     querySnapshot.forEach((doc) => {
       orders.push({
         id: doc.id,
         ...doc.data(),
-        orderDate: doc.data().orderDate.toDate() // Convert Firestore timestamp to Date
+        orderDate: doc.data().orderDate.toDate(), // Convert Firestore timestamp to Date
       });
     });
-    
+
     return orders.slice(0, limit);
   } catch (error) {
-    console.error('Error fetching user orders:', error);
+    console.error("Error fetching user orders:", error);
     throw error;
   }
 }
@@ -111,17 +111,17 @@ function generateOrderId() {
 }
 
 function formatOrderDate(date) {
-  return new Intl.DateTimeFormat('en-IN', {
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit'
+  return new Intl.DateTimeFormat("en-IN", {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
   }).format(date);
 }
 
 function calculateOrderTotal(items) {
-  return items.reduce((total, item) => total + (item.price * item.quantity), 0);
+  return items.reduce((total, item) => total + item.price * item.quantity, 0);
 }
 
 onAuthStateChanged(auth, (user) => {
@@ -136,76 +136,84 @@ onAuthStateChanged(auth, (user) => {
 });
 
 function updateUIForSignedInUser(user) {
-  const loginView = document.getElementById('loginView');
-  const profileView = document.getElementById('userProfileView');
-  const accountText = document.getElementById('accountText');
-  const userAvatar = document.getElementById('userAvatar');
-  
-  if (loginView) loginView.style.display = 'none';
-  if (profileView) profileView.style.display = 'block';
-  
+  const loginView = document.getElementById("loginView");
+  const profileView = document.getElementById("userProfileView");
+  const accountText = document.getElementById("accountText");
+  const userAvatar = document.getElementById("userAvatar");
+
+  if (loginView) loginView.style.display = "none";
+  if (profileView) profileView.style.display = "block";
+
   if (userAvatar) {
     if (user.photoURL) {
       userAvatar.src = user.photoURL;
-      userAvatar.onerror = function() {
-        this.src = 'https://ui-avatars.com/api/?name=' + encodeURIComponent(user.displayName || 'User') + '&background=0D8ABC&color=fff&size=100';
+      userAvatar.onerror = function () {
+        this.src =
+          "https://ui-avatars.com/api/?name=" +
+          encodeURIComponent(user.displayName || "User") +
+          "&background=0D8ABC&color=fff&size=100";
       };
     } else {
-      userAvatar.src = 'https://ui-avatars.com/api/?name=' + encodeURIComponent(user.displayName || user.email) + '&background=0D8ABC&color=fff&size=100';
+      userAvatar.src =
+        "https://ui-avatars.com/api/?name=" +
+        encodeURIComponent(user.displayName || user.email) +
+        "&background=0D8ABC&color=fff&size=100";
     }
   }
-  
-  document.getElementById('userName').textContent = user.displayName || 'User';
-  document.getElementById('userEmail').textContent = user.email;
-  
+
+  document.getElementById("userName").textContent = user.displayName || "User";
+  document.getElementById("userEmail").textContent = user.email;
+
   if (accountText) {
-    accountText.textContent = user.displayName?.split(' ')[0] || 'Account';
+    accountText.textContent = user.displayName?.split(" ")[0] || "Account";
   }
 }
 
 function updateUIForSignedOutUser() {
-  const loginView = document.getElementById('loginView');
-  const profileView = document.getElementById('userProfileView');
-  const accountText = document.getElementById('accountText');
-  
-  if (loginView) loginView.style.display = 'block';
-  if (profileView) profileView.style.display = 'none';
-  
+  const loginView = document.getElementById("loginView");
+  const profileView = document.getElementById("userProfileView");
+  const accountText = document.getElementById("accountText");
+
+  if (loginView) loginView.style.display = "block";
+  if (profileView) profileView.style.display = "none";
+
   if (accountText) {
-    accountText.textContent = 'Account';
+    accountText.textContent = "Account";
   }
 }
 
 // Google Sign-In button click handler
-document.getElementById('googleSignInBtn').addEventListener('click', async () => {
-  try {
-    const result = await signInWithPopup(auth, provider);
-    const user = result.user;
-    
-    if (window.showSuccessToast) {
-      window.showSuccessToast(`Welcome, ${user.displayName}!`);
+document
+  .getElementById("googleSignInBtn")
+  .addEventListener("click", async () => {
+    try {
+      const result = await signInWithPopup(auth, provider);
+      const user = result.user;
+
+      if (window.showSuccessToast) {
+        window.showSuccessToast(`Welcome, ${user.displayName}!`);
+      }
+
+      setTimeout(() => {
+        document.getElementById("userModal").style.display = "none";
+      }, 1000);
+    } catch (error) {
+      console.error("Error signing in with Google:", error);
+      if (window.showErrorToast) {
+        window.showErrorToast("Failed to sign in. Please try again.");
+      }
     }
-    
-    setTimeout(() => {
-      document.getElementById('userModal').style.display = 'none';
-    }, 1000);
-  } catch (error) {
-    console.error('Error signing in with Google:', error);
-    if (window.showErrorToast) {
-      window.showErrorToast('Failed to sign in. Please try again.');
-    }
-  }
-});
+  });
 
 // Sign out button
-document.getElementById('signOutBtn').addEventListener('click', async () => {
+document.getElementById("signOutBtn").addEventListener("click", async () => {
   try {
     await signOut(auth);
-    showSuccessToast('Signed out successfully');
-    document.getElementById('userModal').style.display = 'none';
+    showSuccessToast("Signed out successfully");
+    document.getElementById("userModal").style.display = "none";
   } catch (error) {
-    console.error('Error signing out:', error);
-    showErrorToast('Failed to sign out. Please try again.');
+    console.error("Error signing out:", error);
+    showErrorToast("Failed to sign out. Please try again.");
   }
 });
 
@@ -217,54 +225,58 @@ function validatePassword(password) {
   const hasSpecialChar = /[!@#$%^&*(),.?":{}|<>]/.test(password);
 
   const errors = [];
-  
+
   if (password.length < minLength) {
     errors.push(`Password must be at least ${minLength} characters long`);
   }
   if (!hasUpperCase) {
-    errors.push('Password must contain at least one uppercase letter');
+    errors.push("Password must contain at least one uppercase letter");
   }
   if (!hasLowerCase) {
-    errors.push('Password must contain at least one lowercase letter');
+    errors.push("Password must contain at least one lowercase letter");
   }
   if (!hasNumber) {
-    errors.push('Password must contain at least one number');
+    errors.push("Password must contain at least one number");
   }
   if (!hasSpecialChar) {
-    errors.push('Password must contain at least one special character (!@#$%^&*(),.?":{}|<>)');
+    errors.push(
+      'Password must contain at least one special character (!@#$%^&*(),.?":{}|<>)'
+    );
   }
 
   return {
     isValid: errors.length === 0,
-    errors: errors
+    errors: errors,
   };
 }
 
 function displayPasswordStrength(password) {
   const validation = validatePassword(password);
-  const passwordInput = document.getElementById('signupPassword');
-  
-  let existingHint = document.querySelector('.password-strength-hint');
+  const passwordInput = document.getElementById("signupPassword");
+
+  let existingHint = document.querySelector(".password-strength-hint");
   if (!existingHint) {
-    existingHint = document.createElement('div');
-    existingHint.className = 'password-strength-hint';
+    existingHint = document.createElement("div");
+    existingHint.className = "password-strength-hint";
     passwordInput.parentNode.appendChild(existingHint);
   }
 
   if (!password) {
-    existingHint.innerHTML = '';
-    existingHint.style.display = 'none';
+    existingHint.innerHTML = "";
+    existingHint.style.display = "none";
     return;
   }
 
-  existingHint.style.display = 'block';
-  
+  existingHint.style.display = "block";
+
   if (validation.isValid) {
-    existingHint.innerHTML = '<span style="color: var(--success);"><i class="fas fa-check-circle"></i> Strong password!</span>';
+    existingHint.innerHTML =
+      '<span style="color: var(--success);"><i class="fas fa-check-circle"></i> Strong password!</span>';
   } else {
-    existingHint.innerHTML = '<ul style="margin: 5px 0; padding-left: 20px; font-size: 0.85rem; color: var(--danger);">' + 
-      validation.errors.map(err => `<li>${err}</li>`).join('') + 
-      '</ul>';
+    existingHint.innerHTML =
+      '<ul style="margin: 5px 0; padding-left: 20px; font-size: 0.85rem; color: var(--danger);">' +
+      validation.errors.map((err) => `<li>${err}</li>`).join("") +
+      "</ul>";
   }
 }
 
@@ -379,22 +391,26 @@ async function loadProducts() {
 // Sort products based on selected criteria
 function sortProducts(products, sortType) {
   if (!products || !Array.isArray(products)) return products;
-  
+
   const sortedProducts = [...products]; // Create a copy to avoid mutating original
-  
+
   switch (sortType) {
-    case 'rating-high':
+    case "rating-high":
       return sortedProducts.sort((a, b) => (b.rating || 0) - (a.rating || 0));
-    case 'rating-low':
+    case "rating-low":
       return sortedProducts.sort((a, b) => (a.rating || 0) - (b.rating || 0));
-    case 'price-high':
+    case "price-high":
       return sortedProducts.sort((a, b) => (b.price || 0) - (a.price || 0));
-    case 'price-low':
+    case "price-low":
       return sortedProducts.sort((a, b) => (a.price || 0) - (b.price || 0));
-    case 'name-asc':
-      return sortedProducts.sort((a, b) => (a.name || '').localeCompare(b.name || ''));
-    case 'name-desc':
-      return sortedProducts.sort((a, b) => (b.name || '').localeCompare(a.name || ''));
+    case "name-asc":
+      return sortedProducts.sort((a, b) =>
+        (a.name || "").localeCompare(b.name || "")
+      );
+    case "name-desc":
+      return sortedProducts.sort((a, b) =>
+        (b.name || "").localeCompare(a.name || "")
+      );
     default:
       return sortedProducts;
   }
@@ -405,7 +421,7 @@ function renderProducts() {
   if (!productsData) return;
 
   const category = (currentCategory || "all").toLowerCase();
-  const sortType = document.getElementById('sortOption')?.value || 'default';
+  const sortType = document.getElementById("sortOption")?.value || "default";
 
   // Filter helpers
   const byCategory = (p) =>
@@ -562,7 +578,7 @@ function scrollToProducts() {
  * @param {object} product
  */
 function addToRecentlyViewed(product) {
-  if (!currentUser) return; 
+  if (!currentUser) return;
   const key = `recentlyViewed_${currentUser.uid}`;
   let recentlyViewed = JSON.parse(localStorage.getItem(key) || "[]");
   recentlyViewed = recentlyViewed.filter((p) => p.id !== product.id);
@@ -598,12 +614,12 @@ function renderRecentlyViewed() {
 
 // Generate star rating display
 function generateStars(rating) {
-  if (!rating || rating < 1 || rating > 5) return '';
-  
-  let stars = '';
+  if (!rating || rating < 1 || rating > 5) return "";
+
+  let stars = "";
   const fullStars = Math.floor(rating);
   const hasHalfStar = rating % 1 >= 0.5;
-  
+
   for (let i = 1; i <= 5; i++) {
     if (i <= fullStars) {
       stars += '<i class="fas fa-star"></i>';
@@ -613,7 +629,7 @@ function generateStars(rating) {
       stars += '<i class="far fa-star"></i>';
     }
   }
-  
+
   return stars;
 }
 
@@ -627,20 +643,28 @@ function createProductCard(product) {
   const heartIconClass = isInWishlist ? "fas fa-heart active" : "far fa-heart";
 
   productCard.innerHTML = `
-        <img src="${product.image}" alt="${product.name}" class="product-image skeleton" onload="this.classList.remove('skeleton')" onerror="this.classList.remove('skeleton')">
+        <img src="${product.image}" alt="${
+    product.name
+  }" class="product-image skeleton" onload="this.classList.remove('skeleton')" onerror="this.classList.remove('skeleton')">
         <div class="product-info">
             <h3 class="product-title">${product.name}</h3>
-            <div class="product-price">₹${product.price} <span>(₹${product.discount} off)</span></div>
+            <div class="product-price">₹${product.price} <span>(₹${
+    product.discount
+  } off)</span></div>
             <div class="product-rating">
                 <div class="stars">${generateStars(product.rating)}</div>
-                <span class="rating-value">${product.rating || 'N/A'}</span>
+                <span class="rating-value">${product.rating || "N/A"}</span>
             </div>
             <p>${product.description}</p>
             <div class="product-actions">
-                <button class="add-to-cart" onclick="addToCart('${product.name}', ${product.price}, '${product.image}', ${product.id})">
+                <button class="add-to-cart" onclick="addToCart('${
+                  product.name
+                }', ${product.price}, '${product.image}', ${product.id})">
                     <i class="fas fa-plus"></i> Add to Cart
                 </button>
-                <button class="wishlist" onclick="toggleWishlist(${product.id}, event)">
+                <button class="wishlist" onclick="toggleWishlist(${
+                  product.id
+                }, event)">
                     <i class="${heartIconClass}"></i>
                 </button>
             </div>
@@ -648,7 +672,8 @@ function createProductCard(product) {
     `;
 
   productCard.addEventListener("click", (e) => {
-     if (e.target.closest(".add-to-cart") || e.target.closest(".wishlist")) return;
+    if (e.target.closest(".add-to-cart") || e.target.closest(".wishlist"))
+      return;
     openProductDetail(product);
   });
   return productCard;
@@ -718,9 +743,9 @@ function initializeSearch() {
 
 // Initialize sorting functionality
 function initializeSorting() {
-  const sortDropdown = document.getElementById('sortOption');
+  const sortDropdown = document.getElementById("sortOption");
   if (sortDropdown) {
-    sortDropdown.addEventListener('change', function() {
+    sortDropdown.addEventListener("change", function () {
       renderProducts();
     });
   }
@@ -1115,11 +1140,13 @@ function openCart() {
   document.getElementById("paymentSection").style.display = "none";
   document.getElementById("orderSuccess").style.display = "none";
   updateCartDisplay();
+  updateMobileNavActiveState("navCart");
 }
 
 function closeCart() {
   document.getElementById("cartModal").style.display = "none";
   document.getElementById("userModal").style.display = "none";
+  updateMobileNavActiveState("navHome");
 }
 
 function addToCart(name, price, image, id = null) {
@@ -1265,16 +1292,18 @@ function showPaymentSection() {
   if (!auth || !auth.currentUser) {
     // Open login/signup modal and inform the user
     try {
-      if (typeof openUserModal === 'function') {
+      if (typeof openUserModal === "function") {
         openUserModal();
       } else {
-        const modal = document.getElementById('userModal');
-        if (modal) modal.style.display = 'flex';
+        const modal = document.getElementById("userModal");
+        if (modal) modal.style.display = "flex";
       }
-    } catch (_) { /* non-fatal */ }
+    } catch (_) {
+      /* non-fatal */
+    }
 
-    if (typeof showInfoToast === 'function') {
-      showInfoToast('Please sign in to continue to checkout.');
+    if (typeof showInfoToast === "function") {
+      showInfoToast("Please sign in to continue to checkout.");
     }
     return;
   }
@@ -1517,6 +1546,7 @@ function showInfoToast(message, duration = 4000) {
 
 function openUserModal() {
   document.getElementById("userModal").style.display = "flex";
+  updateMobileNavActiveState('navProfile');
 }
 
 function switchTab(tabName) {
@@ -1554,16 +1584,18 @@ async function placeOrder() {
   // Require authentication before placing the order (defense in depth)
   if (!auth || !auth.currentUser) {
     try {
-      if (typeof openUserModal === 'function') {
+      if (typeof openUserModal === "function") {
         openUserModal();
       } else {
-        const modal = document.getElementById('userModal');
-        if (modal) modal.style.display = 'flex';
+        const modal = document.getElementById("userModal");
+        if (modal) modal.style.display = "flex";
       }
-    } catch (_) { /* non-fatal */ }
+    } catch (_) {
+      /* non-fatal */
+    }
 
-    if (typeof showInfoToast === 'function') {
-      showInfoToast('Please sign in to place your order.');
+    if (typeof showInfoToast === "function") {
+      showInfoToast("Please sign in to place your order.");
     }
     return;
   }
@@ -1596,26 +1628,27 @@ async function placeOrder() {
 
     // Prepare order data
     const orderData = {
-      items: cart.map(item => ({
+      items: cart.map((item) => ({
         id: item.id,
         name: item.name,
         price: item.price,
         quantity: item.quantity,
-        image: item.image
+        image: item.image,
       })),
       totalAmount: totalAmount,
       discount: discount,
       finalAmount: finalAmount,
-      paymentMethod: selectedPayment.querySelector('p').textContent,
-      coupon: appliedCoupon ? appliedCoupon.code : null
+      paymentMethod: selectedPayment.querySelector("p").textContent,
+      coupon: appliedCoupon ? appliedCoupon.code : null,
     };
 
     // Save order to Firebase
     const orderId = await saveOrderToFirebase(orderData);
-    
+
     // Show success message with order ID
     const orderSuccessElement = document.getElementById("orderSuccess");
-    const successMessage = orderSuccessElement.querySelector(".success-message");
+    const successMessage =
+      orderSuccessElement.querySelector(".success-message");
     successMessage.innerHTML = `
       Your order <strong>${orderId}</strong> has been placed successfully!<br>
       Total Amount: <strong>₹${finalAmount}</strong><br>
@@ -1640,10 +1673,9 @@ async function placeOrder() {
         window.cartStorage.clearCart();
       }
     }, 5000);
-
   } catch (error) {
-    console.error('Error placing order:', error);
-    showErrorToast('Failed to place order. Please try again.');
+    console.error("Error placing order:", error);
+    showErrorToast("Failed to place order. Please try again.");
   }
 }
 
@@ -1654,14 +1686,14 @@ let currentProductDetail = null;
 function openProductDetail(product) {
   currentProductDetail = product;
   const modal = document.getElementById("productDetailModal");
-  
+
   // Populate product data
   populateProductDetail(product);
-  
+
   // Show modal
   modal.style.display = "flex";
   document.body.style.overflow = "hidden";
-  
+
   // Add to recently viewed
   addToRecentlyViewed(product);
   renderRecentlyViewed();
@@ -1677,18 +1709,20 @@ function closeProductDetail() {
 function populateProductDetail(product) {
   // Update title
   document.getElementById("productDetailTitle").textContent = product.name;
-  
+
   // Update image
   const productImage = document.getElementById("productDetailImage");
   productImage.src = product.image;
   productImage.alt = product.name;
-  
+
   // Update name
   document.getElementById("productDetailName").textContent = product.name;
-  
+
   // Update price
-  document.getElementById("productDetailPrice").textContent = `₹${product.price}`;
-  
+  document.getElementById(
+    "productDetailPrice"
+  ).textContent = `₹${product.price}`;
+
   // Update discount badge
   const discountElement = document.getElementById("productDetailDiscount");
   if (product.discount && product.discount > 0) {
@@ -1697,26 +1731,30 @@ function populateProductDetail(product) {
   } else {
     discountElement.style.display = "none";
   }
-  
+
   // Update rating
   const starsElement = document.getElementById("productDetailStars");
   starsElement.innerHTML = generateStars(product.rating);
-  
-  document.getElementById("productDetailRatingValue").textContent = product.rating || 'N/A';
-  
+
+  document.getElementById("productDetailRatingValue").textContent =
+    product.rating || "N/A";
+
   // Generate random review count for demo
   const reviewCount = Math.floor(Math.random() * 500) + 50;
-  document.getElementById("productDetailReviews").textContent = `(${reviewCount} reviews)`;
-  
+  document.getElementById(
+    "productDetailReviews"
+  ).textContent = `(${reviewCount} reviews)`;
+
   // Update description
-  document.getElementById("productDetailDescription").textContent = product.description;
-  
+  document.getElementById("productDetailDescription").textContent =
+    product.description;
+
   // Update wishlist button state
   const wishlistButton = document.getElementById("productDetailWishlist");
   const isInWishlist = wishlist.some((item) => item.id === product.id);
   const heartIcon = wishlistButton.querySelector("i");
   const wishlistText = wishlistButton.querySelector("span");
-  
+
   if (isInWishlist) {
     wishlistButton.classList.add("active");
     heartIcon.classList.remove("far");
@@ -1728,7 +1766,7 @@ function populateProductDetail(product) {
     heartIcon.classList.add("far");
     wishlistText.textContent = "Add to Wishlist";
   }
-  
+
   // Update badge based on category or special offers
   const badgeElement = document.getElementById("productDetailBadge");
   if (product.category === "deals" || product.discount > 50) {
@@ -1745,51 +1783,59 @@ function populateProductDetail(product) {
 // Event listeners for product detail modal
 function initializeProductDetailModal() {
   // Add to cart button in product detail
-  document.getElementById("productDetailAddToCart").addEventListener("click", function() {
-    if (currentProductDetail) {
-      addToCart(
-        currentProductDetail.name,
-        currentProductDetail.price,
-        currentProductDetail.image,
-        currentProductDetail.id
-      );
-      showSuccessToast(`${currentProductDetail.name} added to cart!`);
-    }
-  });
-  
-  // Wishlist button in product detail
-  document.getElementById("productDetailWishlist").addEventListener("click", function() {
-    if (currentProductDetail) {
-      // Create a mock event object for toggleWishlist function
-      const mockEvent = {
-        stopPropagation: () => {},
-        currentTarget: this
-      };
-      
-      // Toggle wishlist (this function handles all the UI updates)
-      toggleWishlist(currentProductDetail.id, mockEvent);
-      
-      // Update the text in the product detail modal
-      const wishlistText = this.querySelector("span");
-      const isInWishlist = wishlist.some((item) => item.id === currentProductDetail.id);
-      
-      if (isInWishlist) {
-        wishlistText.textContent = "Remove from Wishlist";
-      } else {
-        wishlistText.textContent = "Add to Wishlist";
+  document
+    .getElementById("productDetailAddToCart")
+    .addEventListener("click", function () {
+      if (currentProductDetail) {
+        addToCart(
+          currentProductDetail.name,
+          currentProductDetail.price,
+          currentProductDetail.image,
+          currentProductDetail.id
+        );
+        showSuccessToast(`${currentProductDetail.name} added to cart!`);
       }
-    }
-  });
-  
+    });
+
+  // Wishlist button in product detail
+  document
+    .getElementById("productDetailWishlist")
+    .addEventListener("click", function () {
+      if (currentProductDetail) {
+        // Create a mock event object for toggleWishlist function
+        const mockEvent = {
+          stopPropagation: () => {},
+          currentTarget: this,
+        };
+
+        // Toggle wishlist (this function handles all the UI updates)
+        toggleWishlist(currentProductDetail.id, mockEvent);
+
+        // Update the text in the product detail modal
+        const wishlistText = this.querySelector("span");
+        const isInWishlist = wishlist.some(
+          (item) => item.id === currentProductDetail.id
+        );
+
+        if (isInWishlist) {
+          wishlistText.textContent = "Remove from Wishlist";
+        } else {
+          wishlistText.textContent = "Add to Wishlist";
+        }
+      }
+    });
+
   // Close modal when clicking outside
-  document.getElementById("productDetailModal").addEventListener("click", function(e) {
-    if (e.target === this) {
-      closeProductDetail();
-    }
-  });
-  
+  document
+    .getElementById("productDetailModal")
+    .addEventListener("click", function (e) {
+      if (e.target === this) {
+        closeProductDetail();
+      }
+    });
+
   // Close modal with Escape key
-  document.addEventListener("keydown", function(e) {
+  document.addEventListener("keydown", function (e) {
     if (e.key === "Escape") {
       const modal = document.getElementById("productDetailModal");
       if (modal.style.display === "flex") {
@@ -1925,7 +1971,7 @@ let filteredOrders = [];
 
 async function openOrderHistory() {
   if (!currentUser) {
-    showErrorToast('Please sign in to view order history');
+    showErrorToast("Please sign in to view order history");
     return;
   }
 
@@ -1958,9 +2004,9 @@ async function loadUserOrders() {
       renderOrdersList();
     }
   } catch (error) {
-    console.error('Error loading orders:', error);
+    console.error("Error loading orders:", error);
     loadingElement.style.display = "none";
-    showErrorToast('Failed to load order history. Please try again.');
+    showErrorToast("Failed to load order history. Please try again.");
   }
 }
 
@@ -1968,7 +2014,7 @@ function renderOrdersList() {
   const ordersListElement = document.getElementById("ordersList");
   ordersListElement.innerHTML = "";
 
-  filteredOrders.forEach(order => {
+  filteredOrders.forEach((order) => {
     const orderElement = createOrderElement(order);
     ordersListElement.appendChild(orderElement);
   });
@@ -1991,11 +2037,17 @@ function createOrderElement(order) {
       </div>
       <div class="order-amount">
         <span class="order-total">₹${order.finalAmount}</span>
-        ${order.discount > 0 ? `<span class="order-discount">₹${order.discount} off</span>` : ''}
+        ${
+          order.discount > 0
+            ? `<span class="order-discount">₹${order.discount} off</span>`
+            : ""
+        }
       </div>
     </div>
     <div class="order-items-list">
-      ${order.items.map(item => `
+      ${order.items
+        .map(
+          (item) => `
         <div class="order-item-detail">
           <img src="${item.image}" alt="${item.name}" class="order-item-image">
           <div class="order-item-info">
@@ -2004,7 +2056,9 @@ function createOrderElement(order) {
           </div>
           <span class="order-item-total">₹${item.price * item.quantity}</span>
         </div>
-      `).join('')}
+      `
+        )
+        .join("")}
     </div>
     <div class="order-footer">
       <div class="order-payment">
@@ -2023,45 +2077,47 @@ function createOrderElement(order) {
 function filterOrdersByDate() {
   const dateFilter = document.getElementById("dateFilter").value;
   const now = new Date();
-  
-  filteredOrders = userOrders.filter(order => {
+
+  filteredOrders = userOrders.filter((order) => {
     const orderDate = order.orderDate;
-    
+
     switch (dateFilter) {
-      case 'today':
+      case "today":
         return orderDate.toDateString() === now.toDateString();
-      case 'week':
+      case "week":
         const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
         return orderDate >= weekAgo;
-      case 'month':
+      case "month":
         const monthAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
         return orderDate >= monthAgo;
-      case 'year':
+      case "year":
         const yearAgo = new Date(now.getTime() - 365 * 24 * 60 * 60 * 1000);
         return orderDate >= yearAgo;
       default:
         return true;
     }
   });
-  
+
   renderOrdersList();
 }
 
 function filterOrdersByCategory() {
   const categoryFilter = document.getElementById("categoryFilter").value;
-  
-  if (categoryFilter === 'all') {
+
+  if (categoryFilter === "all") {
     filteredOrders = [...userOrders];
   } else {
-    filteredOrders = userOrders.filter(order => {
-      return order.items.some(item => {
+    filteredOrders = userOrders.filter((order) => {
+      return order.items.some((item) => {
         // Find the product in our products data to get its category
-        const product = productsData?.allProducts?.find(p => p.id === item.id);
+        const product = productsData?.allProducts?.find(
+          (p) => p.id === item.id
+        );
         return product?.category === categoryFilter;
       });
     });
   }
-  
+
   renderOrdersList();
 }
 
@@ -2075,10 +2131,12 @@ window.onclick = function (event) {
 
   if (event.target === cartModal) {
     closeCart();
+    updateMobileNavActiveState('navHome');
   }
 
   if (event.target === userModal) {
     userModal.style.display = "none";
+    updateMobileNavActiveState('navHome');
   }
 
   if (event.target === wishlistModal) {
@@ -2096,185 +2154,205 @@ window.onclick = function (event) {
 
 // Form submission handlers
 document.addEventListener("DOMContentLoaded", function () {
-  const signupPasswordInput = document.getElementById('signupPassword');
+  const signupPasswordInput = document.getElementById("signupPassword");
   if (signupPasswordInput) {
-    signupPasswordInput.addEventListener('input', function() {
+    signupPasswordInput.addEventListener("input", function () {
       displayPasswordStrength(this.value);
     });
   }
 
-  document.getElementById("loginForm").addEventListener("submit", async function (e) {
-    e.preventDefault();
-    
-    const email = document.getElementById('loginEmail').value;
-    const password = document.getElementById('loginPassword').value;
-    
-    if (!email || !password) {
-      showErrorToast('Please fill in all fields');
-      return;
-    }
-    
-    try {
-      const userCredential = await signInWithEmailAndPassword(auth, email, password);
-      const user = userCredential.user;
-      
-      showSuccessToast(`Welcome back, ${user.displayName || user.email}!`);
-      setTimeout(() => {
-        document.getElementById('userModal').style.display = 'none';
-      }, 1000);
-    } catch (error) {
-      console.error('Error logging in:', error);
-      let errorMessage = 'Failed to log in. ';
-      
-      if (error.code === 'auth/user-not-found') {
-        errorMessage += 'No account found with this email.';
-      } else if (error.code === 'auth/wrong-password') {
-        errorMessage += 'Incorrect password.';
-      } else if (error.code === 'auth/invalid-email') {
-        errorMessage += 'Invalid email address.';
-      } else if (error.code === 'auth/too-many-requests') {
-        errorMessage += 'Too many failed attempts. Please try again later.';
-      } else {
-        errorMessage += 'Please try again.';
-      }
-      
-      showErrorToast(errorMessage);
-    }
-  });
+  document
+    .getElementById("loginForm")
+    .addEventListener("submit", async function (e) {
+      e.preventDefault();
 
-  document.getElementById("signupForm").addEventListener("submit", async function (e) {
-    e.preventDefault();
-    
-    const name = document.getElementById('signupName').value;
-    const email = document.getElementById('signupEmail').value;
-    const password = document.getElementById('signupPassword').value;
-    const confirmPassword = document.getElementById('signupConfirmPassword').value;
-    const phone = document.getElementById('signupPhone').value;
-    
-    if (!name || !email || !password || !phone) {
-      showErrorToast('Please fill in all fields');
-      return;
-    }
+      const email = document.getElementById("loginEmail").value;
+      const password = document.getElementById("loginPassword").value;
 
-    if (password !== confirmPassword) {
-      showErrorToast('Passwords do not match');
-      return;
-    }
-    
-    const validation = validatePassword(password);
-    if (!validation.isValid) {
-      showErrorToast('Password does not meet requirements');
-      return;
-    }
-    
-    try {
-      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-      const user = userCredential.user;
-      
-      await updateProfile(user, {
-        displayName: name,
-        photoURL: `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=0D8ABC&color=fff&size=100`
-      });
-      
-      localStorage.setItem('userPhone', phone);
-      
-      showSuccessToast(`Account created successfully! Welcome, ${name}!`);
-      setTimeout(() => {
-        document.getElementById('userModal').style.display = 'none';
-      }, 1000);
-    } catch (error) {
-      console.error('Error creating account:', error);
-      let errorMessage = 'Failed to create account. ';
-      
-      if (error.code === 'auth/email-already-in-use') {
-        errorMessage += 'This email is already registered.';
-      } else if (error.code === 'auth/invalid-email') {
-        errorMessage += 'Invalid email address.';
-      } else if (error.code === 'auth/weak-password') {
-        errorMessage += 'Password is too weak.';
-      } else {
-        errorMessage += 'Please try again.';
+      if (!email || !password) {
+        showErrorToast("Please fill in all fields");
+        return;
       }
-      
-      showErrorToast(errorMessage);
-    }
-  });
+
+      try {
+        const userCredential = await signInWithEmailAndPassword(
+          auth,
+          email,
+          password
+        );
+        const user = userCredential.user;
+
+        showSuccessToast(`Welcome back, ${user.displayName || user.email}!`);
+        setTimeout(() => {
+          document.getElementById("userModal").style.display = "none";
+        }, 1000);
+      } catch (error) {
+        console.error("Error logging in:", error);
+        let errorMessage = "Failed to log in. ";
+
+        if (error.code === "auth/user-not-found") {
+          errorMessage += "No account found with this email.";
+        } else if (error.code === "auth/wrong-password") {
+          errorMessage += "Incorrect password.";
+        } else if (error.code === "auth/invalid-email") {
+          errorMessage += "Invalid email address.";
+        } else if (error.code === "auth/too-many-requests") {
+          errorMessage += "Too many failed attempts. Please try again later.";
+        } else {
+          errorMessage += "Please try again.";
+        }
+
+        showErrorToast(errorMessage);
+      }
+    });
+
+  document
+    .getElementById("signupForm")
+    .addEventListener("submit", async function (e) {
+      e.preventDefault();
+
+      const name = document.getElementById("signupName").value;
+      const email = document.getElementById("signupEmail").value;
+      const password = document.getElementById("signupPassword").value;
+      const confirmPassword = document.getElementById(
+        "signupConfirmPassword"
+      ).value;
+      const phone = document.getElementById("signupPhone").value;
+
+      if (!name || !email || !password || !phone) {
+        showErrorToast("Please fill in all fields");
+        return;
+      }
+
+      if (password !== confirmPassword) {
+        showErrorToast("Passwords do not match");
+        return;
+      }
+
+      const validation = validatePassword(password);
+      if (!validation.isValid) {
+        showErrorToast("Password does not meet requirements");
+        return;
+      }
+
+      try {
+        const userCredential = await createUserWithEmailAndPassword(
+          auth,
+          email,
+          password
+        );
+        const user = userCredential.user;
+
+        await updateProfile(user, {
+          displayName: name,
+          photoURL: `https://ui-avatars.com/api/?name=${encodeURIComponent(
+            name
+          )}&background=0D8ABC&color=fff&size=100`,
+        });
+
+        localStorage.setItem("userPhone", phone);
+
+        showSuccessToast(`Account created successfully! Welcome, ${name}!`);
+        setTimeout(() => {
+          document.getElementById("userModal").style.display = "none";
+        }, 1000);
+      } catch (error) {
+        console.error("Error creating account:", error);
+        let errorMessage = "Failed to create account. ";
+
+        if (error.code === "auth/email-already-in-use") {
+          errorMessage += "This email is already registered.";
+        } else if (error.code === "auth/invalid-email") {
+          errorMessage += "Invalid email address.";
+        } else if (error.code === "auth/weak-password") {
+          errorMessage += "Password is too weak.";
+        } else {
+          errorMessage += "Please try again.";
+        }
+
+        showErrorToast(errorMessage);
+      }
+    });
 
   // Profile editing functionality
-  let selectedThemeColor = '0D8ABC';
-  
-  const editProfileBtn = document.getElementById('editProfileBtn');
-  const cancelEditBtn = document.getElementById('cancelEditBtn');
-  const profileEditSection = document.getElementById('profileEditSection');
-  const editProfileForm = document.getElementById('editProfileForm');
-  const orderHistoryBtn = document.getElementById('orderHistoryBtn');
-  
+  let selectedThemeColor = "0D8ABC";
+
+  const editProfileBtn = document.getElementById("editProfileBtn");
+  const cancelEditBtn = document.getElementById("cancelEditBtn");
+  const profileEditSection = document.getElementById("profileEditSection");
+  const editProfileForm = document.getElementById("editProfileForm");
+  const orderHistoryBtn = document.getElementById("orderHistoryBtn");
+
   if (editProfileBtn) {
-    editProfileBtn.addEventListener('click', () => {
-      profileEditSection.style.display = 'block';
+    editProfileBtn.addEventListener("click", () => {
+      profileEditSection.style.display = "block";
       const currentUser = auth.currentUser;
       if (currentUser) {
-        document.getElementById('editDisplayName').value = currentUser.displayName || '';
-        const savedColor = localStorage.getItem('profileThemeColor') || '0D8ABC';
+        document.getElementById("editDisplayName").value =
+          currentUser.displayName || "";
+        const savedColor =
+          localStorage.getItem("profileThemeColor") || "0D8ABC";
         selectedThemeColor = savedColor;
         updateColorSelection(savedColor);
       }
     });
   }
-  
+
   if (cancelEditBtn) {
-    cancelEditBtn.addEventListener('click', () => {
-      profileEditSection.style.display = 'none';
+    cancelEditBtn.addEventListener("click", () => {
+      profileEditSection.style.display = "none";
     });
   }
 
   if (orderHistoryBtn) {
-    orderHistoryBtn.addEventListener('click', () => {
+    orderHistoryBtn.addEventListener("click", () => {
       openOrderHistory();
     });
   }
-  
-  document.querySelectorAll('.color-option').forEach(btn => {
-    btn.addEventListener('click', function() {
+
+  document.querySelectorAll(".color-option").forEach((btn) => {
+    btn.addEventListener("click", function () {
       selectedThemeColor = this.dataset.color;
       updateColorSelection(selectedThemeColor);
     });
   });
-  
+
   if (editProfileForm) {
-    editProfileForm.addEventListener('submit', async (e) => {
+    editProfileForm.addEventListener("submit", async (e) => {
       e.preventDefault();
-      
-      const newDisplayName = document.getElementById('editDisplayName').value;
+
+      const newDisplayName = document.getElementById("editDisplayName").value;
       const currentUser = auth.currentUser;
-      
+
       if (!currentUser) {
-        showErrorToast('No user logged in');
+        showErrorToast("No user logged in");
         return;
       }
-      
+
       try {
         await updateProfile(currentUser, {
           displayName: newDisplayName,
-          photoURL: `https://ui-avatars.com/api/?name=${encodeURIComponent(newDisplayName)}&background=${selectedThemeColor}&color=fff&size=100`
+          photoURL: `https://ui-avatars.com/api/?name=${encodeURIComponent(
+            newDisplayName
+          )}&background=${selectedThemeColor}&color=fff&size=100`,
         });
-        
-        localStorage.setItem('profileThemeColor', selectedThemeColor);
-        
+
+        localStorage.setItem("profileThemeColor", selectedThemeColor);
+
         updateUIForSignedInUser(currentUser);
-        
-        showSuccessToast('Profile updated successfully!');
-        profileEditSection.style.display = 'none';
+
+        showSuccessToast("Profile updated successfully!");
+        profileEditSection.style.display = "none";
       } catch (error) {
-        console.error('Error updating profile:', error);
-        showErrorToast('Failed to update profile. Please try again.');
+        console.error("Error updating profile:", error);
+        showErrorToast("Failed to update profile. Please try again.");
       }
     });
   }
 
   // Initialize theme on page load
   initializeTheme();
-  
+
   // Expose functions to window object for HTML onclick handlers
   window.openCart = openCart;
   window.closeCart = closeCart;
@@ -2310,11 +2388,11 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 function updateColorSelection(color) {
-  document.querySelectorAll('.color-option').forEach(btn => {
+  document.querySelectorAll(".color-option").forEach((btn) => {
     if (btn.dataset.color === color) {
-      btn.classList.add('selected');
+      btn.classList.add("selected");
     } else {
-      btn.classList.remove('selected');
+      btn.classList.remove("selected");
     }
   });
 }
@@ -2357,5 +2435,18 @@ window
       setTheme(e.matches ? "dark" : "light");
     }
   });
+// Manages the active state highlight on the new mobile nav
+function updateMobileNavActiveState(activeItem) {
+  // First, remove 'active' from all items
+  document.querySelectorAll(".mobile-nav-item").forEach((item) => {
+    item.classList.remove("active");
+  });
 
-
+  // Then, add 'active' to the correct one
+  if (activeItem) {
+    document.getElementById(activeItem)?.classList.add("active");
+  } else {
+    // Default to home if nothing is active
+    document.getElementById("navHome")?.classList.add("active");
+  }
+}

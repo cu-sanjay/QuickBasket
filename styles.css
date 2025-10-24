@@ -3288,3 +3288,87 @@ footer {
     font-size: 1.1rem;
   }
 }
+ 
+
+/* The new mobile navigation bar container */
+.mobile-nav {
+  display: none; /* Hidden by default on desktop */
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  background: white;
+  box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+  z-index: 999;
+}
+
+/* Flexbox layout for the items inside */
+.mobile-nav-layout {
+  display: flex;
+  justify-content: space-around;
+  padding: 8px 0;
+}
+
+/* Individual navigation items (Home, Cart, etc.) */
+.mobile-nav-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex-grow: 1;
+  text-decoration: none;
+  color: var(--gray);
+  padding: 5px 0;
+  transition: color 0.2s ease-in-out;
+}
+
+.mobile-nav-item i {
+  font-size: 1.4rem;
+  margin-bottom: 4px;
+}
+
+.mobile-nav-item span {
+  font-size: 0.7rem;
+  font-weight: 500;
+}
+
+/* Style for the active/selected item */
+.mobile-nav-item.active {
+  color: var(--primary);
+}
+
+/* Dark theme adjustments */
+[data-theme="dark"] .mobile-nav {
+  background: #1e1e1e;
+  box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.4);
+}
+
+[data-theme="dark"] .mobile-nav-item {
+  color: #9aa0a6; /* Dark theme gray */
+}
+
+[data-theme="dark"] .mobile-nav-item.active {
+  color: var(--primary); /* Dark theme primary color */
+}
+
+
+ 
+
+/* This block of code ONLY runs on screens 768px wide or smaller (like phones) */
+@media (max-width: 768px) {
+  /* HIDE the original, large footer on mobile */
+  footer {
+    display: none;
+  }
+
+  /* SHOW the new mobile navigation bar */
+  .mobile-nav {
+    display: flex; /* This overrides 'display: none' */
+  }
+
+  /* Add padding to the bottom of the body to prevent the
+     fixed nav bar from covering the last piece of content. */
+  body {
+    padding-bottom: 70px;
+  }
+}

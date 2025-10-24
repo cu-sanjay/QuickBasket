@@ -654,5 +654,23 @@
     </div>
     <script src="src/utils/cartStorage.js"></script>
     <script type="module" src="script.js"></script>
+    <nav class="mobile-nav" id="mobileNav">
+  <a href="index.html" class="mobile-nav-item active" id="navHome">
+    <i class="fas fa-home"></i>
+    <span>Home</span>
+  </a>
+  <a href="#" class="mobile-nav-item" onclick="openCart(); return false;" id="navCart">
+    <i class="fas fa-shopping-cart"></i>
+    <span>Cart</span>
+  </a>
+  <a href="#" class="mobile-nav-item" onclick="openUserModal(); return false;" id="navProfile">
+    <i class="fas fa-user"></i>
+    <span>Profile</span>
+  </a>
+  <a href="#footer-section-placeholder" class="mobile-nav-item" id="navHelp">
+    <i class="fas fa-question-circle"></i>
+    <span>Help</span>
+  </a>
+</nav>
   </body>
 </html>
