@@ -1,4 +1,4 @@
-import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+ import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
 import { 
   getAuth, 
   GoogleAuthProvider, 
@@ -1115,11 +1115,12 @@ function openCart() {
   document.getElementById("paymentSection").style.display = "none";
   document.getElementById("orderSuccess").style.display = "none";
   updateCartDisplay();
+  updateMobileNavActiveState('navCart');
 }
 
 function closeCart() {
   document.getElementById("cartModal").style.display = "none";
-  document.getElementById("userModal").style.display = "none";
+  updateMobileNavActiveState('navHome');
 }
 
 function addToCart(name, price, image, id = null) {
@@ -1517,6 +1518,7 @@ function showInfoToast(message, duration = 4000) {
 
 function openUserModal() {
   document.getElementById("userModal").style.display = "flex";
+  updateMobileNavActiveState('navProfile');
 }
 
 function switchTab(tabName) {
@@ -2079,6 +2081,7 @@ window.onclick = function (event) {
 
   if (event.target === userModal) {
     userModal.style.display = "none";
+    updateMobileNavActiveState('navHome');
   }
 
   if (event.target === wishlistModal) {
@@ -2358,4 +2361,18 @@ window
     }
   });
 
+// Manages the active state highlight on the new mobile nav
+function updateMobileNavActiveState(activeItem) {
+  // First, remove 'active' from all items
+  document.querySelectorAll(".mobile-nav-item").forEach((item) => {
+    item.classList.remove("active");
+  });
 
+  // Then, add 'active' to the correct one
+  if (activeItem) {
+    document.getElementById(activeItem)?.classList.add("active");
+  } else {
+    // Default to home if nothing is active
+    document.getElementById("navHome")?.classList.add("active");
+  }
+}
