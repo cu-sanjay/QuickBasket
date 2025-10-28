@@ -3353,22 +3353,34 @@ footer {
 
 
  
-
-/* This block of code ONLY runs on screens 768px wide or smaller (like phones) */
+/* Footer Mobile Visibility Show in small screen */
 @media (max-width: 768px) {
-  /* HIDE the original, large footer on mobile */
   footer {
-    display: none;
+    display: block;
+    padding: 25px 10px;
+    text-align: center;
   }
 
-  /* SHOW the new mobile navigation bar */
-  .mobile-nav {
-    display: flex; /* This overrides 'display: none' */
+  footer .footer-content {
+    align-items: center;
+    gap: 20px;
   }
 
-  /* Add padding to the bottom of the body to prevent the
-     fixed nav bar from covering the last piece of content. */
-  body {
-    padding-bottom: 70px;
+  footer .footer-column {
+    width: 100%;
+  }
+  
+  footer .footer-column p {
+    margin-bottom: 4px;
+  }
+
+  footer .footer-column h3 {
+    margin-bottom: 10px;
+    font-size: 1rem;
+  }
+
+  footer .footer-bottom {
+    font-size: 0.85rem;
+    margin-top: 15px;
   }
 }
